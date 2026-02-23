@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import type { Property } from '../../types';
 import { PropertyCard } from '../../components/PropertyCard';
+import { PropertiesFilters } from '../../components/PropertiesFilters';
 import './Properties.css';
 
 type ListingIntent = 'rentLease' | 'buying';
@@ -130,86 +131,26 @@ export const Properties: React.FC = () => {
   return (
     <main className="properties-page">
       <section className="properties-section">
-        <section className="properties-filters" aria-label="Search and filters">
-          <label className="filter-group filter-search-group">
-            <span className="filter-label">Search</span>
-            <input
-              type="search"
-              className="filter-input"
-              placeholder="Search by title, amenities, or area"
-              value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
-            />
-          </label>
-
-          <div className="filter-group">
-            <span className="filter-label">Budget ({formatBudget(minBudget)} - {formatBudget(maxBudget)})</span>
-            <div
-              className="budget-slider-group"
-              style={
-                {
-                  '--min-budget-percent': `${minBudgetPercent}%`,
-                  '--max-budget-percent': `${maxBudgetPercent}%`,
-                } as React.CSSProperties
-              }
-            >
-              <div className="budget-slider-track" aria-hidden="true" />
-              <input
-                type="range"
-                min={BUDGET_MIN}
-                max={BUDGET_MAX}
-                step={500_000}
-                value={minBudget}
-                onChange={(event) => onMinBudgetChange(Number(event.target.value))}
-                aria-label="Minimum budget"
-              />
-              <input
-                type="range"
-                min={BUDGET_MIN}
-                max={BUDGET_MAX}
-                step={500_000}
-                value={maxBudget}
-                onChange={(event) => onMaxBudgetChange(Number(event.target.value))}
-                aria-label="Maximum budget"
-              />
-            </div>
-          </div>
-
-          <label className="filter-group">
-            <span className="filter-label">Area</span>
-            <select
-              className="filter-input"
-              value={selectedTechParkArea}
-              onChange={(event) => setSelectedTechParkArea(event.target.value)}
-            >
-              {techParkAreas.map((area) => (
-                <option key={area} value={area}>
-                  {area}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <div className="filter-group filter-checkbox-group">
-            <span className="filter-label">Listing Type</span>
-            <label className="checkbox-option">
-              <input
-                type="checkbox"
-                checked={includeRentLease}
-                onChange={(event) => setIncludeRentLease(event.target.checked)}
-              />
-              <span>Renting/Leasing</span>
-            </label>
-            <label className="checkbox-option">
-              <input
-                type="checkbox"
-                checked={includeBuying}
-                onChange={(event) => setIncludeBuying(event.target.checked)}
-              />
-              <span>Buying</span>
-            </label>
-          </div>
-        </section>
+        <PropertiesFilters
+          searchQuery={searchQuery}
+          onSearchQueryChange={setSearchQuery}
+          minBudget={minBudget}
+          maxBudget={maxBudget}
+          minBudgetPercent={minBudgetPercent}
+          maxBudgetPercent={maxBudgetPercent}
+          budgetMin={BUDGET_MIN}
+          budgetMax={BUDGET_MAX}
+          onMinBudgetChange={onMinBudgetChange}
+          onMaxBudgetChange={onMaxBudgetChange}
+          selectedTechParkArea={selectedTechParkArea}
+          techParkAreas={techParkAreas}
+          onTechParkAreaChange={setSelectedTechParkArea}
+          includeRentLease={includeRentLease}
+          includeBuying={includeBuying}
+          onIncludeRentLeaseChange={setIncludeRentLease}
+          onIncludeBuyingChange={setIncludeBuying}
+          formatBudget={formatBudget}
+        />
 
         <header className="properties-header">
           <h1 className="properties-title">Available Properties</h1>

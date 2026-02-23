@@ -19,10 +19,7 @@ const formatArea = (area: number): string => {
 };
 
 const typeLabelMap: Record<Property['type'], string> = {
-  office: 'Office',
-  retail: 'Retail',
-  warehouse: 'Warehouse',
-  industrial: 'Industrial',
+  office: 'Office'
 };
 
 export const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
