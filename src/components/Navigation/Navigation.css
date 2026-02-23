@@ -23,7 +23,14 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.nav-container::-webkit-scrollbar {
+  display: none;
 }
 
 @media (min-width: 768px) {
@@ -66,6 +73,14 @@
 
 .nav-link:hover {
   color: var(--color-white);
+}
+
+.nav-link-active {
+  color: var(--color-white);
+}
+
+.nav-link-active::after {
+  width: 100%;
 }
 
 .nav-link:hover::after {

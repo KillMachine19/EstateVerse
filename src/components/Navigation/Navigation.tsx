@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { NAVIGATION_ITEMS } from '../../constants/navigation';
+import { NavLink } from 'react-router-dom';
+import type { NavItem } from '../../constants/navigation';
 import './Navigation.css';
 import { FiChevronDown } from 'react-icons/fi';
 
 interface NavigationProps {
+  items: NavItem[];
   isOpen?: boolean;
   onClose?: () => void;
   isMobile?: boolean;
 }
 
 export const Navigation: React.FC<NavigationProps> = ({ 
+  items,
   isOpen = true, 
   onClose,
   isMobile = false 
@@ -28,7 +30,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   if (isMobile) {
     return (
       <nav className={`nav-accordion ${isOpen ? 'nav-accordion-open' : ''}`}>
-        {NAVIGATION_ITEMS.map((item) => (
+        {items.map((item) => (
           <div key={item.label} className="accordion-item">
             <button
               className="accordion-toggle"
@@ -45,13 +47,13 @@ export const Navigation: React.FC<NavigationProps> = ({
                 expandedItems.includes(item.label) ? 'expanded' : ''
               }`}
             >
-              <Link 
+              <NavLink
                 to={item.path} 
                 className="accordion-link"
                 onClick={onClose}
               >
                 {item.label}
-              </Link>
+              </NavLink>
             </div>
           </div>
         ))}
@@ -61,10 +63,14 @@ export const Navigation: React.FC<NavigationProps> = ({
 
   return (
     <nav className={isOpen ? 'nav-container' : 'nav-hidden'}>
-      {NAVIGATION_ITEMS.map((item) => (
-        <Link key={item.label} to={item.path} className="nav-link">
+      {items.map((item) => (
+        <NavLink
+          key={item.label}
+          to={item.path}
+          className={({ isActive }) => `nav-link ${isActive ? 'nav-link-active' : ''}`}
+        >
           {item.label}
-        </Link>
+        </NavLink>
       ))}
     </nav>
   );

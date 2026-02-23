@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { NAVIGATION_ITEMS } from '../../constants/navigation';
+import { PUBLIC_NAVIGATION_ITEMS } from '../../constants/navigation';
 import './VerticalNavbar.css';
 
 interface VerticalNavbarProps {
@@ -20,7 +20,7 @@ export const VerticalNavbar: React.FC<VerticalNavbarProps> = ({
 
       <nav className={`vertical-navbar ${isOpen ? 'vertical-navbar-open' : 'vertical-navbar-closed'}`}>
         <div className="vertical-navbar-content">
-          {NAVIGATION_ITEMS.map((item) => (
+          {PUBLIC_NAVIGATION_ITEMS.map((item) => (
             <Link
               key={item.label}
               to={item.path}

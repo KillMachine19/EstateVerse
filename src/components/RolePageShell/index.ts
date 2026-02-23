@@ -1,0 +1,1 @@
+export { RolePageShell } from './RolePageShell';

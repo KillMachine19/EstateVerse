@@ -1,11 +1,16 @@
 import apiClient from '../apiClient';
+import type { BackendRole } from '../../utils/authRole';
 
 export interface AuthCredentials {
   username: string;
   password: string;
 }
 
-export const registerUser = async (credentials: AuthCredentials) => {
+export interface RegisterCredentials extends AuthCredentials {
+  role: BackendRole;
+}
+
+export const registerUser = async (credentials: RegisterCredentials) => {
   try {
     const response = await apiClient.post('/api/auth/register', credentials);
     return response.data;
