@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './ScheduleCall.css';
+import {
+  INDIAN_PHONE_INPUT_PATTERN,
+  validateEmailAddress,
+  validateName,
+  validatePhoneNumber,
+  validateTime,
+} from '../../utils/validation';
 
 interface ScheduleCallProps {
   mode?: 'modal' | 'inline';
@@ -21,6 +28,14 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    date: '',
+    time: '',
+  });
   const [values, setValues] = useState({
     name: '',
     email: '',
@@ -54,6 +69,14 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
 
   const resetForm = () => {
     setError(null);
+    setFieldErrors({
+      name: '',
+      email: '',
+      phone: '',
+      company: '',
+      date: '',
+      time: '',
+    });
     setSent(false);
     setValues({
       name: '',
@@ -97,6 +120,38 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     if (error) setError(null);
+    if (name === 'name' && fieldErrors.name) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        name: value.trim() && !validateName(value) ? 'Please enter a valid name.' : '',
+      }));
+    }
+    if (name === 'email' && fieldErrors.email) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        email: value.trim() && !validateEmailAddress(value) ? 'Please enter a valid email.' : '',
+      }));
+    }
+    if (name === 'phone' && fieldErrors.phone) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        phone: value.trim() && !validatePhoneNumber(value) ? 'Please enter a valid Indian phone number.' : '',
+      }));
+    }
+    if (name === 'company' && fieldErrors.company) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        company: value.trim() ? '' : 'Please enter your company name.',
+      }));
+    }
+    if ((name === 'dateMonth' || name === 'dateDay') && fieldErrors.date) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        date: (name === 'dateMonth' ? value : values.dateMonth) && (name === 'dateDay' ? value : values.dateDay)
+          ? ''
+          : 'Please select your preferred date.',
+      }));
+    }
     setValues(prev => ({ ...prev, [name]: value }));
   };
 
@@ -106,36 +161,82 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
   const dayOptions = Array.from({ length: daysInSelectedMonth }, (_, i) => String(i + 1).padStart(2, '0'));
   const hourOptions = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
   const minuteOptions = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
-  const isValidIndianPhone = (phone: string) => {
-    const normalized = phone.replace(/\s|-/g, '');
-    return /^(\+91)?[6-9]\d{9}$/.test(normalized);
-  };
-
   const handleTimePartChange = (part: 'timeHour' | 'timeMinute' | 'timePeriod', value: string) => {
     if (error) setError(null);
     setValues((prev) => {
       const next = { ...prev, [part]: value };
       const { timeHour, timeMinute, timePeriod } = next;
       next.time = timeHour && timeMinute && timePeriod ? `${timeHour}:${timeMinute} ${timePeriod}` : '';
+      if (fieldErrors.time) {
+        setFieldErrors((prevErrors) => ({
+          ...prevErrors,
+          time: next.time && !validateTime(next.time) ? 'Please select a valid time.' : '',
+        }));
+      }
       return next;
     });
   };
 
+  const getNameError = () => (!values.name.trim() || !validateName(values.name) ? 'Please enter a valid name.' : '');
+  const getEmailError = () =>
+    (!values.email.trim() || !validateEmailAddress(values.email) ? 'Please enter a valid email.' : '');
+  const getPhoneError = () =>
+    (!values.phone.trim() || !validatePhoneNumber(values.phone) ? 'Please enter a valid Indian phone number.' : '');
+  const getCompanyError = () => (!values.company.trim() ? 'Please enter your company name.' : '');
+  const getDateError = () => (!values.dateMonth || !values.dateDay ? 'Please select your preferred date.' : '');
+  const getTimeError = () =>
+    (!values.timeHour || !values.timeMinute || !values.timePeriod || !validateTime(values.time)
+      ? 'Please select a valid time.'
+      : '');
+
   const validate = () => {
-    if (!values.name.trim()) return 'Please enter your name.';
-    if (!values.email.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(values.email)) return 'Please enter a valid email.';
-    if (!values.phone.trim() || !isValidIndianPhone(values.phone)) return 'Please enter a valid Indian phone number.';
-    if (!values.company.trim()) return 'Please enter your company name.';
-    if (!values.dateMonth || !values.dateDay) return 'Please select your preferred date.';
-    if (!values.timeHour || !values.timeMinute || !values.timePeriod) return 'Please select your preferred time.';
+    const nextFieldErrors = {
+      name: getNameError(),
+      email: getEmailError(),
+      phone: getPhoneError(),
+      company: getCompanyError(),
+      date: getDateError(),
+      time: getTimeError(),
+    };
+    setFieldErrors(nextFieldErrors);
+
+    if (
+      nextFieldErrors.name ||
+      nextFieldErrors.email ||
+      nextFieldErrors.phone ||
+      nextFieldErrors.company ||
+      nextFieldErrors.date ||
+      nextFieldErrors.time
+    ) {
+      return '__FIELD_ERRORS__';
+    }
     return null;
+  };
+
+  const handleFieldBlur = (field: 'name' | 'email' | 'phone' | 'company') => {
+    const message = field === 'name'
+      ? getNameError()
+      : field === 'email'
+        ? getEmailError()
+        : field === 'phone'
+          ? getPhoneError()
+          : getCompanyError();
+    setFieldErrors((prev) => ({ ...prev, [field]: message }));
+  };
+
+  const handleDateBlur = () => {
+    setFieldErrors((prev) => ({ ...prev, date: getDateError() }));
+  };
+
+  const handleTimeBlur = () => {
+    setFieldErrors((prev) => ({ ...prev, time: getTimeError() }));
   };
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     const err = validate();
     if (err) {
-      setError(err);
+      setError(err === '__FIELD_ERRORS__' ? null : err);
       return;
     }
     setError(null);
@@ -162,7 +263,7 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
         {!isInline && <button className="sc-close" aria-label="Close" onClick={() => setOpen(false)}>✕</button>}
       </header>
 
-      <form className="sc-form" onSubmit={handleSubmit}>
+      <form className="sc-form" onSubmit={handleSubmit} noValidate>
         {error && <div className="sc-error">{error}</div>}
 
         <div className="sc-row sc-row-two">
@@ -174,9 +275,11 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
               ref={firstInputRef}
               value={values.name}
               onChange={handleChange}
+              onBlur={() => handleFieldBlur('name')}
               placeholder="Your name"
               required
             />
+            {fieldErrors.name && <span className="sc-field-error">{fieldErrors.name}</span>}
           </label>
           <label className="sc-group">
             <span className="sc-label">Email Address <span className="sc-required">*</span></span>
@@ -186,9 +289,11 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
               type="email"
               value={values.email}
               onChange={handleChange}
+              onBlur={() => handleFieldBlur('email')}
               placeholder="you@company.com"
               required
             />
+            {fieldErrors.email && <span className="sc-field-error">{fieldErrors.email}</span>}
           </label>
         </div>
 
@@ -202,10 +307,12 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
               inputMode="numeric"
               value={values.phone}
               onChange={handleChange}
+              onBlur={() => handleFieldBlur('phone')}
               placeholder="+91 98765 43210"
-              pattern="^(\+91)?[6-9]\d{9}$"
+              pattern={INDIAN_PHONE_INPUT_PATTERN}
               required
             />
+            {fieldErrors.phone && <span className="sc-field-error">{fieldErrors.phone}</span>}
           </label>
           <label className="sc-group">
             <span className="sc-label">Company <span className="sc-required">*</span></span>
@@ -214,9 +321,11 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
               name="company"
               value={values.company}
               onChange={handleChange}
+              onBlur={() => handleFieldBlur('company')}
               placeholder="Company name"
               required
             />
+            {fieldErrors.company && <span className="sc-field-error">{fieldErrors.company}</span>}
           </label>
         </div>
 
@@ -228,6 +337,7 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
               name="dateMonth"
               value={values.dateMonth}
               onChange={handleChange}
+              onBlur={handleDateBlur}
               required
             >
               <option value="">Select month</option>
@@ -242,6 +352,7 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
               name="dateDay"
               value={values.dateDay}
               onChange={handleChange}
+              onBlur={handleDateBlur}
               required
             >
               <option value="">Select day</option>
@@ -252,6 +363,7 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
               ))}
             </select>
           </div>
+          {fieldErrors.date && <span className="sc-field-error">{fieldErrors.date}</span>}
         </label>
 
         <label className="sc-group">
@@ -262,6 +374,7 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
               name="timeHour"
               value={values.timeHour}
               onChange={(e) => handleTimePartChange('timeHour', e.target.value)}
+              onBlur={handleTimeBlur}
               required
             >
               <option value="">Hour</option>
@@ -276,6 +389,7 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
               name="timeMinute"
               value={values.timeMinute}
               onChange={(e) => handleTimePartChange('timeMinute', e.target.value)}
+              onBlur={handleTimeBlur}
               required
             >
               <option value="">Minute</option>
@@ -290,6 +404,7 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
               name="timePeriod"
               value={values.timePeriod}
               onChange={(e) => handleTimePartChange('timePeriod', e.target.value)}
+              onBlur={handleTimeBlur}
               required
             >
               <option value="">AM/PM</option>
@@ -297,6 +412,7 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
               <option value="PM">PM</option>
             </select>
           </div>
+          {fieldErrors.time && <span className="sc-field-error">{fieldErrors.time}</span>}
         </label>
 
         <label className="sc-group">
