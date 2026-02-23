@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import type { Property } from '../types';
-import { PropertyCard } from '../components/PropertyCard';
+import type { Property } from '../../types';
+import { PropertyCard } from '../../components/PropertyCard';
 import './Properties.css';
 
 type ListingIntent = 'rentLease' | 'buying';
