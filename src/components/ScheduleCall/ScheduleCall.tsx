@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './ScheduleCall.css';
 import {
-  INDIAN_PHONE_INPUT_PATTERN,
   validateEmailAddress,
   validateName,
   validatePhoneNumber,
@@ -39,7 +38,7 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
   const [values, setValues] = useState({
     name: '',
     email: '',
-    phone: '',
+    phone: '+91',
     company: '',
     dateMonth: '',
     dateDay: '',
@@ -81,7 +80,7 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
     setValues({
       name: '',
       email: '',
-      phone: '',
+      phone: '+91',
       company: '',
       dateMonth: '',
       dateDay: '',
@@ -97,7 +96,10 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
     if (isInline) return;
 
     function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape') {
+        setOpen(false);
+        resetForm();
+      }
     }
     if (open) {
       document.addEventListener('keydown', onKey);
@@ -132,11 +134,21 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
         email: value.trim() && !validateEmailAddress(value) ? 'Please enter a valid email.' : '',
       }));
     }
-    if (name === 'phone' && fieldErrors.phone) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        phone: value.trim() && !validatePhoneNumber(value) ? 'Please enter a valid Indian phone number.' : '',
-      }));
+    if (name === 'phone') {
+      const rawDigits = value.replace(/\D/g, '');
+      const digitsWithoutCountryCode = rawDigits.startsWith('91') && rawDigits.length > 10
+        ? rawDigits.slice(2)
+        : rawDigits;
+      const localDigits = digitsWithoutCountryCode.slice(0, 10);
+      const nextPhone = `+91${localDigits}`;
+      if (fieldErrors.phone) {
+        setFieldErrors((prev) => ({
+          ...prev,
+          phone: !validatePhoneNumber(nextPhone) ? 'Please enter a valid Indian phone number.' : '',
+        }));
+      }
+      setValues((prev) => ({ ...prev, phone: nextPhone }));
+      return;
     }
     if (name === 'company' && fieldErrors.company) {
       setFieldErrors((prev) => ({
@@ -158,6 +170,7 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
   const daysInSelectedMonth = values.dateMonth
     ? new Date(currentYear, Number(values.dateMonth), 0).getDate()
     : 31;
+  const phoneLocalDigits = values.phone.replace(/^\+91/, '').replace(/\D/g, '');
   const dayOptions = Array.from({ length: daysInSelectedMonth }, (_, i) => String(i + 1).padStart(2, '0'));
   const hourOptions = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
   const minuteOptions = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
@@ -260,7 +273,18 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
           <h3 id="sc-title" className="sc-title">Schedule a Call</h3>
           <p className="sc-subtitle">Tell us what you need and we will confirm shortly.</p>
         </div>
-        {!isInline && <button className="sc-close" aria-label="Close" onClick={() => setOpen(false)}>✕</button>}
+        {!isInline && (
+          <button
+            className="sc-close"
+            aria-label="Close"
+            onClick={() => {
+              setOpen(false);
+              resetForm();
+            }}
+          >
+            ✕
+          </button>
+        )}
       </header>
 
       <form className="sc-form" onSubmit={handleSubmit} noValidate>
@@ -300,18 +324,22 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
         <div className="sc-row sc-row-two">
           <label className="sc-group">
             <span className="sc-label">Phone Number <span className="sc-required">*</span></span>
-            <input
-              className="sc-control"
-              name="phone"
-              type="tel"
-              inputMode="numeric"
-              value={values.phone}
-              onChange={handleChange}
-              onBlur={() => handleFieldBlur('phone')}
-              placeholder="+91 98765 43210"
-              pattern={INDIAN_PHONE_INPUT_PATTERN}
-              required
-            />
+            <div className="sc-phone-field">
+              <span className="sc-phone-prefix">+91</span>
+              <input
+                className="sc-phone-input"
+                name="phone"
+                type="tel"
+                inputMode="numeric"
+                value={phoneLocalDigits}
+                onChange={handleChange}
+                onBlur={() => handleFieldBlur('phone')}
+                placeholder="9876543210"
+                pattern="[6-9]\d{9}"
+                maxLength={10}
+                required
+              />
+            </div>
             {fieldErrors.phone && <span className="sc-field-error">{fieldErrors.phone}</span>}
           </label>
           <label className="sc-group">
@@ -431,7 +459,14 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
           <button
             type="button"
             className="sc-cancel"
-            onClick={() => (isInline ? resetForm() : setOpen(false))}
+            onClick={() => {
+              if (isInline) {
+                resetForm();
+                return;
+              }
+              setOpen(false);
+              resetForm();
+            }}
           >
             {isInline ? 'Reset' : 'Cancel'}
           </button>
@@ -472,7 +507,10 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
           role="dialog"
           aria-modal="true"
           aria-labelledby="sc-title"
-          onClick={() => setOpen(false)}
+          onClick={() => {
+            setOpen(false);
+            resetForm();
+          }}
         >
           {formBody}
         </div>
