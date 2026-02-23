@@ -7,7 +7,9 @@ export const Root: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <Outlet />
+      <main className="page-content">
+        <Outlet />
+      </main>
       <Footer />
     </div>
   );

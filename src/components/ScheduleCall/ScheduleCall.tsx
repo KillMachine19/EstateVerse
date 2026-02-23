@@ -26,16 +26,48 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
     email: '',
     phone: '',
     company: '',
-    datetime: '',
+    dateMonth: '',
+    dateDay: '',
+    timeHour: '',
+    timeMinute: '',
+    timePeriod: '',
+    time: '',
     message: '',
   });
+  const currentYear = new Date().getFullYear();
+  const months = [
+    { value: '01', label: 'January' },
+    { value: '02', label: 'February' },
+    { value: '03', label: 'March' },
+    { value: '04', label: 'April' },
+    { value: '05', label: 'May' },
+    { value: '06', label: 'June' },
+    { value: '07', label: 'July' },
+    { value: '08', label: 'August' },
+    { value: '09', label: 'September' },
+    { value: '10', label: 'October' },
+    { value: '11', label: 'November' },
+    { value: '12', label: 'December' },
+  ];
 
   const firstInputRef = useRef<HTMLInputElement | null>(null);
 
   const resetForm = () => {
     setError(null);
     setSent(false);
-    setValues({ name: '', email: '', phone: '', company: '', datetime: '', message: '' });
+    setValues({
+      name: '',
+      email: '',
+      phone: '',
+      company: '',
+      dateMonth: '',
+      dateDay: '',
+      timeHour: '',
+      timeMinute: '',
+      timePeriod: '',
+      time: '',
+      message: '',
+    });
   };
 
   useEffect(() => {
@@ -62,15 +94,40 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
     return () => window.removeEventListener('open-schedule-call', handleOpen);
   }, [isInline]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     if (error) setError(null);
     setValues(prev => ({ ...prev, [name]: value }));
   };
 
+  const daysInSelectedMonth = values.dateMonth
+    ? new Date(currentYear, Number(values.dateMonth), 0).getDate()
+    : 31;
+  const dayOptions = Array.from({ length: daysInSelectedMonth }, (_, i) => String(i + 1).padStart(2, '0'));
+  const hourOptions = Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
+  const minuteOptions = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'));
+  const isValidIndianPhone = (phone: string) => {
+    const normalized = phone.replace(/\s|-/g, '');
+    return /^(\+91)?[6-9]\d{9}$/.test(normalized);
+  };
+
+  const handleTimePartChange = (part: 'timeHour' | 'timeMinute' | 'timePeriod', value: string) => {
+    if (error) setError(null);
+    setValues((prev) => {
+      const next = { ...prev, [part]: value };
+      const { timeHour, timeMinute, timePeriod } = next;
+      next.time = timeHour && timeMinute && timePeriod ? `${timeHour}:${timeMinute} ${timePeriod}` : '';
+      return next;
+    });
+  };
+
   const validate = () => {
     if (!values.name.trim()) return 'Please enter your name.';
     if (!values.email.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(values.email)) return 'Please enter a valid email.';
+    if (!values.phone.trim() || !isValidIndianPhone(values.phone)) return 'Please enter a valid Indian phone number.';
+    if (!values.company.trim()) return 'Please enter your company name.';
+    if (!values.dateMonth || !values.dateDay) return 'Please select your preferred date.';
+    if (!values.timeHour || !values.timeMinute || !values.timePeriod) return 'Please select your preferred time.';
     return null;
   };
 
@@ -110,7 +167,7 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
 
         <div className="sc-row sc-row-two">
           <label className="sc-group">
-            <span className="sc-label">Full Name</span>
+            <span className="sc-label">Full Name <span className="sc-required">*</span></span>
             <input
               className="sc-control"
               name="name"
@@ -118,10 +175,11 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
               value={values.name}
               onChange={handleChange}
               placeholder="Your name"
+              required
             />
           </label>
           <label className="sc-group">
-            <span className="sc-label">Email Address</span>
+            <span className="sc-label">Email Address <span className="sc-required">*</span></span>
             <input
               className="sc-control"
               name="email"
@@ -129,42 +187,116 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
               value={values.email}
               onChange={handleChange}
               placeholder="you@company.com"
+              required
             />
           </label>
         </div>
 
         <div className="sc-row sc-row-two">
           <label className="sc-group">
-            <span className="sc-label">Phone Number</span>
+            <span className="sc-label">Phone Number <span className="sc-required">*</span></span>
             <input
               className="sc-control"
               name="phone"
+              type="tel"
+              inputMode="numeric"
               value={values.phone}
               onChange={handleChange}
-              placeholder="+1 (555) 000-0000"
+              placeholder="+91 98765 43210"
+              pattern="^(\+91)?[6-9]\d{9}$"
+              required
             />
           </label>
           <label className="sc-group">
-            <span className="sc-label">Company</span>
+            <span className="sc-label">Company <span className="sc-required">*</span></span>
             <input
               className="sc-control"
               name="company"
               value={values.company}
               onChange={handleChange}
               placeholder="Company name"
+              required
             />
           </label>
         </div>
 
         <label className="sc-group">
-          <span className="sc-label">Preferred Date & Time</span>
-          <input
-            className="sc-control"
-            name="datetime"
-            type="datetime-local"
-            value={values.datetime}
-            onChange={handleChange}
-          />
+          <span className="sc-label">Preferred Date <span className="sc-required">*</span></span>
+          <div className="sc-row sc-row-two">
+            <select
+              className="sc-control"
+              name="dateMonth"
+              value={values.dateMonth}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select month</option>
+              {months.map((month) => (
+                <option key={month.value} value={month.value}>
+                  {month.label}
+                </option>
+              ))}
+            </select>
+            <select
+              className="sc-control"
+              name="dateDay"
+              value={values.dateDay}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select day</option>
+              {dayOptions.map((day) => (
+                <option key={day} value={day}>
+                  {day}
+                </option>
+              ))}
+            </select>
+          </div>
+        </label>
+
+        <label className="sc-group">
+          <span className="sc-label">Preferred Time <span className="sc-required">*</span></span>
+          <div className="sc-row sc-row-time">
+            <select
+              className="sc-control sc-time-part"
+              name="timeHour"
+              value={values.timeHour}
+              onChange={(e) => handleTimePartChange('timeHour', e.target.value)}
+              required
+            >
+              <option value="">Hour</option>
+              {hourOptions.map((hour) => (
+                <option key={hour} value={hour}>
+                  {hour}
+                </option>
+              ))}
+            </select>
+            <select
+              className="sc-control sc-time-part"
+              name="timeMinute"
+              value={values.timeMinute}
+              onChange={(e) => handleTimePartChange('timeMinute', e.target.value)}
+              required
+            >
+              <option value="">Minute</option>
+              {minuteOptions.map((minute) => (
+                <option key={minute} value={minute}>
+                  {minute}
+                </option>
+              ))}
+            </select>
+            <select
+              className="sc-control sc-time-part"
+              name="timePeriod"
+              value={values.timePeriod}
+              onChange={(e) => handleTimePartChange('timePeriod', e.target.value)}
+              required
+            >
+              <option value="">AM/PM</option>
+              <option value="AM">AM</option>
+              <option value="PM">PM</option>
+            </select>
+          </div>
         </label>
 
         <label className="sc-group">

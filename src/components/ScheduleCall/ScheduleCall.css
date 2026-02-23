@@ -145,6 +145,10 @@
   text-transform: uppercase;
 }
 
+.sc-required {
+  color: var(--color-danger);
+}
+
 .sc-control {
   width: 100%;
   border: 1px solid var(--color-light-gray);
@@ -172,6 +176,14 @@
   border-radius: var(--border-radius-base);
   min-height: 120px;
   resize: vertical;
+}
+
+.sc-row-time {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sc-time-part {
+  min-width: 0;
 }
 
 .sc-actions {
