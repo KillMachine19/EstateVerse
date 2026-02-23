@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Third-party templates
+now-ui-kit-master/
+argon-design-system-angular-master/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
