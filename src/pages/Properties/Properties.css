@@ -7,7 +7,7 @@
 .properties-section {
   max-width: 80rem;
   margin: 0 auto;
-  padding: calc(5rem + var(--spacing-xl)) var(--spacing-md) var(--spacing-3xl);
+  padding: var(--spacing-lg) var(--spacing-md) var(--spacing-3xl);
 }
 
 @media (min-width: 640px) {
@@ -25,7 +25,7 @@
 }
 
 .properties-header {
-  margin-bottom: var(--spacing-2xl);
+  margin-bottom: var(--spacing-lg);
 }
 
 .properties-title {
@@ -48,7 +48,7 @@
   gap: var(--spacing-md);
   width: 100%;
   max-width: 82rem;
-  margin: 0 auto var(--spacing-lg);
+  margin: 0 auto var(--spacing-md);
   padding: var(--spacing-lg) var(--spacing-lg);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: var(--border-radius-lg);

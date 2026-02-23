@@ -173,7 +173,6 @@ export const Properties: React.FC = () => {
                 aria-label="Maximum budget"
               />
             </div>
-            <p className="budget-range-hint">Range: Rs. 50L to 100 Cr</p>
           </div>
 
           <label className="filter-group">
