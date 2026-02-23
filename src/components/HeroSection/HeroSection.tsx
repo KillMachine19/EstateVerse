@@ -1,8 +1,15 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../Button';
 import './HeroSection.css';
 
 export const HeroSection: React.FC = () => {
+  const navigate = useNavigate();
+
+  const goToProperties = () => {
+    navigate('/properties');
+  };
+
   const openScheduleCallPopup = () => {
     window.dispatchEvent(new Event('open-schedule-call'));
   };
@@ -12,12 +19,12 @@ export const HeroSection: React.FC = () => {
       <div className="hero-container">
         <div className="hero-grid">
           <div>
-            <h2 className="hero-title">Premium Commercial Real Estate Solutions</h2>
+            <h2 className="hero-title">Premium Office Real Estate Solutions in India</h2>
             <p className="hero-description">
-              Discover exceptional office spaces, retail locations, and warehouses tailored to your business needs. Connect with expert advisors who understand your goals.
+              Discover exceptional office spaces across India tailored to your business needs. Connect with expert advisors who understand local market dynamics and your growth goals.
             </p>
             <div className="hero-buttons">
-              <Button variant="primary" size="lg">
+              <Button variant="primary" size="lg" onClick={goToProperties}>
                 Explore Properties
               </Button>
               <Button variant="primary" size="lg" onClick={openScheduleCallPopup}>
