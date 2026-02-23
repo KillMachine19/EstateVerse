@@ -9,9 +9,9 @@
   --font-weight-bold: 700;
 
   /* Colors - Primary Palette */
-  --color-primary: #f96332;
-  --color-primary-light: rgba(249, 99, 50, 0.3);
-  --color-primary-dark: #e85428;
+  --color-primary: #00BCD4;
+  --color-primary-light: rgba(0, 188, 212, 0.3);
+  --color-primary-dark: #0097a7;
 
   /* Colors - Info */
   --color-info: #2CA8FF;

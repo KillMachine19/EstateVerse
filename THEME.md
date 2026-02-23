@@ -12,9 +12,9 @@ EstateVerse now uses the **Now UI Kit** design system - a modern, professional U
 
 | Color | Hex Value | CSS Variable | Usage |
 |-------|-----------|--------------|-------|
-| Primary Orange | `#f96332` | `--color-primary` | Primary buttons, highlights, accents |
-| Primary Dark | `#e85428` | `--color-primary-dark` | Hover states, active states |
-| Primary Light | `rgba(249, 99, 50, 0.3)` | `--color-primary-light` | Light backgrounds, overlays |
+| Primary Teal | `#00BCD4` | `--color-primary` | Primary buttons, highlights, accents |
+| Primary Dark | `#0097a7` | `--color-primary-dark` | Hover states, active states |
+| Primary Light | `rgba(0, 188, 212, 0.3)` | `--color-primary-light` | Light backgrounds, overlays |
 
 ### Secondary Colors
 
