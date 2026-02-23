@@ -46,7 +46,8 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--spacing-md);
-  width: min(82rem, calc(100vw - (2 * var(--spacing-lg))));
+  width: 100%;
+  max-width: 82rem;
   margin: 0 auto var(--spacing-lg);
   padding: var(--spacing-lg) var(--spacing-lg);
   border: 1px solid rgba(0, 0, 0, 0.08);

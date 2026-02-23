@@ -311,8 +311,8 @@
   .sc-trigger-floating {
     right: var(--spacing-md);
     bottom: var(--spacing-md);
-    width: calc(100vw - (var(--spacing-md) * 2));
-    max-width: 320px;
+    width: auto;
+    max-width: none;
   }
 
   .sc-header,

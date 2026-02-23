@@ -7,7 +7,7 @@ export interface Property {
   price: number;
   location: string;
   area: number; // in sq ft
-  type: 'office' | 'retail' | 'warehouse' | 'industrial';
+  type: 'office' ;
   image: string;
   amenities: string[];
 }

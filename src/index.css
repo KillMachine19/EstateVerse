@@ -18,6 +18,12 @@ html {
   max-width: 100%;
 }
 
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+}
+
 @media (max-width: 480px) {
   html {
     font-size: 14px;
@@ -31,6 +37,13 @@ body {
   background-color: var(--bg-white);
   color: var(--text-primary);
   overflow-x: hidden;
+}
+
+img,
+video,
+canvas,
+iframe {
+  max-width: 100%;
 }
 
 /* Global Link Styles */
