@@ -1,0 +1,99 @@
+/* Now UI Kit Theme - CSS Variables */
+
+:root {
+  /* Font Family */
+  --font-primary: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+  --font-weight-light: 200;
+  --font-weight-normal: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Colors - Primary Palette */
+  --color-primary: #f96332;
+  --color-primary-light: rgba(249, 99, 50, 0.3);
+  --color-primary-dark: #e85428;
+
+  /* Colors - Info */
+  --color-info: #2CA8FF;
+  --color-info-light: rgba(44, 168, 255, 0.3);
+  --color-info-dark: #1595e8;
+
+  /* Colors - Success */
+  --color-success: #18ce0f;
+  --color-success-light: rgba(24, 206, 15, 0.3);
+  --color-success-dark: #12a00a;
+
+  /* Colors - Warning */
+  --color-warning: #FFB236;
+  --color-warning-light: rgba(255, 178, 54, 0.3);
+  --color-warning-dark: #e6a320;
+
+  /* Colors - Danger */
+  --color-danger: #FF3636;
+  --color-danger-light: rgba(255, 54, 54, 0.3);
+  --color-danger-dark: #e62e2e;
+
+  /* Colors - Neutral */
+  --color-white: #FFFFFF;
+  --color-black: #2c2c2c;
+  --color-light-black: #444444;
+  --color-dark-gray: #9A9A9A;
+  --color-medium-gray: #DDDDDD;
+  --color-light-gray: #E3E3E3;
+  --color-smoke: #F5F5F5;
+  --color-default: #888888;
+
+  /* Background Colors */
+  --bg-white: #FFFFFF;
+  --bg-smoke: #F5F5F5;
+  --bg-dark: #030712;
+  --bg-black: rgba(30, 30, 30, 0.97);
+
+  /* Text Colors */
+  --text-primary: #2c2c2c;
+  --text-secondary: #666666;
+  --text-muted: #9A9A9A;
+  --text-white: #FFFFFF;
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+
+  /* Border Radius */
+  --border-radius-sm: 0.375rem;
+  --border-radius-base: 0.5rem;
+  --border-radius-lg: 0.75rem;
+
+  /* Box Shadow */
+  --shadow-sm: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0px 5px 15px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0px 5px 25px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0px 10px 40px rgba(0, 0, 0, 0.3);
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
+
+  /* Font Sizes */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
+  --font-size-5xl: 3rem;
+
+  /* Line Heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-loose: 1.75;
+  --line-height-relaxed: 2;
+}

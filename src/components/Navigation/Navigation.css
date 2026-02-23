@@ -1,58 +1,76 @@
-/* Navigation Component Styles */
+/* Navigation Component Styles - Now UI Kit Theme */
 
 .nav-hidden {
   display: none;
   align-items: center;
-  gap: 1rem;
+  gap: var(--spacing-md);
 }
 
 @media (min-width: 768px) {
   .nav-hidden {
     display: flex;
-    gap: 1.5rem;
+    gap: var(--spacing-lg);
   }
 }
 
 @media (min-width: 1024px) {
   .nav-hidden {
-    gap: 2rem;
+    gap: var(--spacing-xl);
   }
 }
 
 .nav-container {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
 }
 
 @media (min-width: 768px) {
   .nav-container {
-    gap: 1.5rem;
+    gap: var(--spacing-lg);
   }
 }
 
 @media (min-width: 1024px) {
   .nav-container {
-    gap: 2rem;
+    gap: var(--spacing-xl);
   }
 }
 
 .nav-link {
-  color: #d1d5db;
-  transition: color 0.2s ease;
-  font-size: 0.875rem;
-  font-weight: 500;
+  color: var(--text-muted);
+  transition: all var(--transition-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   white-space: nowrap;
-  padding: 0.5rem;
+  padding: var(--spacing-sm);
   text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-info));
+  transition: width var(--transition-base);
 }
 
 .nav-link:hover {
-  color: white;
+  color: var(--color-white);
+}
+
+.nav-link:hover::after {
+  width: 100%;
 }
 
 @media (min-width: 768px) {
   .nav-link {
-    font-size: 1rem;
+    font-size: var(--font-size-base);
   }
 }
