@@ -1,0 +1,58 @@
+/* Navigation Component Styles */
+
+.nav-hidden {
+  display: none;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .nav-hidden {
+    display: flex;
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav-hidden {
+    gap: 2rem;
+  }
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .nav-container {
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav-container {
+    gap: 2rem;
+  }
+}
+
+.nav-link {
+  color: #d1d5db;
+  transition: color 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 0.5rem;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: white;
+}
+
+@media (min-width: 768px) {
+  .nav-link {
+    font-size: 1rem;
+  }
+}

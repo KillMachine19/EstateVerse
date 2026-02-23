@@ -1,0 +1,253 @@
+======================================================================
+        ESTATE VERSE - COMMERCIAL REAL ESTATE PLATFORM
+                    Setup & Installation Guide
+======================================================================
+
+PROJECT OVERVIEW:
+EstateVerse is a modern commercial real estate website built with Vite,
+React, TypeScript, and custom CSS. The platform helps users discover
+premium office spaces, retail locations, warehouses, and industrial
+properties.
+
+======================================================================
+TECHNOLOGY STACK:
+======================================================================
+
+Frontend:
+  - Vite 7.3.1 (Build tool & Dev server)
+  - React 18+ with TypeScript
+  - Custom CSS (Pure CSS, no Tailwind)
+  - React Router DOM (Navigation & Routing)
+  - Axios (HTTP Client for API calls)
+
+Backend (Planned):
+  - Java Spring Boot
+  - Running on localhost:8080
+
+Design:
+  - Responsive Design (Mobile, Tablet, Desktop)
+  - Dark theme for header/footer
+  - Light theme for main sections
+  - Modular component architecture
+
+======================================================================
+FOLDER STRUCTURE:
+======================================================================
+
+src/
+├── components/              # Reusable React components
+│   ├── Button/             # Button component with variants
+│   ├── Header/             # Sticky navigation header
+│   ├── Logo/               # Brand logo
+│   ├── Navigation/         # Main navigation links
+│   ├── MobileMenuToggle/   # Hamburger menu icon
+│   ├── VerticalNavbar/     # Mobile sidebar navigation
+│   ├── Footer/             # Website footer
+│   ├── HeroSection/        # Landing page hero section
+│   └── FeaturesSection/    # Features showcase section
+├── pages/                  # Page components
+│   ├── Home.tsx
+│   ├── Properties.tsx
+│   ├── Services.tsx
+│   ├── About.tsx
+│   └── Contact.tsx
+├── layout/                 # Layout components
+│   └── Root.tsx           # Main layout wrapper
+├── config/                 # Configuration files
+│   └── router.tsx         # React Router configuration
+├── constants/              # Constant values
+│   └── navigation.ts      # Navigation items
+├── services/               # External services
+│   └── apiClient.ts       # Axios HTTP client
+├── App.tsx                # Main application component
+├── App.css                # App-level styles
+└── index.css              # Global styles
+
+======================================================================
+INSTALLATION:
+======================================================================
+
+1. Clone the repository:
+   git clone <your-github-repo-url>
+   cd EstateVerse
+
+2. Install dependencies:
+   npm install
+
+3. Start development server:
+   npm run dev
+   
+   The app will run on: http://localhost:5173 (or next available port)
+
+4. Build for production:
+   npm run build
+
+5. Preview production build:
+   npm run preview
+
+======================================================================
+GIT REPOSITORY SETUP:
+======================================================================
+
+If you haven't pushed to GitHub yet:
+
+1. Create a new repository on GitHub without initializing README/gitignore
+   (Visit: https://github.com/new)
+
+2. Add remote and push:
+   git remote add origin https://github.com/YOUR_USERNAME/EstateVerse.git
+   git branch -m main
+   git push -u origin main
+
+3. For subsequent commits:
+   git add .
+   git commit -m "Your commit message"
+   git push
+
+======================================================================
+KEY FILES & THEIR PURPOSE:
+======================================================================
+
+vite.config.ts          - Vite build configuration
+tsconfig.json           - TypeScript configuration
+package.json            - Project dependencies & scripts
+postcss.config.js       - PostCSS configuration
+.gitignore              - Files to exclude from version control
+index.html              - HTML entry point
+src/main.tsx            - React app entry point
+
+======================================================================
+CSS ARCHITECTURE:
+======================================================================
+
+Each component has its own CSS file:
+- Button.css             - Button styles (primary, secondary, outline)
+- Logo.css              - Brand logo styling
+- Header.css            - Header/navigation bar styles
+- Navigation.css        - Navigation menu links
+- MobileMenuToggle.css  - Hamburger menu icon
+- VerticalNavbar.css    - Mobile sidebar styling
+- Footer.css            - Footer section styles
+- HeroSection.css       - Hero/landing section
+- FeaturesSection.css   - Features showcase grid
+
+All CSS uses:
+- CSS3 Media Queries for responsive design
+- CSS Flexbox and Grid for layouts
+- CSS Gradients for visual effects
+- CSS Transitions for smooth interactions
+
+NO Tailwind CSS - Pure custom CSS only.
+
+======================================================================
+RESPONSIVE BREAKPOINTS:
+======================================================================
+
+Mobile:  All devices < 640px
+Tablet:  640px ≤ width < 1024px (md: 768px breakpoint in CSS)
+Desktop: ≥ 1024px (lg: 1024px breakpoint in CSS)
+
+Media query structure used:
+- Default styling for mobile
+- @media (min-width: 768px) for tablets
+- @media (min-width: 1024px) for desktop
+
+======================================================================
+API CONFIGURATION:
+======================================================================
+
+API Base URL: http://localhost:8080 (configured in src/services/apiClient.ts)
+
+Environment variable:
+  VITE_API_BASE_URL=http://localhost:8080
+
+To change API endpoint:
+1. Edit src/services/apiClient.ts
+2. Update the baseURL in axios.create({...})
+3. Or set VITE_API_BASE_URL in .env file
+
+======================================================================
+PAGE ROUTES:
+======================================================================
+
+/              → Home page (Hero + Features)
+/properties    → Properties listing page
+/services      → Services page
+/about         → About page
+/contact       → Contact page
+
+======================================================================
+COMPONENT USAGE EXAMPLES:
+======================================================================
+
+Import Button:
+  import { Button } from '@/components/Button';
+  <Button variant="primary" size="lg">Click Me</Button>
+
+Import Logo:
+  import { Logo } from '@/components/Logo';
+  <Logo showTagline={true} />
+
+Import Navigation:
+  import { Navigation } from '@/components/Navigation';
+  <Navigation isOpen={true} />
+
+======================================================================
+FUTURE DEVELOPMENT:
+======================================================================
+
+Planned features:
+- Property listings with search/filter
+- Property detail pages
+- User authentication
+- Admin panel for property management
+- Integration with Java Spring Boot backend
+- Database integration for property data
+- Advanced search & filtering
+- Payment integration
+- User reviews & ratings
+
+======================================================================
+TROUBLESHOOTING:
+======================================================================
+
+Port 5173 already in use?
+  - Vite will automatically try the next available port
+  - Check http://localhost:5174 if 5173 is taken
+
+Build errors?
+  - Delete node_modules folder
+  - Delete package-lock.json
+  - Run: npm install
+  - Run: npm run build
+
+Style not loading?
+  - Clear browser cache (Ctrl+Shift+Delete)
+  - Hard refresh (Ctrl+Shift+R on Windows, Cmd+Shift+R on Mac)
+  - Check that CSS file exists in component folder
+
+======================================================================
+DEVELOPMENT TIPS:
+======================================================================
+
+1. Use React DevTools browser extension for debugging
+2. Enable TypeScript strict mode in tsconfig.json for better type safety
+3. Use VS Code with ESLint extension for code quality
+4. Keep CSS files organized with comments grouping related styles
+5. Use semantic HTML and accessible component names
+6. Test responsive design using browser DevTools (F12 → Toggle device toolbar)
+
+======================================================================
+SUPPORT & CONTRIBUTION:
+======================================================================
+
+For issues, feature requests, or contributions:
+1. Create an issue on GitHub
+2. Fork the repository for contributions
+3. Submit pull requests with clear descriptions
+
+======================================================================
+Version: 1.0.0
+Last Updated: February 23, 2026
+Author: EstateVerse Development Team
+======================================================================
