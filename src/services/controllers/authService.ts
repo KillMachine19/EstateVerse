@@ -24,3 +24,13 @@ export const loginUser = async (credentials: AuthCredentials) => {
     throw error;
   }
 };
+
+export const getCurrentSession = async () => {
+  try {
+    const response = await apiClient.get('/api/auth/me');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching session:', error);
+    throw error;
+  }
+};

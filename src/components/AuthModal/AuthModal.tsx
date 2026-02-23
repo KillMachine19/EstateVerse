@@ -18,9 +18,10 @@ type Role = 'buyer' | 'seller';
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onAuthSuccess: () => Promise<void> | void;
 }
 
-export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
+export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess }) => {
   const [mode, setMode] = useState<AuthMode>('signin');
   const [role, setRole] = useState<Role | null>(null);
   const [roleError, setRoleError] = useState(false);
@@ -99,7 +100,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         setRole(null);
       } else {
         await loginUser(payload);
-        setAuthSuccess('Signed in successfully.');
+        await onAuthSuccess();
+        return;
       }
     } catch (error) {
       const message = isSignUp
