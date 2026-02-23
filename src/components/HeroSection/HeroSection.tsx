@@ -23,10 +23,18 @@ export const HeroSection: React.FC = () => {
           </div>
 
           <div className="hero-image">
-            <div className="hero-image-text">
-              <p className="hero-image-placeholder">Property Image</p>
-              <p className="hero-image-subtext">(Placeholder for hero image)</p>
-            </div>
+            <img
+              src="/images/hero-office.jpg"
+              alt="Premium commercial office interior"
+              className="hero-image-img"
+              onError={(e) => {
+                const target = e.currentTarget as HTMLImageElement;
+                target.style.display = 'none';
+                // show placeholder by toggling a data attribute on parent
+                const parent = target.closest('.hero-image');
+                if (parent) parent.setAttribute('data-image-failed', 'true');
+              }}
+            />
           </div>
         </div>
 

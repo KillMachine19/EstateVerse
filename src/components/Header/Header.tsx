@@ -12,6 +12,10 @@ export const Header: React.FC = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <header className="header">
       <div className="header-container">
@@ -40,7 +44,7 @@ export const Header: React.FC = () => {
 
         {isMobileMenuOpen && (
           <div className="header-mobile-nav">
-            <Navigation isOpen={true} />
+            <Navigation isOpen={isMobileMenuOpen} onClose={closeMobileMenu} isMobile={true} />
             <div className="header-mobile-nav-btn">
               <Button variant="primary" size="sm" className="w-full">
                 Schedule A Call
