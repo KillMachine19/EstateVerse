@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Button } from '../Button';
 import { Logo } from '../Logo';
 import { Navigation } from '../Navigation';
 import { MobileMenuToggle } from '../MobileMenuToggle';
@@ -28,12 +27,6 @@ export const Header: React.FC = () => {
             <Navigation isOpen={true} />
           </div>
 
-          <div className="header-actions">
-            <Button variant="primary" size="sm">
-              Schedule A Call
-            </Button>
-          </div>
-
           <div className="header-mobile-toggle">
             <MobileMenuToggle
               isOpen={isMobileMenuOpen}
@@ -45,11 +38,6 @@ export const Header: React.FC = () => {
         {isMobileMenuOpen && (
           <div className="header-mobile-nav">
             <Navigation isOpen={isMobileMenuOpen} onClose={closeMobileMenu} isMobile={true} />
-            <div className="header-mobile-nav-btn">
-              <Button variant="primary" size="sm" className="w-full">
-                Schedule A Call
-              </Button>
-            </div>
           </div>
         )}
       </div>

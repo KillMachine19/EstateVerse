@@ -9,7 +9,7 @@ export const Logo: React.FC<LogoProps> = ({ showTagline = false }) => {
   return (
     <div className="logo-container">
       <div className="logo-icon">
-        <span className="logo-icon-text">E</span>
+        <span className="logo-icon-text">EV</span>
       </div>
       <div>
         <h1 className="logo-brand">EstateVerse</h1>

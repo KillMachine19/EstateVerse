@@ -3,6 +3,10 @@ import { Button } from '../Button';
 import './HeroSection.css';
 
 export const HeroSection: React.FC = () => {
+  const openScheduleCallPopup = () => {
+    window.dispatchEvent(new Event('open-schedule-call'));
+  };
+
   return (
     <section className="hero-section">
       <div className="hero-container">
@@ -16,7 +20,7 @@ export const HeroSection: React.FC = () => {
               <Button variant="primary" size="lg">
                 Explore Properties
               </Button>
-              <Button variant="primary" size="lg">
+              <Button variant="primary" size="lg" onClick={openScheduleCallPopup}>
                 Schedule Expert Call
               </Button>
             </div>
