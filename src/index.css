@@ -39,6 +39,105 @@ body {
   overflow-x: hidden;
 }
 
+body.theme-dark {
+  --bg-white: #0b1220;
+  --bg-smoke: #111827;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --color-light-gray: #334155;
+  --color-medium-gray: #475569;
+  background-color: #0b1220;
+  color: var(--text-primary);
+}
+
+body.theme-dark a {
+  color: #67e8f9;
+}
+
+body.theme-dark a:hover {
+  color: #a5f3fc;
+}
+
+body.theme-dark .buyer-workspace {
+  background: linear-gradient(180deg, rgba(34, 211, 238, 0.08) 0%, rgba(0, 0, 0, 0) 45%), #0b1220;
+}
+
+body.theme-dark .buyer-workspace-card,
+body.theme-dark .buyer-sidebar,
+body.theme-dark .buyer-metric-card,
+body.theme-dark .buyer-dashboard-section,
+body.theme-dark .buyer-dashboard-insights__card,
+body.theme-dark .buyer-chart-card,
+body.theme-dark .buyer-saved-map-list {
+  background: #111827;
+  border-color: rgba(148, 163, 184, 0.26);
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.4);
+}
+
+body.theme-dark .buyer-workspace-title,
+body.theme-dark .buyer-dashboard-section__title,
+body.theme-dark .buyer-dashboard-list__title,
+body.theme-dark .buyer-dashboard-insights__title,
+body.theme-dark .buyer-saved-map-list-title,
+body.theme-dark .buyer-saved-map-item-name,
+body.theme-dark .buyer-chart-card__title,
+body.theme-dark .buyer-sidebar-link,
+body.theme-dark .buyer-sidebar-accordion__toggle,
+body.theme-dark .buyer-sidebar-sublink {
+  color: #e2e8f0;
+}
+
+body.theme-dark .buyer-workspace-description,
+body.theme-dark .buyer-metric-card__subtext,
+body.theme-dark .buyer-dashboard-list__meta,
+body.theme-dark .buyer-dashboard-plain-list__item,
+body.theme-dark .buyer-dashboard-insights__text,
+body.theme-dark .buyer-analytics-footnote,
+body.theme-dark .buyer-chart-card__category,
+body.theme-dark .buyer-chart-card__footer,
+body.theme-dark .buyer-bar-chart__label,
+body.theme-dark .buyer-saved-map-item-location {
+  color: #94a3b8;
+}
+
+body.theme-dark .buyer-dashboard-list__item,
+body.theme-dark .buyer-saved-map-item,
+body.theme-dark .buyer-sidebar-accordion,
+body.theme-dark .buyer-chart-card__footer {
+  border-color: rgba(148, 163, 184, 0.24);
+}
+
+body.theme-dark .buyer-sidebar-link:hover,
+body.theme-dark .buyer-sidebar-accordion__toggle:hover,
+body.theme-dark .buyer-sidebar-sublink:hover {
+  background: rgba(51, 65, 85, 0.45);
+}
+
+body.theme-dark .buyer-sidebar-link.is-active,
+body.theme-dark .buyer-sidebar-accordion__toggle.is-active,
+body.theme-dark .buyer-sidebar-sublink.is-active {
+  background: rgba(14, 165, 233, 0.24);
+  color: #e2e8f0;
+}
+
+body.theme-dark .buyer-dashboard-insights__card {
+  background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
+}
+
+body.theme-dark .buyer-donut-chart__inner {
+  background: #111827;
+  color: #e2e8f0;
+}
+
+body.theme-dark .buyer-saved-map-board {
+  border-color: rgba(148, 163, 184, 0.28);
+  background:
+    radial-gradient(circle at 18% 24%, rgba(34, 197, 94, 0.28), transparent 38%),
+    radial-gradient(circle at 62% 72%, rgba(14, 165, 233, 0.3), transparent 44%),
+    linear-gradient(180deg, #0f172a 0%, #111827 100%);
+}
+
 img,
 video,
 canvas,

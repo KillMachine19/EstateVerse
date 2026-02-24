@@ -1,0 +1,152 @@
+.buyer-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+  height: fit-content;
+}
+
+.buyer-sidebar-title {
+  font-size: 0.75rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 0.8rem;
+}
+
+.buyer-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.buyer-sidebar-nav > * {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.2rem;
+}
+
+.buyer-sidebar-nav > *:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.buyer-sidebar-accordion {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.buyer-sidebar-accordion__toggle {
+  width: 100%;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-align: left;
+  color: #1e293b;
+  padding: 0.62rem 0.7rem;
+  border-radius: 10px;
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.buyer-sidebar-accordion__toggle:hover {
+  background: rgba(2, 132, 199, 0.1);
+  color: #0f172a;
+}
+
+.buyer-sidebar-accordion__toggle.is-active {
+  background: linear-gradient(90deg, rgba(0, 188, 212, 0.2), rgba(44, 168, 255, 0.18));
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.buyer-sidebar-accordion__chevron {
+  margin-left: auto;
+  transition: transform var(--transition-base);
+}
+
+.buyer-sidebar-accordion__chevron.is-expanded {
+  transform: rotate(180deg);
+}
+
+.buyer-sidebar-accordion__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: 0.2rem;
+}
+
+.buyer-sidebar-sublink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+  color: #475569;
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem 0.5rem 2rem;
+  font-size: 0.82rem;
+}
+
+.buyer-sidebar-sublink:hover {
+  background: rgba(2, 132, 199, 0.08);
+  color: #0f172a;
+}
+
+.buyer-sidebar-sublink.is-active {
+  color: #0f172a;
+  background: rgba(2, 132, 199, 0.12);
+  font-weight: 600;
+}
+
+.buyer-sidebar-sublink__icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.buyer-sidebar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: #1e293b;
+  padding: 0.62rem 0.7rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  transition: all var(--transition-base);
+}
+
+.buyer-sidebar-link:hover {
+  background: rgba(2, 132, 199, 0.1);
+  color: #0f172a;
+}
+
+.buyer-sidebar-link.is-active {
+  background: linear-gradient(90deg, rgba(0, 188, 212, 0.2), rgba(44, 168, 255, 0.18));
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.buyer-sidebar-icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.98rem;
+}
+
+@media (max-width: 900px) {
+  .buyer-sidebar {
+    display: none;
+  }
+
+  .buyer-sidebar-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}

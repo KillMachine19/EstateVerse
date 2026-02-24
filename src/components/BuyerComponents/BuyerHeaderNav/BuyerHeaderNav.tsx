@@ -1,6 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiBell, FiChevronDown, FiLogOut, FiMessageCircle, FiUser } from 'react-icons/fi';
+import {
+  FiBell,
+  FiChevronDown,
+  FiCheckCircle,
+  FiHome,
+  FiLogOut,
+  FiMessageCircle,
+  FiSettings,
+  FiUser,
+} from 'react-icons/fi';
 import './BuyerHeaderNav.css';
 
 interface BuyerHeaderNavProps {
@@ -34,8 +43,8 @@ export const BuyerHeaderNav: React.FC<BuyerHeaderNavProps> = ({ onSignOut }) => 
         label: 'Messages',
         icon: <FiMessageCircle aria-hidden="true" />,
         items: [
-          { label: 'Inbox', to: '/buyer/messages' },
-          { label: 'Unread', to: '/buyer/messages' },
+          { label: 'Inbox', to: '/buyer/messages', icon: <FiMessageCircle aria-hidden="true" /> },
+          { label: 'Unread', to: '/buyer/messages', icon: <FiBell aria-hidden="true" /> },
         ],
       },
       {
@@ -43,8 +52,8 @@ export const BuyerHeaderNav: React.FC<BuyerHeaderNavProps> = ({ onSignOut }) => 
         label: 'Notifications',
         icon: <FiBell aria-hidden="true" />,
         items: [
-          { label: 'All Notifications', to: '/buyer/notifications' },
-          { label: 'Priority Alerts', to: '/buyer/notifications' },
+          { label: 'All Notifications', to: '/buyer/notifications', icon: <FiBell aria-hidden="true" /> },
+          { label: 'Priority Alerts', to: '/buyer/notifications', icon: <FiSettings aria-hidden="true" /> },
         ],
       },
       {
@@ -52,8 +61,9 @@ export const BuyerHeaderNav: React.FC<BuyerHeaderNavProps> = ({ onSignOut }) => 
         label: 'Profile',
         icon: <FiUser aria-hidden="true" />,
         items: [
-          { label: 'My Profile', to: '/buyer/profile' },
-          { label: 'Account Preferences', to: '/buyer/profile' },
+          { label: 'My Profile', to: '/buyer/profile', icon: <FiUser aria-hidden="true" /> },
+          { label: 'Verification Status', to: '/buyer/profile', icon: <FiCheckCircle aria-hidden="true" /> },
+          { label: 'Account Preferences', to: '/buyer/profile', icon: <FiSettings aria-hidden="true" /> },
         ],
       },
     ],
@@ -86,7 +96,8 @@ export const BuyerHeaderNav: React.FC<BuyerHeaderNavProps> = ({ onSignOut }) => 
                     className="buyer-dropdown-item"
                     onClick={() => setOpenDropdown(null)}
                   >
-                    {item.label}
+                    <span className="buyer-dropdown-item-icon">{item.icon}</span>
+                    <span>{item.label}</span>
                   </Link>
                 ))}
               </div>
@@ -116,7 +127,10 @@ export const BuyerHeaderNav: React.FC<BuyerHeaderNavProps> = ({ onSignOut }) => 
               className="buyer-dropdown-item buyer-dropdown-item-button"
               onClick={onSignOut}
             >
-              Sign out now
+              <span className="buyer-dropdown-item-icon">
+                <FiLogOut aria-hidden="true" />
+              </span>
+              <span>Sign out now</span>
             </button>
             <button
               type="button"
@@ -126,7 +140,10 @@ export const BuyerHeaderNav: React.FC<BuyerHeaderNavProps> = ({ onSignOut }) => 
                 navigate('/');
               }}
             >
-              Return to Home
+              <span className="buyer-dropdown-item-icon">
+                <FiHome aria-hidden="true" />
+              </span>
+              <span>Return to Home</span>
             </button>
           </div>
         )}

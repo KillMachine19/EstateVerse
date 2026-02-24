@@ -1,17 +1,30 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  FiBarChart2,
+  FiBell,
+  FiBookmark,
+  FiFileText,
+  FiGrid,
+  FiMapPin,
+  FiMessageSquare,
+  FiSearch,
+  FiTag,
+  FiUser,
+} from 'react-icons/fi';
 import { Logo } from '../Logo';
 import { Navigation } from '../Navigation';
 import { MobileMenuToggle } from '../MobileMenuToggle';
 import { AuthModal } from '../AuthModal';
 import { useAuth } from '../../context/AuthContext';
-import { BuyerHeaderNav } from '../BuyerHeaderNav';
+import { BuyerHeaderNav } from '../BuyerComponents/BuyerHeaderNav';
+import { ThemeToggle } from '../ThemeToggle';
 import {
   getDefaultDashboardPath,
   getSignedInNavigationItems,
   PUBLIC_NAVIGATION_ITEMS,
 } from '../../constants/navigation';
-import type { UserRole } from '../../utils/authRole';
+import { readStoredUserRole, type UserRole } from '../../utils/authRole';
 import './Header.css';
 
 export const Header: React.FC = () => {
@@ -26,13 +39,30 @@ export const Header: React.FC = () => {
     : PUBLIC_NAVIGATION_ITEMS;
 
   const buyerMobileNavigationItems = [
-    { label: 'Dashboard', path: '/buyer/dashboard' },
-    { label: 'Saved', path: '/buyer/saved' },
-    { label: 'Offers', path: '/buyer/offers' },
-    { label: 'Applications', path: '/buyer/applications' },
-    { label: 'Messages', path: '/buyer/messages' },
-    { label: 'Notifications', path: '/buyer/notifications' },
-    { label: 'Profile', path: '/buyer/profile' },
+    {
+      label: 'Dashboard',
+      path: '/buyer/dashboard',
+      icon: <FiGrid aria-hidden="true" />,
+      children: [
+        { label: 'Overview', path: '/buyer/dashboard', icon: <FiGrid aria-hidden="true" /> },
+        { label: 'Analytics', path: '/buyer/analytics', icon: <FiBarChart2 aria-hidden="true" /> },
+      ],
+    },
+    {
+      label: 'Saved',
+      path: '/buyer/saved',
+      icon: <FiBookmark aria-hidden="true" />,
+      children: [
+        { label: 'Property List', path: '/buyer/saved', icon: <FiBookmark aria-hidden="true" /> },
+        { label: 'Map View', path: '/buyer/saved-map', icon: <FiMapPin aria-hidden="true" /> },
+      ],
+    },
+    { label: 'Search Properties', path: '/properties', icon: <FiSearch aria-hidden="true" /> },
+    { label: 'Offers', path: '/buyer/offers', icon: <FiTag aria-hidden="true" /> },
+    { label: 'Applications', path: '/buyer/applications', icon: <FiFileText aria-hidden="true" /> },
+    { label: 'Messages', path: '/buyer/messages', icon: <FiMessageSquare aria-hidden="true" /> },
+    { label: 'Notifications', path: '/buyer/notifications', icon: <FiBell aria-hidden="true" /> },
+    { label: 'Profile', path: '/buyer/profile', icon: <FiUser aria-hidden="true" /> },
   ];
 
   const toggleMobileMenu = () => {
@@ -54,12 +84,19 @@ export const Header: React.FC = () => {
     setIsAuthOpen(false);
   };
 
+  const onLogoClick = () => {
+    setIsMobileMenuOpen(false);
+    navigate(isAuthenticated ? getDefaultDashboardPath(userRole) : '/');
+  };
+
   const onAuthSuccess = async (role: UserRole | null) => {
     setAuthenticated(true);
-    setUserRole(role);
+    const resolvedRole = role ?? readStoredUserRole() ?? 'buyer';
+
+    setUserRole(resolvedRole);
     setIsAuthOpen(false);
     setIsMobileMenuOpen(false);
-    navigate(getDefaultDashboardPath(role));
+    navigate(getDefaultDashboardPath(resolvedRole));
   };
 
   const onSignOut = () => {
@@ -73,9 +110,11 @@ export const Header: React.FC = () => {
     <header className="header">
       <div className="header-container">
         <div className="header-content">
-          <div className="header-logo">
-            <Logo showTagline={false} />
-          </div>
+          <button type="button" className="header-logo-btn" onClick={onLogoClick}>
+            <div className="header-logo">
+              <Logo showTagline={false} />
+            </div>
+          </button>
 
           <div className={`header-nav-desktop ${isBuyer ? 'header-nav-buyer' : ''}`}>
             {isBuyer ? (
@@ -85,19 +124,18 @@ export const Header: React.FC = () => {
             )}
           </div>
 
-          {!isAuthenticated ? (
-            <div className="header-auth-desktop">
+          <div className="header-auth-desktop">
+            <ThemeToggle className="header-theme-toggle" />
+            {!isAuthenticated ? (
               <button type="button" className="header-auth-btn" onClick={openAuthModal}>
                 Sign In / Sign Up
               </button>
-            </div>
-          ) : !isBuyer ? (
-            <div className="header-auth-desktop">
+            ) : !isBuyer ? (
               <button type="button" className="header-auth-btn" onClick={onSignOut}>
                 Sign Out
               </button>
-            </div>
-          ) : null}
+            ) : null}
+          </div>
 
           <div className="header-mobile-toggle">
             <MobileMenuToggle
@@ -115,15 +153,18 @@ export const Header: React.FC = () => {
               onClose={closeMobileMenu}
               isMobile={true}
             />
-            {!isAuthenticated ? (
-              <button type="button" className="header-auth-btn header-auth-mobile" onClick={openAuthModal}>
-                Sign In / Sign Up
-              </button>
-            ) : (
-              <button type="button" className="header-auth-btn header-auth-mobile" onClick={onSignOut}>
-                Sign Out
-              </button>
-            )}
+            <div className="header-mobile-actions">
+              <ThemeToggle className="header-theme-toggle header-theme-toggle-mobile" />
+              {!isAuthenticated ? (
+                <button type="button" className="header-auth-btn header-auth-mobile" onClick={openAuthModal}>
+                  Sign In / Sign Up
+                </button>
+              ) : (
+                <button type="button" className="header-auth-btn header-auth-mobile" onClick={onSignOut}>
+                  Sign Out
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>

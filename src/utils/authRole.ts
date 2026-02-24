@@ -1,3 +1,5 @@
+import { decodeJwtPayload, extractAuthToken } from './authToken';
+
 export type UserRole = 'buyer' | 'seller';
 export type BackendRole = 'ADMIN' | 'USER';
 
@@ -13,11 +15,11 @@ export const normalizeUserRole = (value: unknown): UserRole | null => {
     return normalized;
   }
 
-  if (normalized === 'admin' || normalized === 'role_admin') {
+  if (normalized === 'role_buyer') {
     return 'buyer';
   }
 
-  if (normalized === 'user' || normalized === 'role_user') {
+  if (normalized === 'role_seller') {
     return 'seller';
   }
 
@@ -26,6 +28,42 @@ export const normalizeUserRole = (value: unknown): UserRole | null => {
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null;
+
+const parseAuthorityTokens = (value: unknown): string[] => {
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map((part) => part.trim())
+      .filter(Boolean);
+  }
+
+  if (Array.isArray(value)) {
+    return value
+      .flatMap((entry) => parseAuthorityTokens(entry))
+      .filter(Boolean);
+  }
+
+  if (isRecord(value)) {
+    return parseAuthorityTokens(value.authority ?? value.role ?? value.roles);
+  }
+
+  return [];
+};
+
+const roleFromAuthorities = (authorities: string[]): UserRole | null => {
+  for (const authority of authorities) {
+    const normalized = authority.trim().toLowerCase();
+    if (normalized === 'buyer' || normalized === 'role_buyer') {
+      return 'buyer';
+    }
+
+    if (normalized === 'seller' || normalized === 'role_seller') {
+      return 'seller';
+    }
+  }
+
+  return null;
+};
 
 export const extractUserRoleFromSession = (session: unknown): UserRole | null => {
   if (!isRecord(session)) {
@@ -72,11 +110,37 @@ export const extractUserRoleFromSession = (session: unknown): UserRole | null =>
     }
   }
 
+  const authorityRole = roleFromAuthorities([
+    ...parseAuthorityTokens(session.roles),
+    ...parseAuthorityTokens(session.authorities),
+    ...parseAuthorityTokens(session.scope),
+    ...parseAuthorityTokens(session.scopes),
+  ]);
+  if (authorityRole) {
+    return authorityRole;
+  }
+
+  const token = extractAuthToken(session);
+  if (token) {
+    const jwtPayload = decodeJwtPayload(token);
+    if (jwtPayload) {
+      const jwtRole = roleFromAuthorities([
+        ...parseAuthorityTokens(jwtPayload.role),
+        ...parseAuthorityTokens(jwtPayload.roles),
+        ...parseAuthorityTokens(jwtPayload.authorities),
+        ...parseAuthorityTokens(jwtPayload.scope),
+        ...parseAuthorityTokens(jwtPayload.scp),
+      ]);
+      if (jwtRole) {
+        return jwtRole;
+      }
+    }
+  }
+
   return null;
 };
 
-export const mapUserRoleToBackendRole = (role: UserRole): BackendRole =>
-  role === 'buyer' ? 'ADMIN' : 'USER';
+export const mapUserRoleToBackendRole = (_role: UserRole): BackendRole => 'USER';
 
 export const readStoredUserRole = (): UserRole | null => {
   if (typeof window === 'undefined') {

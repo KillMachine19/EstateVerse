@@ -37,7 +37,10 @@ export const Navigation: React.FC<NavigationProps> = ({
               onClick={() => toggleAccordionItem(item.label)}
               aria-expanded={expandedItems.includes(item.label)}
             >
-              <span className="accordion-label">{item.label}</span>
+              <span className="accordion-label">
+                {item.icon ? <span className="accordion-item-icon">{item.icon}</span> : null}
+                <span>{item.label}</span>
+              </span>
               <span className={`accordion-icon ${expandedItems.includes(item.label) ? 'expanded' : ''}`}>
                 <FiChevronDown aria-hidden="true" />
               </span>
@@ -47,13 +50,27 @@ export const Navigation: React.FC<NavigationProps> = ({
                 expandedItems.includes(item.label) ? 'expanded' : ''
               }`}
             >
-              <NavLink
-                to={item.path} 
-                className="accordion-link"
-                onClick={onClose}
-              >
-                {item.label}
-              </NavLink>
+              {item.children && item.children.length > 0 ? (
+                item.children.map((child) => (
+                  <NavLink
+                    key={`${item.label}-${child.label}`}
+                    to={child.path}
+                    className="accordion-link"
+                    onClick={onClose}
+                  >
+                    {child.icon ? <span className="accordion-item-icon">{child.icon}</span> : null}
+                    <span>{child.label}</span>
+                  </NavLink>
+                ))
+              ) : (
+                <NavLink
+                  to={item.path}
+                  className="accordion-link"
+                  onClick={onClose}
+                >
+                  {item.label}
+                </NavLink>
+              )}
             </div>
           </div>
         ))}

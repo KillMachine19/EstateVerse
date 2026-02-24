@@ -17,6 +17,10 @@
   min-width: 0;
 }
 
+.buyer-workspace-content {
+  margin-top: 1rem;
+}
+
 .buyer-workspace-card {
   background: #ffffff;
   border: 1px solid rgba(15, 23, 42, 0.08);
@@ -29,6 +33,22 @@
   margin: 0 0 0.75rem;
   font-size: clamp(1.5rem, 2.5vw, 2rem);
   color: #0f172a;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.buyer-workspace-title-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 10px;
+  background: rgba(0, 188, 212, 0.14);
+  color: #0369a1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1rem;
 }
 
 .buyer-workspace-description {

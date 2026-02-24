@@ -1,8 +1,11 @@
+import type { ReactNode } from 'react';
 import type { UserRole } from '../utils/authRole';
 
 export interface NavItem {
   label: string;
   path: string;
+  icon?: ReactNode;
+  children?: NavItem[];
 }
 
 export const PUBLIC_NAVIGATION_ITEMS: NavItem[] = [

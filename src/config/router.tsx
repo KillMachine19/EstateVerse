@@ -14,6 +14,9 @@ import { BuyerApplicationsPage } from '../pages/Buyer/BuyerApplicationsPage';
 import { BuyerMessagesPage } from '../pages/Buyer/BuyerMessagesPage';
 import { BuyerNotificationsPage } from '../pages/Buyer/BuyerNotificationsPage';
 import { BuyerProfilePage } from '../pages/Buyer/BuyerProfilePage';
+import { BuyerAnalyticsPage } from '../pages/Buyer/BuyerAnalyticsPage';
+import { BuyerSavedMapPage } from '../pages/Buyer/BuyerSavedMapPage';
+import { BuyerVerificationStatusPage } from '../pages/Buyer/BuyerVerificationStatusPage';
 import { SellerDashboardPage } from '../pages/Seller/SellerDashboardPage';
 import { SellerListingsPage } from '../pages/Seller/SellerListingsPage';
 import { SellerAddPropertyPage } from '../pages/Seller/SellerAddPropertyPage';
@@ -77,6 +80,14 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: 'buyer/saved-map',
+        element: (
+          <RoleProtectedRoute requiredRole="buyer">
+            <BuyerSavedMapPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
         path: 'buyer/offers',
         element: (
           <RoleProtectedRoute requiredRole="buyer">
@@ -113,6 +124,22 @@ export const router = createBrowserRouter([
         element: (
           <RoleProtectedRoute requiredRole="buyer">
             <BuyerProfilePage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'buyer/verification-status',
+        element: (
+          <RoleProtectedRoute requiredRole="buyer">
+            <BuyerVerificationStatusPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'buyer/analytics',
+        element: (
+          <RoleProtectedRoute requiredRole="buyer">
+            <BuyerAnalyticsPage />
           </RoleProtectedRoute>
         ),
       },

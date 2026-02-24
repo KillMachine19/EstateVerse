@@ -1,11 +1,11 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { getCurrentSession } from '../services/controllers/authService';
+import { setApiAuthToken } from '../services/apiClient';
 import {
-  extractUserRoleFromSession,
   persistUserRole,
   readStoredUserRole,
   type UserRole,
 } from '../utils/authRole';
+import { readStoredAuthToken } from '../utils/authToken';
 
 interface AuthContextValue {
   isAuthenticated: boolean;
@@ -20,7 +20,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(Boolean(readStoredAuthToken()));
   const [userRole, setUserRoleState] = useState<UserRole | null>(readStoredUserRole());
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
@@ -37,33 +37,33 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     setIsAuthenticated(false);
     setUserRoleState(null);
     persistUserRole(null);
+    setApiAuthToken(null);
   }, []);
 
   const refreshSession = useCallback(async () => {
-    try {
-      const session = await getCurrentSession();
-      const sessionRole = extractUserRoleFromSession(session) ?? readStoredUserRole();
+    const storedRole = readStoredUserRole();
+    const hasPersistedToken = Boolean(readStoredAuthToken());
+
+    if (hasPersistedToken) {
       setIsAuthenticated(true);
-      setUserRoleState(sessionRole);
-      persistUserRole(sessionRole);
-      return { isAuthenticated: true, role: sessionRole };
-    } catch {
-      setIsAuthenticated(false);
-      setUserRoleState(null);
-      persistUserRole(null);
-      return { isAuthenticated: false, role: null };
+      setUserRoleState(storedRole);
+      return { isAuthenticated: true, role: storedRole };
     }
+
+    setIsAuthenticated(false);
+    setUserRoleState(null);
+    persistUserRole(null);
+    setApiAuthToken(null);
+    return { isAuthenticated: false, role: null };
   }, []);
 
   useEffect(() => {
-    const loadSession = async () => {
-      setIsAuthLoading(true);
-      await refreshSession();
-      setIsAuthLoading(false);
-    };
-
-    void loadSession();
-  }, [refreshSession]);
+    const storedRole = readStoredUserRole();
+    const hasPersistedToken = Boolean(readStoredAuthToken());
+    setIsAuthenticated(hasPersistedToken || Boolean(storedRole));
+    setUserRoleState(storedRole);
+    setIsAuthLoading(false);
+  }, []);
 
   const value = useMemo<AuthContextValue>(
     () => ({

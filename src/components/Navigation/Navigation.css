@@ -152,7 +152,16 @@
 
 .accordion-label {
   flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   text-align: left;
+}
+
+.accordion-item-icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1rem;
 }
 
 .accordion-icon {
@@ -191,6 +200,8 @@
 
 .accordion-link {
   display: block;
+  align-items: center;
+  gap: 0.5rem;
   padding: var(--spacing-md) var(--spacing-lg) var(--spacing-md) calc(var(--spacing-lg) * 2);
   color: var(--color-white);
   text-decoration: none;
@@ -203,6 +214,11 @@
   color: var(--color-primary);
   border-left-color: var(--color-primary);
   background-color: rgba(0, 188, 212, 0.1);
+}
+
+.accordion-content .accordion-link {
+  display: inline-flex;
+  width: 100%;
 }
 
 @media (min-width: 768px) {
