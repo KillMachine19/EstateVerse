@@ -1,0 +1,148 @@
+.seller-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1rem;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+  height: fit-content;
+}
+
+.seller-sidebar-title {
+  font-size: 0.75rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 0.8rem;
+}
+
+.seller-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.seller-sidebar-nav > * {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.2rem;
+}
+
+.seller-sidebar-nav > *:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.seller-sidebar-accordion {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.seller-sidebar-accordion__toggle {
+  width: 100%;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-align: left;
+  color: #1e293b;
+  padding: 0.62rem 0.7rem;
+  border-radius: 10px;
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.seller-sidebar-accordion__toggle:hover {
+  background: rgba(14, 116, 144, 0.1);
+  color: #0f172a;
+}
+
+.seller-sidebar-accordion__toggle.is-active {
+  background: linear-gradient(90deg, rgba(14, 116, 144, 0.18), rgba(20, 83, 45, 0.12));
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.seller-sidebar-accordion__chevron {
+  margin-left: auto;
+  transition: transform var(--transition-base);
+}
+
+.seller-sidebar-accordion__chevron.is-expanded {
+  transform: rotate(180deg);
+}
+
+.seller-sidebar-accordion__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: 0.2rem;
+}
+
+.seller-sidebar-sublink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+  color: #475569;
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem 0.5rem 2rem;
+  font-size: 0.82rem;
+}
+
+.seller-sidebar-sublink:hover {
+  background: rgba(14, 116, 144, 0.08);
+  color: #0f172a;
+}
+
+.seller-sidebar-sublink.is-active {
+  color: #0f172a;
+  background: rgba(14, 116, 144, 0.12);
+  font-weight: 600;
+}
+
+.seller-sidebar-sublink__icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.seller-sidebar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: #1e293b;
+  padding: 0.62rem 0.7rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  transition: all var(--transition-base);
+}
+
+.seller-sidebar-link:hover {
+  background: rgba(14, 116, 144, 0.1);
+  color: #0f172a;
+}
+
+.seller-sidebar-link.is-active {
+  background: linear-gradient(90deg, rgba(14, 116, 144, 0.18), rgba(20, 83, 45, 0.12));
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.seller-sidebar-icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.98rem;
+  color: #0f766e;
+}
+
+@media (max-width: 900px) {
+  .seller-sidebar {
+    display: none;
+  }
+}

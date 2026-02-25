@@ -13,10 +13,10 @@ import { BuyerOffersPage } from '../pages/Buyer/BuyerOffersPage';
 import { BuyerApplicationsPage } from '../pages/Buyer/BuyerApplicationsPage';
 import { BuyerMessagesPage } from '../pages/Buyer/BuyerMessagesPage';
 import { BuyerNotificationsPage } from '../pages/Buyer/BuyerNotificationsPage';
-import { BuyerProfilePage } from '../pages/Buyer/BuyerProfilePage';
+import { ProfilePage } from '../pages/Account/ProfilePage';
 import { BuyerAnalyticsPage } from '../pages/Buyer/BuyerAnalyticsPage';
 import { BuyerSavedMapPage } from '../pages/Buyer/BuyerSavedMapPage';
-import { BuyerVerificationStatusPage } from '../pages/Buyer/BuyerVerificationStatusPage';
+import { VerificationStatusPage } from '../pages/Account/VerificationStatusPage';
 import { SellerDashboardPage } from '../pages/Seller/SellerDashboardPage';
 import { SellerListingsPage } from '../pages/Seller/SellerListingsPage';
 import { SellerAddPropertyPage } from '../pages/Seller/SellerAddPropertyPage';
@@ -24,7 +24,12 @@ import { SellerLeadsPage } from '../pages/Seller/SellerLeadsPage';
 import { SellerAnalyticsPage } from '../pages/Seller/SellerAnalyticsPage';
 import { SellerMessagesPage } from '../pages/Seller/SellerMessagesPage';
 import { SellerNotificationsPage } from '../pages/Seller/SellerNotificationsPage';
-import { SellerProfilePage } from '../pages/Seller/SellerProfilePage';
+import { ResetPasswordPage } from '../pages/Account/ResetPasswordPage';
+import { AdminDashboardPage } from '../pages/Admin/AdminDashboardPage';
+import { AdminRevokeAccessPage } from '../pages/Admin/AdminRevokeAccessPage';
+import { AdminUsersPage } from '../pages/Admin/AdminUsersPage';
+import { AdminAuditLogsPage } from '../pages/Admin/AdminAuditLogsPage';
+import { AdminSettingsPage } from '../pages/Admin/AdminSettingsPage';
 
 export const router = createBrowserRouter([
   {
@@ -121,17 +126,33 @@ export const router = createBrowserRouter([
       },
       {
         path: 'buyer/profile',
+        element: <Navigate to="/profile" replace />,
+      },
+      {
+        path: 'profile',
         element: (
-          <RoleProtectedRoute requiredRole="buyer">
-            <BuyerProfilePage />
+          <RoleProtectedRoute>
+            <ProfilePage />
           </RoleProtectedRoute>
         ),
       },
       {
         path: 'buyer/verification-status',
+        element: <Navigate to="/verification-status" replace />,
+      },
+      {
+        path: 'verification-status',
         element: (
-          <RoleProtectedRoute requiredRole="buyer">
-            <BuyerVerificationStatusPage />
+          <RoleProtectedRoute>
+            <VerificationStatusPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'reset-password',
+        element: (
+          <RoleProtectedRoute>
+            <ResetPasswordPage />
           </RoleProtectedRoute>
         ),
       },
@@ -140,6 +161,46 @@ export const router = createBrowserRouter([
         element: (
           <RoleProtectedRoute requiredRole="buyer">
             <BuyerAnalyticsPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'admin/dashboard',
+        element: (
+          <RoleProtectedRoute requiredRole="admin">
+            <AdminDashboardPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'admin/users',
+        element: (
+          <RoleProtectedRoute requiredRole="admin">
+            <AdminUsersPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'admin/audit-logs',
+        element: (
+          <RoleProtectedRoute requiredRole="admin">
+            <AdminAuditLogsPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'admin/revoke-access',
+        element: (
+          <RoleProtectedRoute requiredRole="admin">
+            <AdminRevokeAccessPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'admin/settings',
+        element: (
+          <RoleProtectedRoute requiredRole="admin">
+            <AdminSettingsPage />
           </RoleProtectedRoute>
         ),
       },
@@ -201,11 +262,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'seller/profile',
-        element: (
-          <RoleProtectedRoute requiredRole="seller">
-            <SellerProfilePage />
-          </RoleProtectedRoute>
-        ),
+        element: <Navigate to="/profile" replace />,
       },
     ],
   },

@@ -1,19 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import axios from 'axios';
-import {
-  FiBriefcase,
-  FiHome,
-  FiKey,
-  FiTrendingUp,
-  FiUser,
-  FiX,
-} from 'react-icons/fi';
+import { FiBriefcase, FiKey, FiUser, FiX } from 'react-icons/fi';
 import { loginUser, registerUser } from '../../services/controllers/authService';
 import {
   extractUserRoleFromSession,
-  mapUserRoleToBackendRole,
-  persistUserRole,
   readStoredUserRole,
   type UserRole,
 } from '../../utils/authRole';
@@ -29,8 +20,6 @@ interface AuthModalProps {
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess }) => {
   const [mode, setMode] = useState<AuthMode>('signin');
-  const [role, setRole] = useState<UserRole | null>(null);
-  const [roleError, setRoleError] = useState(false);
   const [authError, setAuthError] = useState('');
   const [authSuccess, setAuthSuccess] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,8 +29,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
   useEffect(() => {
     if (!isOpen) {
       setMode('signin');
-      setRole(null);
-      setRoleError(false);
       setAuthError('');
       setAuthSuccess('');
       setIsSubmitting(false);
@@ -87,13 +74,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
       return;
     }
 
-    if (isSignUp && !role) {
-      setRoleError(true);
-      return;
-    }
-
-    const selectedRole = role;
-
     const payload = {
       username: email.trim(),
       password,
@@ -102,20 +82,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
     try {
       setIsSubmitting(true);
       if (isSignUp) {
-        if (!selectedRole) {
-          setRoleError(true);
-          setIsSubmitting(false);
-          return;
-        }
-
-        await registerUser({
-          ...payload,
-          role: mapUserRoleToBackendRole(selectedRole),
-        });
-        persistUserRole(selectedRole);
+        await registerUser(payload);
         setAuthSuccess('Registration successful. You can now sign in.');
         setMode('signin');
-        setRole(null);
       } else {
         const loginResponse = await loginUser(payload);
         const resolvedRole = extractUserRoleFromSession(loginResponse) ?? readStoredUserRole();
@@ -155,7 +124,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
             className={`auth-mode-option ${mode === 'signin' ? 'active' : ''}`}
             onClick={() => {
               setMode('signin');
-              setRoleError(false);
               setAuthError('');
               setAuthSuccess('');
             }}
@@ -170,7 +138,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
             className={`auth-mode-option ${mode === 'signup' ? 'active' : ''}`}
             onClick={() => {
               setMode('signup');
-              setRoleError(false);
               setAuthError('');
               setAuthSuccess('');
             }}
@@ -224,41 +191,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
               required
             />
           </label>
-
-          {isSignUp && (
-            <div className="role-section">
-              <p className="auth-label role-label">Who are you?</p>
-              <div className="role-toggle" role="radiogroup" aria-label="Select user role">
-                <button
-                  type="button"
-                  className={`role-option ${role === 'buyer' ? 'active buyer' : ''}`}
-                  disabled={isSubmitting}
-                  onClick={() => {
-                    setRole('buyer');
-                    setRoleError(false);
-                  }}
-                  aria-pressed={role === 'buyer'}
-                >
-                  <FiHome aria-hidden="true" />
-                  Buyer
-                </button>
-                <button
-                  type="button"
-                  className={`role-option ${role === 'seller' ? 'active seller' : ''}`}
-                  disabled={isSubmitting}
-                  onClick={() => {
-                    setRole('seller');
-                    setRoleError(false);
-                  }}
-                  aria-pressed={role === 'seller'}
-                >
-                  <FiTrendingUp aria-hidden="true" />
-                  Seller
-                </button>
-              </div>
-              {roleError && <p className="role-error">Please select Buyer or Seller.</p>}
-            </div>
-          )}
 
           {authError && <p className="auth-error">{authError}</p>}
           {authSuccess && <p className="auth-success">{authSuccess}</p>}

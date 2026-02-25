@@ -1,0 +1,58 @@
+.admin-sidebar {
+  width: 240px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  padding: 1.25rem;
+}
+
+.admin-sidebar-title {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+  color: #0f172a;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.admin-sidebar-nav {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.admin-sidebar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-radius: 12px;
+  padding: 0.65rem 0.75rem;
+  color: #334155;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+.admin-sidebar-link:hover {
+  background: rgba(0, 188, 212, 0.12);
+  color: #0f172a;
+}
+
+.admin-sidebar-link.is-active {
+  background: rgba(14, 165, 233, 0.18);
+  color: #0f172a;
+}
+
+.admin-sidebar-icon {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #0284c7;
+}
+
+@media (max-width: 900px) {
+  .admin-sidebar {
+    width: 100%;
+  }
+}

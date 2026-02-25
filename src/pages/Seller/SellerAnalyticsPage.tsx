@@ -1,11 +1,13 @@
 import React from 'react';
-import { RolePageShell } from '../../components/RolePageShell';
+import { FiBarChart2 } from 'react-icons/fi';
+import { SellerWorkspace } from '../../components/SellerComponents';
 
 export const SellerAnalyticsPage: React.FC = () => {
   return (
-    <RolePageShell
+    <SellerWorkspace
       title="Analytics"
       description="Analyze impressions, engagement, and conversion metrics across your listings."
+      icon={<FiBarChart2 aria-hidden="true" />}
     />
   );
 };

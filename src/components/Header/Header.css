@@ -129,6 +129,32 @@
   white-space: nowrap;
 }
 
+.header-perspective-toggle {
+  display: inline-flex;
+  border: 1px solid rgba(0, 188, 212, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.header-perspective-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-white);
+  padding: 0.45rem 0.85rem;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+.header-perspective-btn.is-active {
+  background: linear-gradient(90deg, rgba(0, 188, 212, 0.85), rgba(44, 168, 255, 0.85));
+  color: var(--color-white);
+}
+
 .header-theme-toggle {
   border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 999px;
@@ -180,8 +206,17 @@
 .header-mobile-actions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--spacing-sm);
   margin-top: var(--spacing-md);
+}
+
+.header-perspective-toggle-mobile {
+  width: 100%;
+}
+
+.header-perspective-toggle-mobile .header-perspective-btn {
+  flex: 1;
 }
 
 .header-theme-toggle-mobile {

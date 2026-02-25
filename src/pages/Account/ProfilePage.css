@@ -1,4 +1,4 @@
-.buyer-profile-form {
+.profile-form {
   background: var(--bg-white);
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 16px;
@@ -6,7 +6,7 @@
   box-shadow: var(--shadow-md);
 }
 
-.buyer-profile-avatar-section {
+.profile-avatar-section {
   display: grid;
   justify-items: center;
   gap: 0.7rem;
@@ -15,9 +15,9 @@
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-.buyer-profile-avatar {
-  width: 136px;
-  height: 136px;
+.profile-avatar {
+  width: 208px;
+  height: 208px;
   border-radius: 50%;
   overflow: hidden;
   border: 4px solid var(--color-white);
@@ -27,25 +27,30 @@
   place-items: center;
 }
 
-.buyer-profile-avatar img {
+.profile-avatar-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform var(--transition-base);
 }
 
-.buyer-profile-avatar-placeholder {
+.profile-avatar:hover .profile-avatar-image {
+  transform: scale(1.08);
+}
+
+.profile-avatar-placeholder {
   color: #0369a1;
   font-size: 2.4rem;
   display: inline-flex;
 }
 
-.buyer-profile-grid {
+.profile-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
 }
 
-.buyer-profile-field {
+.profile-field {
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
@@ -54,11 +59,11 @@
   font-size: var(--font-size-sm);
 }
 
-.buyer-profile-required {
+.profile-required {
   color: var(--color-danger);
 }
 
-.buyer-profile-field input {
+.profile-field input {
   border: 1px solid rgba(15, 23, 42, 0.16);
   border-radius: 10px;
   padding: 0.72rem 0.85rem;
@@ -68,63 +73,63 @@
   transition: border-color var(--transition-base), box-shadow var(--transition-base);
 }
 
-.buyer-profile-field-error {
+.profile-field-error {
   margin-top: 0.15rem;
   color: var(--color-danger-dark);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
 }
 
-.buyer-profile-field input:focus-visible {
+.profile-field input:focus-visible {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
-.buyer-profile-panel {
+.profile-panel {
   border: 1px solid rgba(15, 23, 42, 0.12);
   border-radius: 14px;
   padding: 1rem;
   background: linear-gradient(180deg, rgba(0, 188, 212, 0.08) 0%, rgba(0, 188, 212, 0.01) 100%);
 }
 
-.buyer-profile-panel h2 {
+.profile-panel h2 {
   margin: 0;
   color: var(--text-primary);
   font-size: var(--font-size-lg);
 }
 
-.buyer-profile-panel--verification {
+.profile-panel--verification {
   margin-top: 1rem;
   background: var(--bg-white);
   border-color: rgba(15, 23, 42, 0.12);
   box-shadow: var(--shadow-sm);
 }
 
-.buyer-profile-help {
+.profile-help {
   margin: 0.35rem 0 0.8rem;
   color: var(--text-secondary);
   font-size: var(--font-size-sm);
 }
 
-.buyer-profile-upload {
+.profile-upload {
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
   margin-top: 0.9rem;
 }
 
-.buyer-profile-upload--avatar {
+.profile-upload--avatar {
   margin-top: 0;
   align-items: center;
 }
 
-.buyer-profile-upload-label {
+.profile-upload-label {
   color: var(--text-secondary);
   font-size: var(--font-size-sm);
 }
 
-.buyer-profile-upload input {
+.profile-upload input {
   position: absolute;
   width: 0.1px;
   height: 0.1px;
@@ -133,7 +138,7 @@
   z-index: -1;
 }
 
-.buyer-profile-upload-button {
+.profile-upload-button {
   border: 1px solid rgba(15, 23, 42, 0.12);
   background: linear-gradient(120deg, rgba(0, 188, 212, 0.14), rgba(44, 168, 255, 0.2));
   color: #0369a1;
@@ -148,12 +153,12 @@
   transition: filter var(--transition-base), transform var(--transition-base);
 }
 
-.buyer-profile-upload:hover .buyer-profile-upload-button {
+.profile-upload:hover .profile-upload-button {
   filter: brightness(1.05);
   transform: translateY(-1px);
 }
 
-.buyer-profile-actions {
+.profile-actions {
   margin-top: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -163,7 +168,7 @@
   flex-wrap: wrap;
 }
 
-.buyer-profile-save {
+.profile-save {
   border: none;
   border-radius: 12px;
   background: linear-gradient(90deg, var(--color-primary), var(--color-info));
@@ -177,26 +182,35 @@
   cursor: pointer;
 }
 
-.buyer-profile-status {
+.profile-save:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.profile-status {
   margin: 0;
   color: #0f766e;
   font-size: var(--font-size-sm);
   text-align: center;
 }
 
-.buyer-profile-verification {
+.profile-status--error {
+  color: var(--color-danger-dark);
+}
+
+.profile-verification {
   font-weight: var(--font-weight-bold);
 }
 
-.buyer-profile-verification.is-verified {
+.profile-verification.is-verified {
   color: var(--color-success-dark);
 }
 
-.buyer-profile-verification.is-unverified {
+.profile-verification.is-unverified {
   color: var(--color-warning-dark);
 }
 
-.buyer-profile-verify-link {
+.profile-verify-link {
   display: inline-flex;
   margin-top: 0.15rem;
   color: var(--color-info-dark);
@@ -205,12 +219,12 @@
   text-decoration: none;
 }
 
-.buyer-profile-verify-link:hover {
+.profile-verify-link:hover {
   text-decoration: underline;
 }
 
 @media (max-width: 900px) {
-  .buyer-profile-grid {
+  .profile-grid {
     grid-template-columns: 1fr;
   }
 }

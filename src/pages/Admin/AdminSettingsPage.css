@@ -1,0 +1,45 @@
+.admin-settings-grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.admin-settings-card {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  gap: 0.6rem;
+}
+
+.admin-settings-card h3 {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: #0f172a;
+}
+
+.admin-settings-card p {
+  margin: 0;
+  color: #64748b;
+  font-size: var(--font-size-sm);
+}
+
+.admin-settings-card button {
+  width: fit-content;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: #f8fafc;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+@media (max-width: 1000px) {
+  .admin-settings-grid {
+    grid-template-columns: 1fr;
+  }
+}

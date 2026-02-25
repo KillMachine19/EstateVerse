@@ -1,6 +1,6 @@
 import { decodeJwtPayload, extractAuthToken } from './authToken';
 
-export type UserRole = 'buyer' | 'seller';
+export type UserRole = 'buyer' | 'seller' | 'admin';
 export type BackendRole = 'ADMIN' | 'USER';
 
 export const USER_ROLE_STORAGE_KEY = 'estateverse_user_role';
@@ -11,7 +11,7 @@ export const normalizeUserRole = (value: unknown): UserRole | null => {
   }
 
   const normalized = value.trim().toLowerCase();
-  if (normalized === 'buyer' || normalized === 'seller') {
+  if (normalized === 'buyer' || normalized === 'seller' || normalized === 'admin') {
     return normalized;
   }
 
@@ -21,6 +21,10 @@ export const normalizeUserRole = (value: unknown): UserRole | null => {
 
   if (normalized === 'role_seller') {
     return 'seller';
+  }
+
+  if (normalized === 'role_admin') {
+    return 'admin';
   }
 
   return null;
@@ -59,6 +63,10 @@ const roleFromAuthorities = (authorities: string[]): UserRole | null => {
 
     if (normalized === 'seller' || normalized === 'role_seller') {
       return 'seller';
+    }
+
+    if (normalized === 'admin' || normalized === 'role_admin') {
+      return 'admin';
     }
   }
 

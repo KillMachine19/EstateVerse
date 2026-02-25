@@ -5,7 +5,7 @@ import { getDefaultDashboardPath } from '../../constants/navigation';
 import type { UserRole } from '../../utils/authRole';
 
 interface RoleProtectedRouteProps {
-  requiredRole: UserRole;
+  requiredRole?: UserRole;
   children: React.ReactNode;
 }
 
@@ -24,7 +24,7 @@ export const RoleProtectedRoute: React.FC<RoleProtectedRouteProps> = ({ required
     return <Navigate to="/" replace />;
   }
 
-  if (userRole !== requiredRole) {
+  if (requiredRole && userRole !== requiredRole) {
     return <Navigate to={getDefaultDashboardPath(userRole)} replace />;
   }
 

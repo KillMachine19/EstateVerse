@@ -6,6 +6,8 @@ import {
   validatePhoneNumber,
   validateTime,
 } from '../../utils/validation';
+import axios from 'axios';
+import { scheduleCall } from '../../services/controllers/callsService';
 
 interface ScheduleCallProps {
   mode?: 'modal' | 'inline';
@@ -247,6 +249,9 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
+    if (submitting) {
+      return;
+    }
     const err = validate();
     if (err) {
       setError(err === '__FIELD_ERRORS__' ? null : err);
@@ -254,16 +259,43 @@ export const ScheduleCall: React.FC<ScheduleCallProps> = ({
     }
     setError(null);
     setSubmitting(true);
-    // simulate API call
-    await new Promise(res => setTimeout(res, 800));
-    setSubmitting(false);
-    setSent(true);
-    setTimeout(() => {
-      if (!isInline) {
-        setOpen(false);
+    try {
+      await scheduleCall({
+        name: values.name.trim(),
+        email: values.email.trim(),
+        phone: values.phone,
+        company: values.company.trim(),
+        dateMonth: values.dateMonth,
+        dateDay: values.dateDay,
+        timeHour: values.timeHour,
+        timeMinute: values.timeMinute,
+        timePeriod: values.timePeriod,
+        time: values.time,
+        message: values.message.trim(),
+      });
+      setSent(true);
+      setTimeout(() => {
+        if (!isInline) {
+          setOpen(false);
+        }
+        resetForm();
+      }, 1000);
+    } catch (apiError) {
+      if (axios.isAxiosError(apiError)) {
+        if (apiError.response?.status === 401) {
+          setError('Your session has expired. Please sign in again.');
+          return;
+        }
+        const apiMessage = typeof apiError.response?.data?.message === 'string'
+          ? apiError.response.data.message
+          : null;
+        setError(apiMessage || 'Unable to schedule the call right now. Please try again.');
+      } else {
+        setError('Unable to schedule the call right now. Please try again.');
       }
-      resetForm();
-    }, 1000);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const formBody = (

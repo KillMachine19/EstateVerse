@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FiBarChart2,
   FiBell,
   FiBookmark,
+  FiCheckCircle,
   FiFileText,
   FiGrid,
+  FiShield,
+  FiSettings,
   FiMapPin,
   FiMessageSquare,
   FiSearch,
@@ -33,6 +36,7 @@ export const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const isBuyer = isAuthenticated && userRole === 'buyer';
+  const isAdmin = isAuthenticated && userRole === 'admin';
 
   const navigationItems = isAuthenticated
     ? getSignedInNavigationItems(userRole)
@@ -62,7 +66,31 @@ export const Header: React.FC = () => {
     { label: 'Applications', path: '/buyer/applications', icon: <FiFileText aria-hidden="true" /> },
     { label: 'Messages', path: '/buyer/messages', icon: <FiMessageSquare aria-hidden="true" /> },
     { label: 'Notifications', path: '/buyer/notifications', icon: <FiBell aria-hidden="true" /> },
-    { label: 'Profile', path: '/buyer/profile', icon: <FiUser aria-hidden="true" /> },
+    {
+      label: 'Profile',
+      path: '/profile',
+      icon: <FiUser aria-hidden="true" />,
+      children: [
+        { label: 'My Profile', path: '/profile', icon: <FiUser aria-hidden="true" /> },
+        { label: 'Verification Status', path: '/verification-status', icon: <FiCheckCircle aria-hidden="true" /> },
+        { label: 'Reset Password', path: '/reset-password', icon: <FiSettings aria-hidden="true" /> },
+      ],
+    },
+  ];
+
+  const adminMobileNavigationItems = [
+    { label: 'Dashboard', path: '/admin/dashboard', icon: <FiGrid aria-hidden="true" /> },
+    { label: 'Revoke Access', path: '/admin/revoke-access', icon: <FiShield aria-hidden="true" /> },
+    {
+      label: 'Profile',
+      path: '/profile',
+      icon: <FiUser aria-hidden="true" />,
+      children: [
+        { label: 'My Profile', path: '/profile', icon: <FiUser aria-hidden="true" /> },
+        { label: 'Verification Status', path: '/verification-status', icon: <FiCheckCircle aria-hidden="true" /> },
+        { label: 'Reset Password', path: '/reset-password', icon: <FiSettings aria-hidden="true" /> },
+      ],
+    },
   ];
 
   const toggleMobileMenu = () => {
@@ -84,6 +112,18 @@ export const Header: React.FC = () => {
     setIsAuthOpen(false);
   };
 
+  useEffect(() => {
+    const handleOpenAuthModal = () => {
+      if (!isAuthenticated) {
+        setIsAuthOpen(true);
+      }
+    };
+    window.addEventListener('open-auth-modal', handleOpenAuthModal);
+    return () => {
+      window.removeEventListener('open-auth-modal', handleOpenAuthModal);
+    };
+  }, [isAuthenticated]);
+
   const onLogoClick = () => {
     setIsMobileMenuOpen(false);
     navigate(isAuthenticated ? getDefaultDashboardPath(userRole) : '/');
@@ -97,6 +137,16 @@ export const Header: React.FC = () => {
     setIsAuthOpen(false);
     setIsMobileMenuOpen(false);
     navigate(getDefaultDashboardPath(resolvedRole));
+  };
+
+  const onPerspectiveChange = (perspective: 'buyer' | 'seller') => {
+    if (!isAuthenticated || userRole === perspective || userRole === 'admin') {
+      return;
+    }
+
+    setUserRole(perspective);
+    setIsMobileMenuOpen(false);
+    navigate(getDefaultDashboardPath(perspective));
   };
 
   const onSignOut = () => {
@@ -118,23 +168,59 @@ export const Header: React.FC = () => {
 
           <div className={`header-nav-desktop ${isBuyer ? 'header-nav-buyer' : ''}`}>
             {isBuyer ? (
-              <BuyerHeaderNav onSignOut={onSignOut} />
+              <>
+                <BuyerHeaderNav />
+                <div className="header-perspective-toggle" role="group" aria-label="Select viewing perspective">
+                  <button
+                    type="button"
+                    className={`header-perspective-btn ${userRole === 'buyer' ? 'is-active' : ''}`}
+                    onClick={() => onPerspectiveChange('buyer')}
+                  >
+                    Buyer
+                  </button>
+                  <button
+                    type="button"
+                    className="header-perspective-btn"
+                    onClick={() => onPerspectiveChange('seller')}
+                  >
+                    Seller
+                  </button>
+                </div>
+              </>
             ) : (
               <Navigation items={navigationItems} isOpen={true} />
             )}
           </div>
 
           <div className="header-auth-desktop">
+            {isAuthenticated && !isBuyer && !isAdmin ? (
+              <div className="header-perspective-toggle" role="group" aria-label="Select viewing perspective">
+                <button
+                  type="button"
+                  className={`header-perspective-btn ${userRole === 'buyer' ? 'is-active' : ''}`}
+                  onClick={() => onPerspectiveChange('buyer')}
+                >
+                  Buyer
+                </button>
+                <button
+                  type="button"
+                  className={`header-perspective-btn ${userRole === 'seller' ? 'is-active' : ''}`}
+                  onClick={() => onPerspectiveChange('seller')}
+                >
+                  Seller
+                </button>
+              </div>
+            ) : null}
             <ThemeToggle className="header-theme-toggle" />
             {!isAuthenticated ? (
               <button type="button" className="header-auth-btn" onClick={openAuthModal}>
                 Sign In / Sign Up
               </button>
-            ) : !isBuyer ? (
+            ) : (
               <button type="button" className="header-auth-btn" onClick={onSignOut}>
                 Sign Out
               </button>
-            ) : null}
+            )}
           </div>
 
           <div className="header-mobile-toggle">
@@ -148,12 +234,30 @@ export const Header: React.FC = () => {
         {isMobileMenuOpen && (
           <div className="header-mobile-nav">
             <Navigation
-              items={isBuyer ? buyerMobileNavigationItems : navigationItems}
+              items={isBuyer ? buyerMobileNavigationItems : isAdmin ? adminMobileNavigationItems : navigationItems}
               isOpen={isMobileMenuOpen}
               onClose={closeMobileMenu}
               isMobile={true}
             />
             <div className="header-mobile-actions">
+              {isAuthenticated && !isAdmin ? (
+                <div className="header-perspective-toggle header-perspective-toggle-mobile" role="group" aria-label="Select viewing perspective">
+                  <button
+                    type="button"
+                    className={`header-perspective-btn ${userRole === 'buyer' ? 'is-active' : ''}`}
+                    onClick={() => onPerspectiveChange('buyer')}
+                  >
+                    Buyer
+                  </button>
+                  <button
+                    type="button"
+                    className={`header-perspective-btn ${userRole === 'seller' ? 'is-active' : ''}`}
+                    onClick={() => onPerspectiveChange('seller')}
+                  >
+                    Seller
+                  </button>
+                </div>
+              ) : null}
               <ThemeToggle className="header-theme-toggle header-theme-toggle-mobile" />
               {!isAuthenticated ? (
                 <button type="button" className="header-auth-btn header-auth-mobile" onClick={openAuthModal}>

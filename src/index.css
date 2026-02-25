@@ -138,6 +138,56 @@ body.theme-dark .buyer-saved-map-board {
     linear-gradient(180deg, #0f172a 0%, #111827 100%);
 }
 
+body.theme-dark .property-listing-form,
+body.theme-dark .property-listing-section-card {
+  background: #111827;
+  border-color: rgba(148, 163, 184, 0.26);
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.4);
+}
+
+body.theme-dark .property-listing-grid input,
+body.theme-dark .property-listing-coordinates input,
+body.theme-dark .property-listing-textarea textarea,
+body.theme-dark .property-listing-chips,
+body.theme-dark .property-listing-input-group {
+  background: #0f172a;
+  border-color: rgba(148, 163, 184, 0.28);
+}
+
+body.theme-dark .property-listing-input-addon {
+  background: rgba(15, 23, 42, 0.5);
+  color: #94a3b8;
+}
+
+body.theme-dark .property-listing-input-select {
+  background: rgba(15, 23, 42, 0.5);
+  color: #94a3b8;
+  border-left-color: rgba(148, 163, 184, 0.28);
+  background-image: linear-gradient(45deg, transparent 50%, #94a3b8 50%),
+    linear-gradient(135deg, #94a3b8 50%, transparent 50%);
+}
+
+body.theme-dark .property-listing-image-slot {
+  background: #0f172a;
+  border-color: rgba(148, 163, 184, 0.28);
+}
+
+body.theme-dark .property-listing-chip {
+  background: rgba(34, 211, 238, 0.12);
+  border-color: rgba(34, 211, 238, 0.35);
+  color: #67e8f9;
+}
+
+body.theme-dark .property-listing-chip__label {
+  color: #e2e8f0;
+}
+
+body.theme-dark .property-listing-suggestion {
+  background: #0f172a;
+  border-color: rgba(148, 163, 184, 0.4);
+  color: #94a3b8;
+}
+
 img,
 video,
 canvas,

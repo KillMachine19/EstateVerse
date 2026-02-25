@@ -26,3 +26,8 @@
   line-height: 1.6;
   max-width: 64ch;
 }
+
+.role-page-shell__content {
+  max-width: 1100px;
+  margin: 1rem auto 0;
+}

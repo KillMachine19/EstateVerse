@@ -8,9 +8,7 @@ export interface AuthCredentials {
   password: string;
 }
 
-export interface RegisterCredentials extends AuthCredentials {
-  role: BackendRole;
-}
+export type RegisterCredentials = AuthCredentials | (AuthCredentials & { role: BackendRole });
 
 export const registerUser = async (credentials: RegisterCredentials) => {
   try {
