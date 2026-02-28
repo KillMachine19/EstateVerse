@@ -7,12 +7,13 @@ interface SellerWorkspaceProps {
   description: string;
   icon?: React.ReactNode;
   children?: React.ReactNode;
+  wide?: boolean;
 }
 
-export const SellerWorkspace: React.FC<SellerWorkspaceProps> = ({ title, description, icon, children }) => {
+export const SellerWorkspace: React.FC<SellerWorkspaceProps> = ({ title, description, icon, children, wide = false }) => {
   return (
     <section className="seller-workspace">
-      <div className="seller-workspace-container">
+      <div className={`seller-workspace-container ${wide ? 'is-wide' : ''}`}>
         <SellerSidebar />
         <div className="seller-workspace-main">
           <div className="seller-workspace-card">

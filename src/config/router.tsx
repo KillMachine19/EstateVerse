@@ -16,9 +16,11 @@ import { BuyerNotificationsPage } from '../pages/Buyer/BuyerNotificationsPage';
 import { ProfilePage } from '../pages/Account/ProfilePage';
 import { BuyerAnalyticsPage } from '../pages/Buyer/BuyerAnalyticsPage';
 import { BuyerSavedMapPage } from '../pages/Buyer/BuyerSavedMapPage';
+import { BuyerPropertyDetailsPage } from '../pages/Buyer/BuyerPropertyDetailsPage';
 import { VerificationStatusPage } from '../pages/Account/VerificationStatusPage';
 import { SellerDashboardPage } from '../pages/Seller/SellerDashboardPage';
 import { SellerListingsPage } from '../pages/Seller/SellerListingsPage';
+import { SellerListingManagePage } from '../pages/Seller/SellerListingManagePage';
 import { SellerAddPropertyPage } from '../pages/Seller/SellerAddPropertyPage';
 import { SellerLeadsPage } from '../pages/Seller/SellerLeadsPage';
 import { SellerAnalyticsPage } from '../pages/Seller/SellerAnalyticsPage';
@@ -73,6 +75,14 @@ export const router = createBrowserRouter([
         element: (
           <RoleProtectedRoute requiredRole="buyer">
             <BuyerSearchPropertiesPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'buyer/properties/:propertyId',
+        element: (
+          <RoleProtectedRoute requiredRole="buyer">
+            <BuyerPropertyDetailsPage />
           </RoleProtectedRoute>
         ),
       },
@@ -217,6 +227,14 @@ export const router = createBrowserRouter([
         element: (
           <RoleProtectedRoute requiredRole="seller">
             <SellerListingsPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'seller/listings/:propertyId',
+        element: (
+          <RoleProtectedRoute requiredRole="seller">
+            <SellerListingManagePage />
           </RoleProtectedRoute>
         ),
       },

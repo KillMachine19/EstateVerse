@@ -13,6 +13,10 @@
   gap: 1rem;
 }
 
+.seller-workspace-container.is-wide {
+  max-width: 1520px;
+}
+
 .seller-workspace-main {
   flex: 1;
   min-width: 0;

@@ -4,7 +4,7 @@ import { FiBookmark, FiChevronDown, FiFileText, FiGrid, FiList, FiMapPin, FiPieC
 import './BuyerSidebar.css';
 
 const BUYER_SIDEBAR_ITEMS = [
-  { label: 'Search Properties', to: '/properties', icon: <FiSearch aria-hidden="true" /> },
+  { label: 'Search Properties', to: '/buyer/search', icon: <FiSearch aria-hidden="true" /> },
   { label: 'Offers', to: '/buyer/offers', icon: <FiTag aria-hidden="true" /> },
   { label: 'Applications', to: '/buyer/applications', icon: <FiFileText aria-hidden="true" /> },
 ];

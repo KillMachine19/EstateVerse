@@ -1,0 +1,128 @@
+.seller-listing-manage-page {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.seller-listing-manage-shell {
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.09);
+  padding: 0.9rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.seller-listing-manage-bottom {
+  padding-top: 0.25rem;
+  border-top: 1px solid rgba(15, 23, 42, 0.1);
+  display: flex;
+  justify-content: flex-start;
+}
+
+.seller-listing-manage-bottom .btn {
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+  background: #f8fafc;
+}
+
+.seller-listing-manage-message {
+  margin: 0;
+  border-radius: 12px;
+  padding: 0.65rem 0.8rem;
+  background: rgba(14, 116, 144, 0.08);
+  border: 1px solid rgba(14, 116, 144, 0.2);
+  color: #0f172a;
+}
+
+.seller-listing-manage-message.is-error {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.32);
+  color: #991b1b;
+}
+
+.seller-listing-manage-message.is-success {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.35);
+  color: #166534;
+}
+
+.seller-listing-manage-layout {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 0.9rem;
+  align-items: start;
+}
+
+.seller-listing-manage-panel {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 16px;
+  padding: 1rem;
+  display: grid;
+  gap: 0.75rem;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+}
+
+.seller-listing-manage-panel label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.seller-listing-manage-panel input,
+.seller-listing-manage-panel textarea {
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 10px;
+  padding: 0.6rem 0.7rem;
+  font-size: 0.88rem;
+}
+
+.seller-listing-manage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.seller-listing-manage-buyers {
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 12px;
+  padding: 0.65rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.seller-listing-manage-buyers > p {
+  margin: 0;
+  color: #0f766e;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.seller-listing-manage-buyer-item {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 10px;
+  padding: 0.55rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.seller-listing-manage-buyer-item span {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.seller-listing-manage-buyer-item small {
+  font-size: 0.78rem;
+  color: #475569;
+}
+
+@media (max-width: 1100px) {
+  .seller-listing-manage-layout {
+    grid-template-columns: 1fr;
+  }
+}

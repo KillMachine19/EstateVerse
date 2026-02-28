@@ -1,5 +1,8 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { FiImage, FiPlus, FiStar } from 'react-icons/fi';
+import axios from 'axios';
+import { FiImage, FiPlus, FiStar, FiX } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
+import { createListing, uploadListingImages } from '../../services/controllers';
 import './PropertyListingForm.css';
 
 export interface PropertyListingFormValues {
@@ -33,8 +36,12 @@ const defaultValues: PropertyListingFormValues = {
 };
 
 export const PropertyListingForm: React.FC = () => {
+  const navigate = useNavigate();
   const [values, setValues] = useState<PropertyListingFormValues>(defaultValues);
   const [saved, setSaved] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
+  const [submitBanner, setSubmitBanner] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [amenityInput, setAmenityInput] = useState('');
   const [amenityError, setAmenityError] = useState('');
@@ -44,6 +51,7 @@ export const PropertyListingForm: React.FC = () => {
   const [modalState, setModalState] = useState<{ title: string; message: string } | null>(null);
   const [areaUnit, setAreaUnit] = useState<'sqft' | 'sqm'>('sqft');
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const submitBannerRef = useRef<HTMLDivElement>(null);
   const maxImages = 6;
   const maxImageSizeBytes = 1.5 * 1024 * 1024;
   const SQM_TO_SQFT = 10.7639;
@@ -179,6 +187,13 @@ export const PropertyListingForm: React.FC = () => {
     };
   }, [values.images]);
 
+  React.useEffect(() => {
+    if (submitBanner?.type !== 'error') {
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [submitBanner]);
+
   const addAmenity = (raw: string) => {
     const value = raw.trim();
     if (!value) return;
@@ -220,30 +235,275 @@ export const PropertyListingForm: React.FC = () => {
   };
 
   const handleChange = (field: keyof PropertyListingFormValues, value: string) => {
+    if (field === 'totalArea' || field === 'offerArea' || field === 'pricePerSqFt') {
+      if (!/^\d*\.?\d*$/.test(value)) {
+        return;
+      }
+    }
+
+    if (field === 'roi' || field === 'agreementDuration') {
+      if (!/^\d*$/.test(value)) {
+        return;
+      }
+      if (value.length > 2) {
+        return;
+      }
+    }
+
     setValues((prev) => ({ ...prev, [field]: value }));
+    setSaved(false);
+  };
+
+  const handleRemoveImage = (indexToRemove: number) => {
+    setValues((prev) => {
+      const nextImages = prev.images.filter((_, index) => index !== indexToRemove);
+      return { ...prev, images: nextImages };
+    });
+
+    setMainImageIndex((prevMainIndex) => {
+      if (prevMainIndex === null) {
+        return null;
+      }
+      if (indexToRemove === prevMainIndex) {
+        return values.images.length - 1 > 0 ? 0 : null;
+      }
+      if (indexToRemove < prevMainIndex) {
+        return prevMainIndex - 1;
+      }
+      return prevMainIndex;
+    });
+
     setSaved(false);
   };
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
-    let hasError = false;
-    if (values.images.length === 0) {
-      setImageError('Add at least one image.');
-      hasError = true;
-    }
-    if (values.amenities.length === 0) {
-      setAmenityError('Add at least one amenity.');
-      hasError = true;
-    }
-    if (wordCount > 150) {
-      setDetailsError('Other details can have a maximum of 150 words.');
-      hasError = true;
-    }
-    if (hasError) {
-      setSaved(false);
-      return;
-    }
-    setSaved(true);
+    setSubmitBanner(null);
+    console.log('[PropertyListingForm] Publish clicked', {
+      imagesCount: values.images.length,
+      mainImageIndex,
+      amenitiesCount: values.amenities.length,
+      wordCount,
+      areaUnit,
+    });
+    const submitListing = async () => {
+      let hasError = false;
+      const validationMessages: string[] = [];
+      const projectName = values.projectName.trim();
+      const location = values.location.trim();
+      const totalArea = values.totalArea.trim();
+      const offerArea = values.offerArea.trim();
+      const pricePerSqFt = values.pricePerSqFt.trim();
+      const roi = values.roi.trim();
+      const agreementDuration = values.agreementDuration.trim();
+      const details = values.details.trim();
+
+      const numericValue = /^\d+(\.\d+)?$/;
+      const twoDigitNumber = /^\d{1,2}$/;
+      const twoDigitInteger = /^\d{1,2}$/;
+
+      if (!projectName) {
+        validationMessages.push('Project Name is required.');
+        hasError = true;
+      }
+      if (!location) {
+        validationMessages.push('Location is required.');
+        hasError = true;
+      }
+      if (!totalArea) {
+        validationMessages.push('Total Area is required.');
+        hasError = true;
+      } else if (!numericValue.test(totalArea)) {
+        validationMessages.push('Total Area must be numeric.');
+        hasError = true;
+      }
+      if (!offerArea) {
+        validationMessages.push('Area on Offer is required.');
+        hasError = true;
+      } else if (!numericValue.test(offerArea)) {
+        validationMessages.push('Area on Offer must be numeric.');
+        hasError = true;
+      }
+      if (!pricePerSqFt) {
+        validationMessages.push('Price is required.');
+        hasError = true;
+      } else if (!numericValue.test(pricePerSqFt)) {
+        validationMessages.push('Price must be numeric.');
+        hasError = true;
+      }
+      if (!roi) {
+        validationMessages.push('ROI is required.');
+        hasError = true;
+      } else if (!twoDigitNumber.test(roi)) {
+        validationMessages.push('ROI must be numeric and a maximum of 2 digits.');
+        hasError = true;
+      }
+      if (!agreementDuration) {
+        validationMessages.push('Agreement Duration is required.');
+        hasError = true;
+      } else if (!twoDigitInteger.test(agreementDuration)) {
+        validationMessages.push('Agreement Duration must be a maximum of 2 digits.');
+        hasError = true;
+      }
+      if (!details) {
+        validationMessages.push('Other Details are required.');
+        hasError = true;
+      }
+
+      if (values.images.length < 1) {
+        setImageError('Add at least 1 image.');
+        validationMessages.push('Please add at least 1 image to publish.');
+        console.log('[PropertyListingForm] Validation failed: at least 1 image is required', {
+          imagesCount: values.images.length,
+        });
+        hasError = true;
+      }
+      if (values.images.length > maxImages) {
+        setImageError('You can upload up to 6 images.');
+        validationMessages.push('You can upload up to 6 images.');
+        console.log('[PropertyListingForm] Validation failed: maximum image count exceeded', {
+          imagesCount: values.images.length,
+        });
+        hasError = true;
+      }
+      if (mainImageIndex === null || !values.images[mainImageIndex]) {
+        setImageError('Select a main image.');
+        validationMessages.push('Please select a main image.');
+        console.log('[PropertyListingForm] Validation failed: main image not selected');
+        hasError = true;
+      }
+      if (values.amenities.length === 0) {
+        setAmenityError('Add at least one amenity.');
+        validationMessages.push('Add at least one amenity.');
+        console.log('[PropertyListingForm] Validation failed: no amenities');
+        hasError = true;
+      }
+      if (wordCount > 150) {
+        setDetailsError('Other details can have a maximum of 150 words.');
+        validationMessages.push('Other details can have a maximum of 150 words.');
+        console.log('[PropertyListingForm] Validation failed: details word count exceeded', { wordCount });
+        hasError = true;
+      }
+
+      const totalAreaNumeric = toNumber(totalArea);
+      const offerAreaNumeric = toNumber(offerArea);
+      if (totalAreaNumeric !== null && offerAreaNumeric !== null && offerAreaNumeric > totalAreaNumeric) {
+        validationMessages.push('Area on Offer cannot exceed Total Area.');
+        console.log('[PropertyListingForm] Validation failed: offer area greater than total area', {
+          totalAreaNumeric,
+          offerAreaNumeric,
+        });
+        hasError = true;
+      }
+
+      if (hasError) {
+        setSaved(false);
+        setSubmitBanner({
+          type: 'error',
+          text: validationMessages[0] ?? 'Please fix validation errors before publishing.',
+        });
+        console.log('[PropertyListingForm] Submission aborted due to validation errors');
+        return;
+      }
+
+      const areaNumeric = toNumber(values.totalArea);
+      const offerNumeric = toNumber(values.offerArea);
+      const priceNumeric = toNumber(values.pricePerSqFt);
+
+      if (areaNumeric === null || offerNumeric === null || priceNumeric === null) {
+        setSubmitMessage('Area and price must be valid numeric values.');
+        setSubmitBanner({ type: 'error', text: 'Area and price must be valid numeric values.' });
+        setSaved(false);
+        console.log('[PropertyListingForm] Validation failed: non-numeric area/price', {
+          totalArea: values.totalArea,
+          offerArea: values.offerArea,
+          pricePerSqFt: values.pricePerSqFt,
+        });
+        return;
+      }
+
+      const areaSqFt = areaUnit === 'sqft' ? areaNumeric : areaNumeric * SQM_TO_SQFT;
+      const areaSqM = areaUnit === 'sqft' ? areaNumeric / SQM_TO_SQFT : areaNumeric;
+      const offerSqFt = areaUnit === 'sqft' ? offerNumeric : offerNumeric * SQM_TO_SQFT;
+      const offerSqM = areaUnit === 'sqft' ? offerNumeric / SQM_TO_SQFT : offerNumeric;
+      const priceSqFt = areaUnit === 'sqft' ? priceNumeric : priceNumeric / SQM_TO_SQFT;
+      const priceSqM = areaUnit === 'sqft' ? priceNumeric * SQM_TO_SQFT : priceNumeric;
+
+      try {
+        setIsSubmitting(true);
+        setSubmitMessage('');
+        setSubmitBanner(null);
+        console.log('[PropertyListingForm] Uploading images...');
+        const selectedMainIndex = mainImageIndex;
+        const uploadResponse = await uploadListingImages(values.images);
+        console.log('[PropertyListingForm] Upload response', uploadResponse);
+        const imageIds = (uploadResponse.imageIds ?? []).slice(0, maxImages);
+        const mainImageId = selectedMainIndex !== null ? imageIds[selectedMainIndex] : '';
+
+        if (imageIds.length < 1 || imageIds.length > maxImages || !mainImageId) {
+          setSubmitMessage('Image upload failed: backend returned invalid image IDs.');
+          setSubmitBanner({ type: 'error', text: 'Image upload failed: backend returned invalid image IDs.' });
+          setSaved(false);
+          console.log('[PropertyListingForm] Upload validation failed', {
+            imageIdsCount: imageIds.length,
+            mainImageId,
+            selectedMainIndex,
+          });
+          return;
+        }
+
+        console.log('[PropertyListingForm] Creating listing...', {
+          projectName: values.projectName,
+          imageIdsCount: imageIds.length,
+          mainImageId,
+        });
+        await createListing({
+          projectName,
+          location,
+          latitude: values.latitude,
+          longitude: values.longitude,
+          totalAreaSqFt: areaSqFt.toFixed(2),
+          totalAreaSqM: areaSqM.toFixed(2),
+          offerAreaSqFt: offerSqFt.toFixed(2),
+          offerAreaSqM: offerSqM.toFixed(2),
+          areaUnitSelected: areaUnit,
+          pricePerSqFt: priceSqFt.toFixed(2),
+          pricePerSqM: priceSqM.toFixed(2),
+          priceUnitSelected: areaUnit,
+          amenities: values.amenities.map((item) => item.label),
+          roiPercent: roi,
+          agreementDuration: `${agreementDuration} years`,
+          details,
+          imageIds,
+          mainImageId,
+        });
+        console.log('[PropertyListingForm] Listing created successfully. Redirecting to /seller/listings');
+        setSaved(true);
+        setSubmitMessage('Property listing published successfully.');
+        setSubmitBanner({ type: 'success', text: 'Property listing published successfully.' });
+        navigate('/seller/listings');
+      } catch (error) {
+        console.error('[PropertyListingForm] Publish failed', error);
+        if (axios.isAxiosError(error)) {
+          const errorText =
+            typeof error.response?.data?.message === 'string'
+              ? error.response.data.message
+              : 'Failed to publish listing.';
+          setSubmitMessage(
+            errorText
+          );
+          setSubmitBanner({ type: 'error', text: errorText });
+        } else {
+          setSubmitMessage('Failed to publish listing.');
+          setSubmitBanner({ type: 'error', text: 'Failed to publish listing.' });
+        }
+        setSaved(false);
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+
+    void submitListing();
   };
 
   const handleReset = () => {
@@ -255,6 +515,9 @@ export const PropertyListingForm: React.FC = () => {
     setMainImageIndex(null);
     setModalState(null);
     setSaved(false);
+    setIsSubmitting(false);
+    setSubmitMessage('');
+    setSubmitBanner(null);
     setImagePreviews((prev) => {
       prev.forEach((url) => URL.revokeObjectURL(url));
       return [];
@@ -290,6 +553,15 @@ export const PropertyListingForm: React.FC = () => {
           </div>
         </div>
       ) : null}
+      {submitBanner ? (
+        <div
+          ref={submitBannerRef}
+          className={`property-listing-banner ${submitBanner.type === 'error' ? 'is-error' : 'is-success'}`}
+          role="alert"
+        >
+          {submitBanner.text}
+        </div>
+      ) : null}
 
       <div className="property-listing-section-card">
         <label className="property-listing-images">
@@ -300,7 +572,6 @@ export const PropertyListingForm: React.FC = () => {
             accept="image/*"
             multiple
             onChange={handleImageChange}
-            required
             className="property-listing-image-input"
           />
           <div className="property-listing-image-grid">
@@ -313,6 +584,14 @@ export const PropertyListingForm: React.FC = () => {
                     className={`property-listing-image-slot is-filled ${mainImageIndex === index ? 'is-main' : ''}`}
                   >
                     <img src={preview} alt={`Preview ${index + 1}`} />
+                    <button
+                      type="button"
+                      className="property-listing-image-remove"
+                      onClick={() => handleRemoveImage(index)}
+                      aria-label={`Remove image ${index + 1}`}
+                    >
+                      <FiX aria-hidden="true" />
+                    </button>
                     <button
                       type="button"
                       className="property-listing-image-main"
@@ -339,7 +618,7 @@ export const PropertyListingForm: React.FC = () => {
               );
             })}
           </div>
-          <p className="property-listing-helper">Upload up to 6 images. Max 1.5 MB each. Minimum 1 image required.</p>
+          <p className="property-listing-helper">Upload 1 to 6 images. Max 1.5 MB each.</p>
           {imageError ? <small className="property-listing-error">{imageError}</small> : null}
         </label>
       </div>
@@ -368,13 +647,14 @@ export const PropertyListingForm: React.FC = () => {
         <label>
           <span>Total Area <span className="property-listing-required">*</span></span>
           <div className="property-listing-input-group">
-            <input
-              type="text"
-              value={values.totalArea}
-              onChange={(event) => handleChange('totalArea', event.target.value)}
-              placeholder="Total area"
-              required
-            />
+          <input
+            type="text"
+            value={values.totalArea}
+            onChange={(event) => handleChange('totalArea', event.target.value)}
+            placeholder="Total area"
+            inputMode="decimal"
+            required
+          />
             <select
               className="property-listing-input-select"
               value={areaUnit}
@@ -401,6 +681,7 @@ export const PropertyListingForm: React.FC = () => {
               value={values.offerArea}
               onChange={(event) => handleChange('offerArea', event.target.value)}
               placeholder="Available area"
+              inputMode="decimal"
               required
             />
             <select
@@ -430,6 +711,7 @@ export const PropertyListingForm: React.FC = () => {
               value={values.pricePerSqFt}
               onChange={(event) => handleChange('pricePerSqFt', event.target.value)}
               placeholder={`Price per ${areaUnit === 'sqft' ? 'sq ft' : 'sq m'}`}
+              inputMode="decimal"
               required
             />
           </div>
@@ -444,13 +726,15 @@ export const PropertyListingForm: React.FC = () => {
         <label>
           <span>ROI (for investments) <span className="property-listing-required">*</span></span>
           <div className="property-listing-input-group">
-            <input
-              type="text"
-              value={values.roi}
-              onChange={(event) => handleChange('roi', event.target.value)}
-              placeholder="Expected ROI"
-              required
-            />
+          <input
+            type="text"
+            value={values.roi}
+            onChange={(event) => handleChange('roi', event.target.value)}
+            placeholder="Expected ROI"
+            inputMode="decimal"
+            maxLength={2}
+            required
+          />
             <span className="property-listing-input-addon is-suffix">%</span>
           </div>
         </label>
@@ -460,7 +744,9 @@ export const PropertyListingForm: React.FC = () => {
             type="text"
             value={values.agreementDuration}
             onChange={(event) => handleChange('agreementDuration', event.target.value)}
-            placeholder="e.g. 5 years"
+            placeholder="e.g. 5"
+            inputMode="numeric"
+            maxLength={2}
             required
           />
         </label>
@@ -554,12 +840,13 @@ export const PropertyListingForm: React.FC = () => {
 
       <div className="property-listing-actions">
         <button type="submit" className="btn btn-primary btn-md">
-          Publish Listing
+          {isSubmitting ? 'Publishing...' : 'Publish Listing'}
         </button>
         <button type="button" className="btn btn-outline btn-sm" onClick={handleReset}>
           Reset
         </button>
         {saved ? <p>Property listing saved.</p> : null}
+        {submitMessage ? <p>{submitMessage}</p> : null}
       </div>
     </form>
   );

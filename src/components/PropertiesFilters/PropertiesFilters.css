@@ -119,6 +119,39 @@
   justify-content: flex-end;
 }
 
+.filter-amenities-group {
+  grid-column: 1 / -1;
+}
+
+.filter-amenities-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filter-amenity-chip {
+  border: 1px solid rgba(15, 23, 42, 0.18);
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  background: #ffffff;
+  color: var(--text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: border-color var(--transition-base), background var(--transition-base), color var(--transition-base);
+}
+
+.filter-amenity-chip:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+}
+
+.filter-amenity-chip.is-active {
+  border-color: rgba(0, 188, 212, 0.5);
+  background: rgba(0, 188, 212, 0.14);
+  color: #0369a1;
+}
+
 .checkbox-option {
   display: inline-flex;
   align-items: center;

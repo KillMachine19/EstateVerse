@@ -1,132 +1,157 @@
-import React, { useMemo, useState } from 'react';
-import type { Property } from '../../types';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import axios from 'axios';
+import { Navigate } from 'react-router-dom';
 import { PropertyCard } from '../../components/PropertyCard';
 import { PropertiesFilters } from '../../components/PropertiesFilters';
+import { useAuth } from '../../context/AuthContext';
+import { getAllProperties, type ListingRecord } from '../../services/controllers';
+import type { Property } from '../../types';
+import '../../components/PropertiesFilters/PropertiesFilters.css';
 import './Properties.css';
 
-type ListingIntent = 'rentLease' | 'buying';
-
-interface PropertyListing extends Property {
-  techParkArea: string;
-  listingIntents: ListingIntent[];
-}
-
-const BUDGET_MIN = 5_000_000; // 50L
-const BUDGET_MAX = 1_000_000_000; // 100Cr
-
-const listedProperties: PropertyListing[] = [
-  {
-    id: 'prop-blr-001',
-    title: 'Outer Ring Road Business Hub',
-    description: 'Grade A managed office floors with flexible seating plans for scaling technology teams.',
-    price: 38_500_000,
-    location: 'Bengaluru, Karnataka',
-    techParkArea: 'Outer Ring Road',
-    area: 18_400,
-    type: 'office',
-    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80',
-    amenities: ['24/7 Access', 'Smart Security', 'Dedicated Parking', 'Conference Floors'],
-    listingIntents: ['rentLease', 'buying'],
-  },
-  {
-    id: 'prop-blr-002',
-    title: 'Whitefield Enterprise Tower',
-    description: 'Premium office tower with modern reception, large floor plates, and metro connectivity.',
-    price: 46_200_000,
-    location: 'Bengaluru, Karnataka',
-    techParkArea: 'Whitefield',
-    area: 22_100,
-    type: 'office',
-    image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80',
-    amenities: ['Metro Access', 'Visitor Management', 'Backup Power', 'Cafeteria'],
-    listingIntents: ['buying'],
-  },
-  {
-    id: 'prop-blr-003',
-    title: 'Electronic City Signature Offices',
-    description: 'Move-in-ready enterprise office suites in a high-demand IT corridor.',
-    price: 29_800_000,
-    location: 'Bengaluru, Karnataka',
-    techParkArea: 'Electronic City',
-    area: 15_750,
-    type: 'office',
-    image: 'https://images.unsplash.com/photo-1497366412874-3415097a27e7?auto=format&fit=crop&w=1200&q=80',
-    amenities: ['Managed Reception', 'Boardrooms', 'LEED Gold', 'High-Speed Internet'],
-    listingIntents: ['rentLease'],
-  },
-  {
-    id: 'prop-blr-004',
-    title: 'Manyata Tech Park Business Center',
-    description: 'Contemporary office campus designed for finance, consulting, and enterprise operations.',
-    price: 33_400_000,
-    location: 'Bengaluru, Karnataka',
-    techParkArea: 'Manyata Tech Park',
-    area: 17_400,
-    type: 'office',
-    image: 'https://images.unsplash.com/photo-1577412647305-991150c7d163?auto=format&fit=crop&w=1200&q=80',
-    amenities: ['Multi-level Parking', 'Business Lounge', 'Fitness Center', 'BMS Enabled'],
-    listingIntents: ['rentLease', 'buying'],
-  },
+const PAGE_SIZE = 12;
+const AMENITY_SUGGESTIONS = [
+  'High-Speed WiFi',
+  'Fire Exit',
+  'Power Backup',
+  'Central Air',
+  'CCTV Surveillance',
+  'Elevator Access',
+  '24/7 Security',
+  'Parking',
+  'Reception Desk',
+  'Conference Rooms',
 ];
 
-const techParkAreas = ['All Bengaluru Tech Park Areas', ...new Set(listedProperties.map((p) => p.techParkArea))];
-
-const formatBudget = (value: number): string => {
-  if (value >= 10_000_000) {
-    return `Rs. ${(value / 10_000_000).toFixed(value % 10_000_000 === 0 ? 0 : 1)} Cr`;
+const parseNumber = (value: string | undefined, fallback = 0): number => {
+  if (!value) {
+    return fallback;
   }
-  return `Rs. ${(value / 100_000).toFixed(0)} L`;
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
+const resolveId = (listing: ListingRecord) => listing.propid ?? listing.id ?? '';
+
+const toCardModel = (listing: ListingRecord): Property => {
+  const area = parseNumber(listing.offerAreaSqFt ?? listing.totalAreaSqFt, 0);
+  const unitPrice = parseNumber(listing.pricePerSqFt, 0);
+
+  return {
+    id: resolveId(listing),
+    title: listing.projectName ?? 'Untitled Property',
+    description: listing.details ?? 'No description available.',
+    price: unitPrice * (area > 0 ? area : 1),
+    location: listing.location ?? 'N/A',
+    area,
+    type: 'office',
+    image: listing.imageIds?.[0] || 'https://via.placeholder.com/1200x900?text=No+Image',
+    amenities: listing.amenities ?? [],
+  };
 };
 
 export const Properties: React.FC = () => {
+  const { isAuthenticated, userRole } = useAuth();
+  const [items, setItems] = useState<ListingRecord[]>([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTechParkArea, setSelectedTechParkArea] = useState(techParkAreas[0]);
-  const [minBudget, setMinBudget] = useState(BUDGET_MIN);
-  const [maxBudget, setMaxBudget] = useState(BUDGET_MAX);
+  const [minBudget, setMinBudget] = useState(0);
+  const [maxBudget, setMaxBudget] = useState(0);
+  const [selectedTechParkArea, setSelectedTechParkArea] = useState('All Areas');
   const [includeRentLease, setIncludeRentLease] = useState(false);
   const [includeBuying, setIncludeBuying] = useState(false);
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+
+  const loadProperties = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const response = await getAllProperties({ page, size: PAGE_SIZE });
+      setItems(response.content ?? []);
+      setTotalPages(response.totalPages ?? 0);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        setError(typeof err.response?.data?.message === 'string' ? err.response.data.message : 'Failed to load properties.');
+      } else {
+        setError('Failed to load properties.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [page]);
+
+  useEffect(() => {
+    void loadProperties();
+  }, [loadProperties]);
+
+  const properties = useMemo(() => items.map(toCardModel), [items]);
+
+  const budgetMin = useMemo(() => {
+    if (properties.length === 0) return 0;
+    return Math.min(...properties.map((property) => property.price));
+  }, [properties]);
+
+  const budgetMax = useMemo(() => {
+    if (properties.length === 0) return 0;
+    return Math.max(...properties.map((property) => property.price));
+  }, [properties]);
+
+  useEffect(() => {
+    if (properties.length === 0) {
+      setMinBudget(0);
+      setMaxBudget(0);
+      return;
+    }
+    setMinBudget((prev) => (prev === 0 ? budgetMin : prev));
+    setMaxBudget((prev) => (prev === 0 ? budgetMax : prev));
+  }, [budgetMax, budgetMin, properties.length]);
+
+  const techParkAreas = useMemo(() => {
+    const all = ['All Areas'];
+    const unique = Array.from(new Set(properties.map((property) => property.location).filter(Boolean)));
+    return [...all, ...unique];
+  }, [properties]);
 
   const filteredProperties = useMemo(() => {
-    const normalizedQuery = searchQuery.trim().toLowerCase();
-    const hasIntentFilter = includeRentLease || includeBuying;
-
-    return listedProperties.filter((property) => {
+    const normalized = searchQuery.trim().toLowerCase();
+    return properties.filter((property) => {
       const isBudgetMatch = property.price >= minBudget && property.price <= maxBudget;
-      const isAreaMatch =
-        selectedTechParkArea === techParkAreas[0] || property.techParkArea === selectedTechParkArea;
-      const isIntentMatch = !hasIntentFilter
-        ? true
-        : (includeRentLease && property.listingIntents.includes('rentLease')) ||
-          (includeBuying && property.listingIntents.includes('buying'));
-
-      if (!normalizedQuery) {
-        return isBudgetMatch && isAreaMatch && isIntentMatch;
-      }
-
-      const searchableText = [
-        property.title,
-        property.description,
-        property.location,
-        property.techParkArea,
-        ...property.amenities,
-      ]
+      const isAreaMatch = selectedTechParkArea === 'All Areas' || property.location === selectedTechParkArea;
+      const hasIntentFilter = includeRentLease || includeBuying;
+      const isIntentMatch = !hasIntentFilter || includeRentLease || includeBuying;
+      const hasAmenitiesMatch = selectedAmenities.every((amenity) =>
+        property.amenities.some((item) => item.toLowerCase() === amenity.toLowerCase())
+      );
+      const haystack = [property.title, property.description, property.location, ...property.amenities]
         .join(' ')
         .toLowerCase();
-
-      return isBudgetMatch && isAreaMatch && isIntentMatch && searchableText.includes(normalizedQuery);
+      const isSearchMatch = !normalized || haystack.includes(normalized);
+      return isBudgetMatch && isAreaMatch && isIntentMatch && hasAmenitiesMatch && isSearchMatch;
     });
-  }, [includeBuying, includeRentLease, maxBudget, minBudget, searchQuery, selectedTechParkArea]);
+  }, [includeBuying, includeRentLease, maxBudget, minBudget, properties, searchQuery, selectedAmenities, selectedTechParkArea]);
 
-  const onMinBudgetChange = (value: number) => {
-    setMinBudget(Math.min(value, maxBudget));
+  const toggleAmenity = (amenity: string) => {
+    setSelectedAmenities((prev) =>
+      prev.includes(amenity) ? prev.filter((item) => item !== amenity) : [...prev, amenity]
+    );
   };
 
-  const onMaxBudgetChange = (value: number) => {
-    setMaxBudget(Math.max(value, minBudget));
+  const formatBudget = (value: number): string => {
+    if (value >= 10_000_000) {
+      return `Rs. ${(value / 10_000_000).toFixed(value % 10_000_000 === 0 ? 0 : 1)} Cr`;
+    }
+    return `Rs. ${(value / 100_000).toFixed(0)} L`;
   };
 
-  const minBudgetPercent = ((minBudget - BUDGET_MIN) / (BUDGET_MAX - BUDGET_MIN)) * 100;
-  const maxBudgetPercent = ((maxBudget - BUDGET_MIN) / (BUDGET_MAX - BUDGET_MIN)) * 100;
+  const minBudgetPercent = budgetMax > budgetMin ? ((minBudget - budgetMin) / (budgetMax - budgetMin)) * 100 : 0;
+  const maxBudgetPercent = budgetMax > budgetMin ? ((maxBudget - budgetMin) / (budgetMax - budgetMin)) * 100 : 100;
+
+  if (isAuthenticated && userRole === 'buyer') {
+    return <Navigate to="/buyer/search" replace />;
+  }
 
   return (
     <main className="properties-page">
@@ -138,10 +163,10 @@ export const Properties: React.FC = () => {
           maxBudget={maxBudget}
           minBudgetPercent={minBudgetPercent}
           maxBudgetPercent={maxBudgetPercent}
-          budgetMin={BUDGET_MIN}
-          budgetMax={BUDGET_MAX}
-          onMinBudgetChange={onMinBudgetChange}
-          onMaxBudgetChange={onMaxBudgetChange}
+          budgetMin={budgetMin}
+          budgetMax={budgetMax}
+          onMinBudgetChange={setMinBudget}
+          onMaxBudgetChange={setMaxBudget}
           selectedTechParkArea={selectedTechParkArea}
           techParkAreas={techParkAreas}
           onTechParkAreaChange={setSelectedTechParkArea}
@@ -150,28 +175,57 @@ export const Properties: React.FC = () => {
           onIncludeRentLeaseChange={setIncludeRentLease}
           onIncludeBuyingChange={setIncludeBuying}
           formatBudget={formatBudget}
+          selectedAmenities={selectedAmenities}
+          amenitySuggestions={AMENITY_SUGGESTIONS}
+          onToggleAmenity={toggleAmenity}
         />
 
         <header className="properties-header">
           <h1 className="properties-title">Available Properties</h1>
-          <p className="properties-subtitle">
-            Explore curated office spaces across Bengaluru tech parks, ready for your next expansion.
-          </p>
+          <p className="properties-subtitle">Explore verified commercial listings.</p>
         </header>
 
-        <p className="properties-results-count">{filteredProperties.length} properties found</p>
+        {loading ? <p>Loading properties...</p> : null}
+        {error ? <p className="property-listing-error">{error}</p> : null}
+        {!loading && !error ? (
+          <p className="properties-results-count">{filteredProperties.length} properties found</p>
+        ) : null}
 
-        {filteredProperties.length > 0 ? (
+        {!loading && !error && filteredProperties.length > 0 ? (
           <div className="properties-grid" aria-label="Property listings">
             {filteredProperties.map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))}
           </div>
-        ) : (
+        ) : null}
+
+        {!loading && !error && filteredProperties.length === 0 ? (
           <div className="properties-empty-state" role="status" aria-live="polite">
-            No properties match your current filters.
+            No properties found.
           </div>
-        )}
+        ) : null}
+
+        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+          <button
+            type="button"
+            className="btn btn-outline btn-sm"
+            onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+            disabled={page === 0 || loading}
+          >
+            Previous
+          </button>
+          <button
+            type="button"
+            className="btn btn-outline btn-sm"
+            onClick={() => setPage((prev) => prev + 1)}
+            disabled={loading || (totalPages > 0 && page + 1 >= totalPages)}
+          >
+            Next
+          </button>
+          <span style={{ alignSelf: 'center' }}>
+            Page {page + 1}{totalPages > 0 ? ` of ${totalPages}` : ''}
+          </span>
+        </div>
       </section>
     </main>
   );

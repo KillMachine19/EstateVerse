@@ -10,6 +10,8 @@ export interface Property {
   type: 'office' ;
   image: string;
   amenities: string[];
+  imageGallery?: string[];
+  shortlistedBuyersCount?: number;
 }
 
 export interface LeadForm {

@@ -20,6 +20,9 @@ interface PropertiesFiltersProps {
   onIncludeRentLeaseChange: (checked: boolean) => void;
   onIncludeBuyingChange: (checked: boolean) => void;
   formatBudget: (value: number) => string;
+  selectedAmenities: string[];
+  amenitySuggestions: string[];
+  onToggleAmenity: (amenity: string) => void;
 }
 
 export const PropertiesFilters: React.FC<PropertiesFiltersProps> = ({
@@ -41,6 +44,9 @@ export const PropertiesFilters: React.FC<PropertiesFiltersProps> = ({
   onIncludeRentLeaseChange,
   onIncludeBuyingChange,
   formatBudget,
+  selectedAmenities,
+  amenitySuggestions,
+  onToggleAmenity,
 }) => (
   <section className="properties-filters" aria-label="Search and filters">
     <label className="filter-group filter-search-group">
@@ -120,6 +126,26 @@ export const PropertiesFilters: React.FC<PropertiesFiltersProps> = ({
         />
         <span>Buying</span>
       </label>
+    </div>
+
+    <div className="filter-group filter-amenities-group">
+      <span className="filter-label">Amenities</span>
+      <div className="filter-amenities-chips">
+        {amenitySuggestions.map((amenity) => {
+          const isActive = selectedAmenities.includes(amenity);
+          return (
+            <button
+              key={amenity}
+              type="button"
+              className={`filter-amenity-chip ${isActive ? 'is-active' : ''}`}
+              onClick={() => onToggleAmenity(amenity)}
+              aria-pressed={isActive}
+            >
+              {amenity}
+            </button>
+          );
+        })}
+      </div>
     </div>
   </section>
 );

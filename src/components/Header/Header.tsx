@@ -61,7 +61,7 @@ export const Header: React.FC = () => {
         { label: 'Map View', path: '/buyer/saved-map', icon: <FiMapPin aria-hidden="true" /> },
       ],
     },
-    { label: 'Search Properties', path: '/properties', icon: <FiSearch aria-hidden="true" /> },
+    { label: 'Search Properties', path: '/buyer/search', icon: <FiSearch aria-hidden="true" /> },
     { label: 'Offers', path: '/buyer/offers', icon: <FiTag aria-hidden="true" /> },
     { label: 'Applications', path: '/buyer/applications', icon: <FiFileText aria-hidden="true" /> },
     { label: 'Messages', path: '/buyer/messages', icon: <FiMessageSquare aria-hidden="true" /> },

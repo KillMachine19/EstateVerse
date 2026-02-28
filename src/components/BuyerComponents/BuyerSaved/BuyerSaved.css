@@ -8,6 +8,12 @@
   gap: 0.95rem;
 }
 
+.buyer-property-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
 .buyer-saved-map {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
