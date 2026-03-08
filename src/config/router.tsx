@@ -23,6 +23,8 @@ import { SellerListingsPage } from '../pages/Seller/SellerListingsPage';
 import { SellerListingManagePage } from '../pages/Seller/SellerListingManagePage';
 import { SellerAddPropertyPage } from '../pages/Seller/SellerAddPropertyPage';
 import { SellerLeadsPage } from '../pages/Seller/SellerLeadsPage';
+import { SellerApplicationsPage } from '../pages/Seller/SellerApplicationsPage';
+import { SellerApplicationDetailsPage } from '../pages/Seller/SellerApplicationDetailsPage';
 import { SellerAnalyticsPage } from '../pages/Seller/SellerAnalyticsPage';
 import { SellerMessagesPage } from '../pages/Seller/SellerMessagesPage';
 import { SellerNotificationsPage } from '../pages/Seller/SellerNotificationsPage';
@@ -251,6 +253,22 @@ export const router = createBrowserRouter([
         element: (
           <RoleProtectedRoute requiredRole="seller">
             <SellerLeadsPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'seller/applications',
+        element: (
+          <RoleProtectedRoute requiredRole="seller">
+            <SellerApplicationsPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'seller/applications/:applicationId',
+        element: (
+          <RoleProtectedRoute requiredRole="seller">
+            <SellerApplicationDetailsPage />
           </RoleProtectedRoute>
         ),
       },

@@ -1,0 +1,1 @@
+export { ShortlistRemoveModal } from './ShortlistRemoveModal';

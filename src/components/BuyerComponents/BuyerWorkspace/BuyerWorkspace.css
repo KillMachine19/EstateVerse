@@ -5,7 +5,9 @@
 }
 
 .buyer-workspace-container {
-  max-width: 1240px;
+  --workspace-max-width: 1240px;
+  --sidebar-width: 220px;
+  max-width: var(--workspace-max-width);
   margin: 0 auto;
   display: flex;
   align-items: flex-start;
@@ -15,6 +17,7 @@
 .buyer-workspace-main {
   flex: 1;
   min-width: 0;
+  margin-left: calc(var(--sidebar-width) + 1rem);
 }
 
 .buyer-workspace-content {
@@ -61,6 +64,10 @@
 @media (max-width: 900px) {
   .buyer-workspace-container {
     flex-direction: column;
+  }
+
+  .buyer-workspace-main {
+    margin-left: 0;
   }
 
   .buyer-workspace {

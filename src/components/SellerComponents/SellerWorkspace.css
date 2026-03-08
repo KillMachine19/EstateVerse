@@ -6,7 +6,9 @@
 }
 
 .seller-workspace-container {
-  max-width: 1240px;
+  --workspace-max-width: 1240px;
+  --sidebar-width: 220px;
+  max-width: var(--workspace-max-width);
   margin: 0 auto;
   display: flex;
   align-items: flex-start;
@@ -14,12 +16,14 @@
 }
 
 .seller-workspace-container.is-wide {
-  max-width: 1520px;
+  --workspace-max-width: 1520px;
+  max-width: var(--workspace-max-width);
 }
 
 .seller-workspace-main {
   flex: 1;
   min-width: 0;
+  margin-left: calc(var(--sidebar-width) + 1rem);
 }
 
 .seller-workspace-content {
@@ -66,6 +70,10 @@
 @media (max-width: 900px) {
   .seller-workspace-container {
     flex-direction: column;
+  }
+
+  .seller-workspace-main {
+    margin-left: 0;
   }
 
   .seller-workspace {

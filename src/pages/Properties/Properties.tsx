@@ -3,52 +3,13 @@ import axios from 'axios';
 import { Navigate } from 'react-router-dom';
 import { PropertyCard } from '../../components/PropertyCard';
 import { PropertiesFilters } from '../../components/PropertiesFilters';
+import { PaginationNav } from '../../components/PaginationNav';
 import { useAuth } from '../../context/AuthContext';
 import { getAllProperties, type ListingRecord } from '../../services/controllers';
-import type { Property } from '../../types';
+import { LISTING_AMENITY_SUGGESTIONS, PUBLIC_PROPERTIES_PAGE_SIZE } from '../../constants/listings';
+import { toPropertyCardFromListing } from '../../utils/listings';
 import '../../components/PropertiesFilters/PropertiesFilters.css';
 import './Properties.css';
-
-const PAGE_SIZE = 12;
-const AMENITY_SUGGESTIONS = [
-  'High-Speed WiFi',
-  'Fire Exit',
-  'Power Backup',
-  'Central Air',
-  'CCTV Surveillance',
-  'Elevator Access',
-  '24/7 Security',
-  'Parking',
-  'Reception Desk',
-  'Conference Rooms',
-];
-
-const parseNumber = (value: string | undefined, fallback = 0): number => {
-  if (!value) {
-    return fallback;
-  }
-  const parsed = Number.parseFloat(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-};
-
-const resolveId = (listing: ListingRecord) => listing.propid ?? listing.id ?? '';
-
-const toCardModel = (listing: ListingRecord): Property => {
-  const area = parseNumber(listing.offerAreaSqFt ?? listing.totalAreaSqFt, 0);
-  const unitPrice = parseNumber(listing.pricePerSqFt, 0);
-
-  return {
-    id: resolveId(listing),
-    title: listing.projectName ?? 'Untitled Property',
-    description: listing.details ?? 'No description available.',
-    price: unitPrice * (area > 0 ? area : 1),
-    location: listing.location ?? 'N/A',
-    area,
-    type: 'office',
-    image: listing.imageIds?.[0] || 'https://via.placeholder.com/1200x900?text=No+Image',
-    amenities: listing.amenities ?? [],
-  };
-};
 
 export const Properties: React.FC = () => {
   const { isAuthenticated, userRole } = useAuth();
@@ -69,7 +30,7 @@ export const Properties: React.FC = () => {
     try {
       setLoading(true);
       setError('');
-      const response = await getAllProperties({ page, size: PAGE_SIZE });
+      const response = await getAllProperties({ page, size: PUBLIC_PROPERTIES_PAGE_SIZE });
       setItems(response.content ?? []);
       setTotalPages(response.totalPages ?? 0);
     } catch (err) {
@@ -87,7 +48,7 @@ export const Properties: React.FC = () => {
     void loadProperties();
   }, [loadProperties]);
 
-  const properties = useMemo(() => items.map(toCardModel), [items]);
+  const properties = useMemo(() => items.map((item) => toPropertyCardFromListing(item)), [items]);
 
   const budgetMin = useMemo(() => {
     if (properties.length === 0) return 0;
@@ -132,6 +93,10 @@ export const Properties: React.FC = () => {
       return isBudgetMatch && isAreaMatch && isIntentMatch && hasAmenitiesMatch && isSearchMatch;
     });
   }, [includeBuying, includeRentLease, maxBudget, minBudget, properties, searchQuery, selectedAmenities, selectedTechParkArea]);
+  const effectiveTotalPages = useMemo(
+    () => (totalPages > 0 ? totalPages : filteredProperties.length > 0 ? page + 1 : 0),
+    [filteredProperties.length, page, totalPages]
+  );
 
   const toggleAmenity = (amenity: string) => {
     setSelectedAmenities((prev) =>
@@ -150,7 +115,7 @@ export const Properties: React.FC = () => {
   const maxBudgetPercent = budgetMax > budgetMin ? ((maxBudget - budgetMin) / (budgetMax - budgetMin)) * 100 : 100;
 
   if (isAuthenticated && userRole === 'buyer') {
-    return <Navigate to="/buyer/search" replace />;
+    return <Navigate to="/buyer/dashboard" replace />;
   }
 
   return (
@@ -176,7 +141,7 @@ export const Properties: React.FC = () => {
           onIncludeBuyingChange={setIncludeBuying}
           formatBudget={formatBudget}
           selectedAmenities={selectedAmenities}
-          amenitySuggestions={AMENITY_SUGGESTIONS}
+          amenitySuggestions={[...LISTING_AMENITY_SUGGESTIONS]}
           onToggleAmenity={toggleAmenity}
         />
 
@@ -205,27 +170,13 @@ export const Properties: React.FC = () => {
           </div>
         ) : null}
 
-        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-          <button
-            type="button"
-            className="btn btn-outline btn-sm"
-            onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-            disabled={page === 0 || loading}
-          >
-            Previous
-          </button>
-          <button
-            type="button"
-            className="btn btn-outline btn-sm"
-            onClick={() => setPage((prev) => prev + 1)}
-            disabled={loading || (totalPages > 0 && page + 1 >= totalPages)}
-          >
-            Next
-          </button>
-          <span style={{ alignSelf: 'center' }}>
-            Page {page + 1}{totalPages > 0 ? ` of ${totalPages}` : ''}
-          </span>
-        </div>
+        <PaginationNav
+          className="properties-pagination"
+          page={page}
+          totalPages={effectiveTotalPages}
+          loading={loading}
+          onPageChange={setPage}
+        />
       </section>
     </main>
   );

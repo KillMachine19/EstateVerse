@@ -3,6 +3,12 @@ import axios from 'axios';
 import { FiImage, FiPlus, FiStar, FiX } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { createListing, uploadListingImages } from '../../services/controllers';
+import {
+  LISTING_AMENITY_SUGGESTIONS,
+  LISTING_MAX_IMAGES,
+  LISTING_MAX_IMAGE_SIZE_BYTES,
+} from '../../constants/listings';
+import { SQM_TO_SQFT } from '../../constants/units';
 import './PropertyListingForm.css';
 
 export interface PropertyListingFormValues {
@@ -52,20 +58,10 @@ export const PropertyListingForm: React.FC = () => {
   const [areaUnit, setAreaUnit] = useState<'sqft' | 'sqm'>('sqft');
   const imageInputRef = useRef<HTMLInputElement>(null);
   const submitBannerRef = useRef<HTMLDivElement>(null);
-  const maxImages = 6;
-  const maxImageSizeBytes = 1.5 * 1024 * 1024;
-  const SQM_TO_SQFT = 10.7639;
+  const maxImages = LISTING_MAX_IMAGES;
+  const maxImageSizeBytes = LISTING_MAX_IMAGE_SIZE_BYTES;
   const amenitySuggestions = [
-    'High-Speed WiFi',
-    'Fire Exit',
-    'Power Backup',
-    'Central Air',
-    'CCTV Surveillance',
-    'Elevator Access',
-    '24/7 Security',
-    'Parking',
-    'Reception Desk',
-    'Conference Rooms',
+    ...LISTING_AMENITY_SUGGESTIONS,
   ];
   const createAmenityId = () => {
     if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {

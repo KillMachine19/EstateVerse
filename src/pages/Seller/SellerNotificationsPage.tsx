@@ -5,6 +5,7 @@ import { FiAlertCircle, FiBell, FiCalendar, FiCheckCircle, FiMessageCircle, FiSt
 import { SellerWorkspace } from '../../components/SellerComponents';
 import { getListedProperties, getBuyersWhoShortlistedPropertyById, type ListingRecord, type BuyerRecord } from '../../services/controllers';
 import { listCalls } from '../../services/controllers/callsService';
+import { resolveListingId } from '../../utils/listings';
 import './SellerNotificationsPage.css';
 
 type NotificationType = 'all' | 'shortlist' | 'connect' | 'insight' | 'system';
@@ -39,7 +40,6 @@ interface SellerNotification {
   ctaTo?: string;
 }
 
-const resolveListingId = (listing: ListingRecord): string => listing.propid ?? listing.id ?? '';
 const resolveListingName = (listing: ListingRecord): string => listing.projectName?.trim() || 'Untitled Property';
 const resolveBuyerName = (buyer: BuyerRecord): string =>
   buyer.name?.trim() || buyer.username?.trim() || buyer.email?.trim() || 'A buyer';

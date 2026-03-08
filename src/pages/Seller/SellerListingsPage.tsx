@@ -11,87 +11,17 @@ import {
   getListedProperties,
   type ListingRecord,
 } from '../../services/controllers';
+import { LISTING_AMENITY_SUGGESTIONS } from '../../constants/listings';
+import { resolveListingId, toPropertyCardFromListing } from '../../utils/listings';
 import '../Properties/Properties.css';
 import '../../components/PropertiesFilters/PropertiesFilters.css';
 import './SellerListingsPage.css';
 
 type ListingIntent = 'rentLease' | 'buying';
 
-const parseNumber = (value: string | undefined, fallback = 0): number => {
-  if (!value) {
-    return fallback;
-  }
-  const parsed = Number.parseFloat(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-};
-const AMENITY_SUGGESTIONS = [
-  'High-Speed WiFi',
-  'Fire Exit',
-  'Power Backup',
-  'Central Air',
-  'CCTV Surveillance',
-  'Elevator Access',
-  '24/7 Security',
-  'Parking',
-  'Reception Desk',
-  'Conference Rooms',
-];
-
-const resolveId = (listing: ListingRecord) => listing.propid ?? listing.id ?? '';
-const normalizeImageId = (value: string | undefined): string => {
-  if (!value) {
-    return '';
-  }
-  if (!/^https?:\/\//i.test(value)) {
-    return value;
-  }
-  try {
-    const url = new URL(value, window.location.origin);
-    const parts = url.pathname.split('/').filter(Boolean);
-    const uploadsIndex = parts.findIndex((part) => part === 'uploads');
-    if (uploadsIndex >= 0 && parts[uploadsIndex + 1]) {
-      return parts[uploadsIndex + 1];
-    }
-    return '';
-  } catch {
-    return '';
-  }
-};
-
-const reorderGalleryByMainImage = (images: string[], mainImageId: string | undefined): string[] => {
-  if (!images.length) {
-    return images;
-  }
-  const normalizedMain = normalizeImageId(mainImageId);
-  if (!normalizedMain) {
-    return images;
-  }
-  const mainIndex = images.findIndex((image) => normalizeImageId(image) === normalizedMain);
-  if (mainIndex <= 0) {
-    return images;
-  }
-  const next = [...images];
-  const [mainImage] = next.splice(mainIndex, 1);
-  next.unshift(mainImage);
-  return next;
-};
-
 const toPropertyCardModel = (listing: ListingRecord, shortlistedBuyersCount: number): Property => {
-  const area = parseNumber(listing.offerAreaSqFt ?? listing.totalAreaSqFt, 0);
-  const unitPrice = parseNumber(listing.pricePerSqFt, 0);
-  const imageGallery = reorderGalleryByMainImage(listing.imageIds ?? [], listing.mainImageId);
-
   return {
-    id: resolveId(listing),
-    title: listing.projectName ?? 'Untitled Property',
-    description: listing.details ?? 'No description available.',
-    price: unitPrice * (area > 0 ? area : 1),
-    location: listing.location ?? 'N/A',
-    area,
-    type: 'office',
-    image: imageGallery[0] || 'https://via.placeholder.com/1200x900?text=No+Image',
-    imageGallery,
-    amenities: listing.amenities ?? [],
+    ...toPropertyCardFromListing(listing, { shortlistedBuyersCount }),
     shortlistedBuyersCount,
   };
 };
@@ -124,7 +54,7 @@ export const SellerListingsPage: React.FC = () => {
 
       const countEntries = await Promise.all(
         listings.map(async (listing) => {
-          const id = resolveId(listing);
+          const id = resolveListingId(listing);
           if (!id) {
             return ['', 0] as const;
           }
@@ -161,7 +91,7 @@ export const SellerListingsPage: React.FC = () => {
 
   const mappedProperties = useMemo<SellerListingCard[]>(() => {
     return items.map((listing) => {
-      const id = resolveId(listing);
+      const id = resolveListingId(listing);
       const base = toPropertyCardModel(listing, buyerCounts[id] ?? 0);
       return {
         ...base,
@@ -269,7 +199,7 @@ export const SellerListingsPage: React.FC = () => {
             onIncludeBuyingChange={setIncludeBuying}
             formatBudget={formatBudget}
             selectedAmenities={selectedAmenities}
-            amenitySuggestions={AMENITY_SUGGESTIONS}
+            amenitySuggestions={[...LISTING_AMENITY_SUGGESTIONS]}
             onToggleAmenity={toggleAmenity}
           />
 

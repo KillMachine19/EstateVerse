@@ -1,82 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { FiChevronLeft, FiChevronRight, FiX } from 'react-icons/fi';
 import { PropertyCard } from '../../PropertyCard';
-import type { Property } from '../../../types';
+import { PaginationNav } from '../../PaginationNav';
+import { ShortlistRemoveModal } from '../../ShortlistRemoveModal';
 import {
-  getSellerDetails,
   getShortlistedProperties,
   removeShortlistedPropertyById,
   shortlistPropertyById,
   type ListingRecord,
-  type SellerDetailsResponse,
 } from '../../../services/controllers';
+import { resolveListingId, toPropertyCardFromListing } from '../../../utils/listings';
 import './BuyerSaved.css';
-
-const parseNumber = (value: string | undefined, fallback = 0): number => {
-  if (!value) {
-    return fallback;
-  }
-  const parsed = Number.parseFloat(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-};
-
-const listingId = (item: ListingRecord) => item.propid ?? item.id ?? '';
-const normalizeImageId = (value: string | undefined): string => {
-  if (!value) {
-    return '';
-  }
-  if (!/^https?:\/\//i.test(value)) {
-    return value;
-  }
-  try {
-    const url = new URL(value, window.location.origin);
-    const parts = url.pathname.split('/').filter(Boolean);
-    const uploadsIndex = parts.findIndex((part) => part === 'uploads');
-    if (uploadsIndex >= 0 && parts[uploadsIndex + 1]) {
-      return parts[uploadsIndex + 1];
-    }
-    return '';
-  } catch {
-    return '';
-  }
-};
-
-const reorderGalleryByMainImage = (images: string[], mainImageId: string | undefined): string[] => {
-  if (!images.length) {
-    return images;
-  }
-  const normalizedMain = normalizeImageId(mainImageId);
-  if (!normalizedMain) {
-    return images;
-  }
-  const mainIndex = images.findIndex((image) => normalizeImageId(image) === normalizedMain);
-  if (mainIndex <= 0) {
-    return images;
-  }
-  const next = [...images];
-  const [mainImage] = next.splice(mainIndex, 1);
-  next.unshift(mainImage);
-  return next;
-};
-
-const toPropertyCardModel = (item: ListingRecord): Property => {
-  const area = parseNumber(item.offerAreaSqFt ?? item.totalAreaSqFt, 0);
-  const unitPrice = parseNumber(item.pricePerSqFt, 0);
-  const imageGallery = reorderGalleryByMainImage(item.imageIds ?? [], item.mainImageId);
-  return {
-    id: listingId(item),
-    title: item.projectName ?? 'Untitled Property',
-    description: item.details ?? 'No description available.',
-    price: unitPrice * (area > 0 ? area : 1),
-    location: item.location ?? 'N/A',
-    area,
-    type: 'office',
-    image: imageGallery[0] || 'https://via.placeholder.com/1200x900?text=No+Image',
-    imageGallery,
-    amenities: item.amenities ?? [],
-  };
-};
 
 export const BuyerSavedCards: React.FC = () => {
   const [items, setItems] = useState<ListingRecord[]>([]);
@@ -85,10 +21,12 @@ export const BuyerSavedCards: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionMessage, setActionMessage] = useState('');
-  const [sellerDetails, setSellerDetails] = useState<Record<string, SellerDetailsResponse>>({});
   const [shortlistLoadingId, setShortlistLoadingId] = useState<string | null>(null);
-  const [detailsLoadingId, setDetailsLoadingId] = useState<string | null>(null);
+  const [pendingRemoveShortlistId, setPendingRemoveShortlistId] = useState<string | null>(null);
   const [shortlistedState, setShortlistedState] = useState<Record<string, boolean>>({});
+  const [isImageLightboxOpen, setIsImageLightboxOpen] = useState(false);
+  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const loadShortlist = useCallback(async () => {
     try {
@@ -99,7 +37,7 @@ export const BuyerSavedCards: React.FC = () => {
       setTotalPages(response.totalPages ?? 0);
       const nextShortlistedState: Record<string, boolean> = {};
       (response.content ?? []).forEach((item) => {
-        const id = listingId(item);
+        const id = resolveListingId(item);
         if (id) {
           nextShortlistedState[id] = true;
         }
@@ -120,25 +58,48 @@ export const BuyerSavedCards: React.FC = () => {
     void loadShortlist();
   }, [loadShortlist]);
 
-  const properties = useMemo(() => items.map(toPropertyCardModel), [items]);
+  useEffect(() => {
+    if (!isImageLightboxOpen || lightboxImages.length <= 1) {
+      return;
+    }
+    const timer = window.setInterval(() => {
+      setLightboxIndex((prev) => (prev === lightboxImages.length - 1 ? 0 : prev + 1));
+    }, 3200);
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [isImageLightboxOpen, lightboxImages.length]);
+
+  const properties = useMemo(() => items.map((item) => toPropertyCardFromListing(item)), [items]);
+  const effectiveTotalPages = useMemo(
+    () => (totalPages > 0 ? totalPages : properties.length > 0 ? page + 1 : 0),
+    [page, properties.length, totalPages]
+  );
+
+  const openImageLightbox = useCallback((images: string[], index: number) => {
+    if (!images.length) {
+      return;
+    }
+    setLightboxImages(images);
+    setLightboxIndex(index);
+    setIsImageLightboxOpen(true);
+  }, []);
 
   const handleToggleShortlist = useCallback(
     async (propertyId: string) => {
       if (!propertyId) {
         return;
       }
+      if (shortlistedState[propertyId]) {
+        setPendingRemoveShortlistId(propertyId);
+        return;
+      }
       try {
         setShortlistLoadingId(propertyId);
         setActionMessage('');
-        if (shortlistedState[propertyId]) {
-          await removeShortlistedPropertyById(propertyId);
-          setShortlistedState((prev) => ({ ...prev, [propertyId]: false }));
-          setActionMessage('Property removed from shortlist.');
-        } else {
-          await shortlistPropertyById(propertyId);
-          setShortlistedState((prev) => ({ ...prev, [propertyId]: true }));
-          setActionMessage('Property shortlisted.');
-        }
+        await shortlistPropertyById(propertyId);
+        setShortlistedState((prev) => ({ ...prev, [propertyId]: true }));
+        setActionMessage('Property shortlisted.');
       } catch (err) {
         if (axios.isAxiosError(err)) {
           setActionMessage(
@@ -153,31 +114,48 @@ export const BuyerSavedCards: React.FC = () => {
         setShortlistLoadingId(null);
       }
     },
-    [shortlistedState]
+    [page, shortlistedState]
   );
 
-  const handleSellerDetails = useCallback(async (propertyId: string) => {
-    if (!propertyId) {
+  const handleConfirmRemoveShortlist = useCallback(async () => {
+    if (!pendingRemoveShortlistId) {
       return;
     }
+    const propertyId = pendingRemoveShortlistId;
     try {
-      setDetailsLoadingId(propertyId);
-      const response = await getSellerDetails(propertyId);
-      setSellerDetails((prev) => ({ ...prev, [propertyId]: response }));
+      setShortlistLoadingId(propertyId);
+      setActionMessage('');
+      await removeShortlistedPropertyById(propertyId);
+      setShortlistedState((prev) => ({ ...prev, [propertyId]: false }));
+      let shouldMoveToPreviousPage = false;
+      setItems((prev) => {
+        const next = prev.filter((item) => resolveListingId(item) !== propertyId);
+        shouldMoveToPreviousPage = next.length === 0 && page > 0;
+        return next;
+      });
+      if (shouldMoveToPreviousPage) {
+        setPage((prev) => Math.max(prev - 1, 0));
+      }
+      setActionMessage('Property removed from shortlist.');
     } catch (err) {
       if (axios.isAxiosError(err)) {
         setActionMessage(
           typeof err.response?.data?.message === 'string'
             ? err.response.data.message
-            : 'Unable to fetch seller details.'
+            : 'Unable to update shortlist.'
         );
       } else {
-        setActionMessage('Unable to fetch seller details.');
+        setActionMessage('Unable to update shortlist.');
       }
     } finally {
-      setDetailsLoadingId(null);
+      setPendingRemoveShortlistId(null);
+      setShortlistLoadingId(null);
     }
-  }, []);
+  }, [page, pendingRemoveShortlistId]);
+
+  const handleCancelRemoveShortlist = () => {
+    setPendingRemoveShortlistId(null);
+  };
 
   return (
     <section className="buyer-saved" aria-label="Saved properties card view">
@@ -188,10 +166,9 @@ export const BuyerSavedCards: React.FC = () => {
       {!loading && !error && properties.length === 0 ? <p>No shortlisted properties found.</p> : null}
 
       {!loading && !error && properties.length > 0 ? (
-        <div className="buyer-saved-grid">
-          {properties.map((property) => {
-            const details = sellerDetails[property.id];
-            return (
+        <div className="buyer-saved-panel">
+          <div className="buyer-saved-grid">
+            {properties.map((property) => (
               <div key={property.id}>
                 <Link to={`/buyer/properties/${property.id}`} className="buyer-property-card-link">
                   <PropertyCard
@@ -199,57 +176,77 @@ export const BuyerSavedCards: React.FC = () => {
                     isShortlisted={Boolean(shortlistedState[property.id])}
                     onToggleShortlist={handleToggleShortlist}
                     shortlistLoading={shortlistLoadingId === property.id}
+                    onImageClick={openImageLightbox}
                   />
                 </Link>
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
-                  <button
-                    type="button"
-                    className="btn btn-outline btn-sm"
-                    onClick={() => void handleSellerDetails(property.id)}
-                    disabled={detailsLoadingId === property.id}
-                  >
-                    {detailsLoadingId === property.id ? 'Loading seller...' : 'Get Seller Details'}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-sm"
-                    onClick={() => void handleToggleShortlist(property.id)}
-                    disabled={shortlistLoadingId === property.id}
-                  >
-                    {shortlistLoadingId === property.id
-                      ? 'Updating...'
-                      : shortlistedState[property.id]
-                        ? 'Remove'
-                        : 'Shortlist'}
-                  </button>
-                </div>
-                {details ? (
-                  <p style={{ marginTop: '0.45rem', fontSize: '0.85rem' }}>
-                    Seller: {details.name || 'N/A'} | {details.email || 'N/A'} | {details.phone || 'N/A'}
-                  </p>
-                ) : null}
               </div>
-            );
-          })}
+            ))}
+          </div>
+
+          <PaginationNav
+            className="buyer-saved-pagination"
+            page={page}
+            totalPages={effectiveTotalPages}
+            loading={loading}
+            onPageChange={setPage}
+          />
         </div>
       ) : null}
 
-      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-        <button type="button" className="btn btn-outline btn-sm" onClick={() => setPage((prev) => Math.max(prev - 1, 0))} disabled={page === 0 || loading}>
-          Previous
-        </button>
-        <button
-          type="button"
-          className="btn btn-outline btn-sm"
-          onClick={() => setPage((prev) => prev + 1)}
-          disabled={loading || (totalPages > 0 && page + 1 >= totalPages)}
-        >
-          Next
-        </button>
-        <span style={{ alignSelf: 'center' }}>
-          Page {page + 1}{totalPages > 0 ? ` of ${totalPages}` : ''}
-        </span>
-      </div>
+      {isImageLightboxOpen ? (
+        <div className="buyer-saved-lightbox-overlay" role="dialog" aria-modal="true" aria-label="Property gallery">
+          <div className="buyer-saved-lightbox">
+            <button
+              type="button"
+              className="buyer-saved-lightbox-close"
+              aria-label="Close image viewer"
+              onClick={() => setIsImageLightboxOpen(false)}
+            >
+              <FiX aria-hidden="true" />
+            </button>
+            <div id="buyerSavedCarousel" className="carousel slide buyer-saved-carousel" data-ride="carousel">
+              <ol className="carousel-indicators">
+                {lightboxImages.map((image, index) => (
+                  <li
+                    key={`${image}-${index}`}
+                    className={lightboxIndex === index ? 'active' : ''}
+                    onClick={() => setLightboxIndex(index)}
+                    aria-hidden="true"
+                  />
+                ))}
+              </ol>
+              <div className="carousel-inner" role="listbox">
+                {lightboxImages.map((image, index) => (
+                  <div key={`${image}-${index}`} className={`carousel-item ${lightboxIndex === index ? 'active' : ''}`}>
+                    <img className="d-block" src={image} alt={`Property image ${index + 1}`} />
+                  </div>
+                ))}
+              </div>
+              <button
+                type="button"
+                className="carousel-control-prev"
+                onClick={() => setLightboxIndex((prev) => (prev === 0 ? lightboxImages.length - 1 : prev - 1))}
+                aria-label="Previous image"
+              >
+                <FiChevronLeft aria-hidden="true" />
+              </button>
+              <button
+                type="button"
+                className="carousel-control-next"
+                onClick={() => setLightboxIndex((prev) => (prev === lightboxImages.length - 1 ? 0 : prev + 1))}
+                aria-label="Next image"
+              >
+                <FiChevronRight aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      <ShortlistRemoveModal
+        isOpen={Boolean(pendingRemoveShortlistId)}
+        onConfirm={() => void handleConfirmRemoveShortlist()}
+        onCancel={handleCancelRemoveShortlist}
+      />
     </section>
   );
 };

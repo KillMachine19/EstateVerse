@@ -14,6 +14,7 @@ import './SellerSidebar.css';
 
 const SELLER_SIDEBAR_ITEMS = [
   { label: 'Leads', to: '/seller/leads', icon: <FiTag aria-hidden="true" /> },
+  { label: 'Applications', to: '/seller/applications', icon: <FiFileText aria-hidden="true" /> },
   { label: 'Messages', to: '/seller/messages', icon: <FiMessageSquare aria-hidden="true" /> },
   { label: 'Notifications', to: '/seller/notifications', icon: <FiFileText aria-hidden="true" /> },
 ];

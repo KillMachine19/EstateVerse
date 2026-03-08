@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FiEye, FiEyeOff, FiLock } from 'react-icons/fi';
-import { BuyerWorkspace } from '../../components/BuyerComponents/BuyerWorkspace';
+import { RolePageShell } from '../../components/RolePageShell';
 import axios from 'axios';
 import { updatePassword } from '../../services/controllers/profileService';
 import './ResetPasswordPage.css';
@@ -86,7 +86,7 @@ export const ResetPasswordPage: React.FC = () => {
   };
 
   return (
-    <BuyerWorkspace
+    <RolePageShell
       title="Reset Password"
       description="Choose a new password to keep your account secure."
       icon={<FiLock aria-hidden="true" />}
@@ -169,6 +169,6 @@ export const ResetPasswordPage: React.FC = () => {
           {isSaved ? <p className="reset-password-status">Password updated successfully.</p> : null}
         </div>
       </form>
-    </BuyerWorkspace>
+    </RolePageShell>
   );
 };

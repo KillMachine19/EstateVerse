@@ -129,7 +129,7 @@ const toPageable = <T>(payload: unknown, fallbackPage: number, fallbackSize: num
 export const getAllProperties = async (query: PublicPropertiesQuery = {}) => {
   const { page = 0, size = 10 } = query;
   try {
-    const response = await apiClient.get('/api/listings', {
+    const response = await apiClient.get('/api/listings/all', {
       params: { page, size },
     });
     return toPageable<ListingRecord>(response.data, page, size);

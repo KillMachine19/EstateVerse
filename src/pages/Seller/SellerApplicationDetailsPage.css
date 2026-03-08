@@ -1,0 +1,113 @@
+.seller-application-details {
+  display: grid;
+  gap: 1rem;
+}
+
+.seller-application-details-card {
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+  padding: 1rem;
+}
+
+.seller-application-details-card h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+  color: #0f172a;
+}
+
+.seller-application-details-card h3 {
+  margin: 0 0 0.85rem;
+  font-size: 1rem;
+  color: #0f172a;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.seller-application-details-card p {
+  margin: 0 0 0.45rem;
+}
+
+.seller-application-back-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.6rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgba(14, 116, 144, 0.32);
+  background: rgba(14, 116, 144, 0.08);
+  color: #0f172a;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.seller-application-decision-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.8rem;
+}
+
+.seller-application-decision-tab {
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: 999px;
+  padding: 0.46rem 0.85rem;
+  background: #ffffff;
+  color: #334155;
+  font-weight: 600;
+  font-size: 0.84rem;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.seller-application-decision-tab.is-active {
+  border-color: rgba(14, 116, 144, 0.45);
+  background: rgba(14, 116, 144, 0.14);
+  color: #0f172a;
+}
+
+.seller-application-panel {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.seller-application-panel--grid {
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.seller-application-label {
+  margin: 0;
+  color: #0f172a;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.seller-application-control {
+  min-height: 2.7rem;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  background: #ffffff;
+  color: #0f172a;
+  padding: 0.58rem 0.72rem;
+}
+
+.seller-application-actions {
+  margin-top: 0.95rem;
+}
+
+.seller-application-action-message {
+  margin-top: 0.7rem;
+  margin-bottom: 0;
+  color: #0f766e;
+  font-weight: 600;
+}
+
+@media (max-width: 760px) {
+  .seller-application-panel--grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -5,37 +5,19 @@ import { FiSearch } from 'react-icons/fi';
 import { BuyerWorkspace } from '../../components/BuyerComponents/BuyerWorkspace';
 import { PropertyCard } from '../../components/PropertyCard';
 import { PropertiesFilters } from '../../components/PropertiesFilters';
-import type { Property } from '../../types';
+import { PaginationNav } from '../../components/PaginationNav';
+import { ShortlistRemoveModal } from '../../components/ShortlistRemoveModal';
 import {
   getAllProperties,
+  getShortlistedProperties,
   removeShortlistedPropertyById,
   shortlistPropertyById,
   type ListingRecord,
 } from '../../services/controllers';
+import { BUYER_SEARCH_PAGE_SIZE, LISTING_AMENITY_SUGGESTIONS } from '../../constants/listings';
+import { resolveListingId, toPropertyCardFromListing } from '../../utils/listings';
 import '../../components/BuyerComponents/BuyerSaved/BuyerSaved.css';
 import '../../components/PropertiesFilters/PropertiesFilters.css';
-
-const DEFAULT_PAGE_SIZE = 8;
-const AMENITY_SUGGESTIONS = [
-  'High-Speed WiFi',
-  'Fire Exit',
-  'Power Backup',
-  'Central Air',
-  'CCTV Surveillance',
-  'Elevator Access',
-  '24/7 Security',
-  'Parking',
-  'Reception Desk',
-  'Conference Rooms',
-];
-
-const parseNumber = (value: string | undefined, fallback = 0): number => {
-  if (!value) {
-    return fallback;
-  }
-  const parsed = Number.parseFloat(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-};
 
 const isAlreadyShortlistedError = (err: unknown): boolean => {
   if (!axios.isAxiosError(err)) {
@@ -46,62 +28,6 @@ const isAlreadyShortlistedError = (err: unknown): boolean => {
   return raw.toLowerCase().includes('already shortlisted');
 };
 
-const resolveListingId = (listing: ListingRecord): string => listing.propid ?? listing.id ?? '';
-const normalizeImageId = (value: string | undefined): string => {
-  if (!value) {
-    return '';
-  }
-  if (!/^https?:\/\//i.test(value)) {
-    return value;
-  }
-  try {
-    const url = new URL(value, window.location.origin);
-    const parts = url.pathname.split('/').filter(Boolean);
-    const uploadsIndex = parts.findIndex((part) => part === 'uploads');
-    if (uploadsIndex >= 0 && parts[uploadsIndex + 1]) {
-      return parts[uploadsIndex + 1];
-    }
-    return '';
-  } catch {
-    return '';
-  }
-};
-
-const reorderGalleryByMainImage = (images: string[], mainImageId: string | undefined): string[] => {
-  if (!images.length) {
-    return images;
-  }
-  const normalizedMain = normalizeImageId(mainImageId);
-  if (!normalizedMain) {
-    return images;
-  }
-  const mainIndex = images.findIndex((image) => normalizeImageId(image) === normalizedMain);
-  if (mainIndex <= 0) {
-    return images;
-  }
-  const next = [...images];
-  const [mainImage] = next.splice(mainIndex, 1);
-  next.unshift(mainImage);
-  return next;
-};
-
-const toPropertyCardModel = (listing: ListingRecord): Property => {
-  const imageGallery = reorderGalleryByMainImage(listing.imageIds ?? [], listing.mainImageId);
-  const parsedArea = parseNumber(listing.offerAreaSqFt ?? listing.totalAreaSqFt, 0);
-  const parsedPrice = parseNumber(listing.pricePerSqFt, 0) * (parsedArea > 0 ? parsedArea : 1);
-  return {
-    id: resolveListingId(listing),
-    title: listing.projectName ?? 'Untitled Property',
-    description: listing.details ?? 'No description available.',
-    price: parsedPrice,
-    location: listing.location ?? 'N/A',
-    area: parsedArea,
-    type: 'office',
-    image: imageGallery[0] || 'https://via.placeholder.com/1200x900?text=No+Image',
-    imageGallery,
-    amenities: listing.amenities ?? [],
-  };
-};
 
 export const BuyerSearchPropertiesPage: React.FC = () => {
   const [items, setItems] = useState<ListingRecord[]>([]);
@@ -112,6 +38,7 @@ export const BuyerSearchPropertiesPage: React.FC = () => {
   const [actionMessage, setActionMessage] = useState('');
   const [shortlistingId, setShortlistingId] = useState<string | null>(null);
   const [shortlistedIds, setShortlistedIds] = useState<Record<string, true>>({});
+  const [pendingRemoveShortlistId, setPendingRemoveShortlistId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [minBudget, setMinBudget] = useState(0);
   const [maxBudget, setMaxBudget] = useState(0);
@@ -124,9 +51,32 @@ export const BuyerSearchPropertiesPage: React.FC = () => {
     try {
       setLoading(true);
       setError('');
-      const propertiesResponse = await getAllProperties({ page, size: DEFAULT_PAGE_SIZE });
-      setItems(propertiesResponse.content ?? []);
+      const [propertiesResponse, shortlistResponse] = await Promise.all([
+        getAllProperties({ page, size: BUYER_SEARCH_PAGE_SIZE }),
+        getShortlistedProperties(0, 10).catch(() => ({ content: [] as ListingRecord[] })),
+      ]);
+      const shortlistIdSet = new Set(
+        (shortlistResponse.content ?? []).map((item) => resolveListingId(item)).filter(Boolean)
+      );
+      const nextItems = (propertiesResponse.content ?? []).map((item) => {
+        const id = resolveListingId(item);
+        return { ...item, shortlistFlag: Boolean(item.shortlistFlag || (id && shortlistIdSet.has(id))) };
+      });
+      setItems(nextItems);
       setTotalPages(propertiesResponse.totalPages ?? 0);
+      setShortlistedIds(() => {
+        const next: Record<string, true> = {};
+        nextItems.forEach((item) => {
+          const id = resolveListingId(item);
+          if (id && item.shortlistFlag) {
+            next[id] = true;
+          }
+        });
+        shortlistIdSet.forEach((id) => {
+          next[id] = true;
+        });
+        return next;
+      });
     } catch (err) {
       if (axios.isAxiosError(err)) {
         setError(typeof err.response?.data?.message === 'string' ? err.response.data.message : 'Failed to load properties.');
@@ -142,7 +92,7 @@ export const BuyerSearchPropertiesPage: React.FC = () => {
     void loadProperties();
   }, [loadProperties]);
 
-  const mappedProperties = useMemo(() => items.map(toPropertyCardModel), [items]);
+  const mappedProperties = useMemo(() => items.map((item) => toPropertyCardFromListing(item)), [items]);
 
   const budgetMin = useMemo(() => {
     if (mappedProperties.length === 0) return 0;
@@ -187,6 +137,10 @@ export const BuyerSearchPropertiesPage: React.FC = () => {
       return isBudgetMatch && isAreaMatch && isIntentMatch && hasAmenitiesMatch && isSearchMatch;
     });
   }, [includeBuying, includeRentLease, mappedProperties, maxBudget, minBudget, searchQuery, selectedAmenities, selectedTechParkArea]);
+  const effectiveTotalPages = useMemo(
+    () => (totalPages > 0 ? totalPages : filteredProperties.length > 0 ? page + 1 : 0),
+    [filteredProperties.length, page, totalPages]
+  );
 
   const toggleAmenity = (amenity: string) => {
     setSelectedAmenities((prev) =>
@@ -208,35 +162,24 @@ export const BuyerSearchPropertiesPage: React.FC = () => {
     if (!listingId) {
       return;
     }
+    if (shortlistedIds[listingId]) {
+      setPendingRemoveShortlistId(listingId);
+      return;
+    }
     try {
       setShortlistingId(listingId);
       setActionMessage('');
-      if (shortlistedIds[listingId]) {
-        await removeShortlistedPropertyById(listingId);
-        setShortlistedIds((prev) => {
-          const next = { ...prev };
-          delete next[listingId];
-          return next;
-        });
-        setActionMessage('Property removed from shortlist.');
-      } else {
-        try {
-          await shortlistPropertyById(listingId);
+      try {
+        await shortlistPropertyById(listingId);
+        setShortlistedIds((prev) => ({ ...prev, [listingId]: true }));
+        setActionMessage('Property shortlisted.');
+      } catch (err) {
+        if (isAlreadyShortlistedError(err)) {
           setShortlistedIds((prev) => ({ ...prev, [listingId]: true }));
-          setActionMessage('Property shortlisted.');
-        } catch (err) {
-          if (isAlreadyShortlistedError(err)) {
-            await removeShortlistedPropertyById(listingId);
-            setShortlistedIds((prev) => {
-              const next = { ...prev };
-              delete next[listingId];
-              return next;
-            });
-            setActionMessage('Property removed from shortlist.');
-            return;
-          }
-          throw err;
+          setActionMessage('Property is already shortlisted.');
+          return;
         }
+        throw err;
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -253,13 +196,49 @@ export const BuyerSearchPropertiesPage: React.FC = () => {
     }
   }, [shortlistedIds]);
 
+  const handleConfirmRemoveShortlist = useCallback(async () => {
+    if (!pendingRemoveShortlistId) {
+      return;
+    }
+    const listingId = pendingRemoveShortlistId;
+    try {
+      setShortlistingId(listingId);
+      setActionMessage('');
+      await removeShortlistedPropertyById(listingId);
+      setShortlistedIds((prev) => {
+        const next = { ...prev };
+        delete next[listingId];
+        return next;
+      });
+      setActionMessage('Property removed from shortlist.');
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        setActionMessage(
+          typeof err.response?.data?.message === 'string'
+            ? err.response.data.message
+            : 'Unable to update shortlist.'
+        );
+      } else {
+        setActionMessage('Unable to update shortlist.');
+      }
+    } finally {
+      setPendingRemoveShortlistId(null);
+      setShortlistingId(null);
+    }
+  }, [pendingRemoveShortlistId]);
+
+  const handleCancelRemoveShortlist = () => {
+    setPendingRemoveShortlistId(null);
+  };
+
   return (
-    <BuyerWorkspace
-      title="Search Properties"
-      description="Browse available commercial spaces and refine your search with location, budget, and property-type filters."
-      icon={<FiSearch aria-hidden="true" />}
-    >
-      <section className="buyer-saved" aria-live="polite">
+    <>
+      <BuyerWorkspace
+        title="Search Properties"
+        description="Browse available commercial spaces and refine your search with location, budget, and property-type filters."
+        icon={<FiSearch aria-hidden="true" />}
+      >
+        <section className="buyer-saved" aria-live="polite">
         <PropertiesFilters
           searchQuery={searchQuery}
           onSearchQueryChange={setSearchQuery}
@@ -280,7 +259,7 @@ export const BuyerSearchPropertiesPage: React.FC = () => {
           onIncludeBuyingChange={setIncludeBuying}
           formatBudget={formatBudget}
           selectedAmenities={selectedAmenities}
-          amenitySuggestions={AMENITY_SUGGESTIONS}
+          amenitySuggestions={[...LISTING_AMENITY_SUGGESTIONS]}
           onToggleAmenity={toggleAmenity}
         />
 
@@ -307,23 +286,20 @@ export const BuyerSearchPropertiesPage: React.FC = () => {
           </div>
         ) : null}
 
-        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-          <button type="button" className="btn btn-outline btn-sm" onClick={() => setPage((prev) => Math.max(prev - 1, 0))} disabled={page === 0 || loading}>
-            Previous
-          </button>
-          <button
-            type="button"
-            className="btn btn-outline btn-sm"
-            onClick={() => setPage((prev) => prev + 1)}
-            disabled={loading || (totalPages > 0 && page + 1 >= totalPages)}
-          >
-            Next
-          </button>
-          <span style={{ alignSelf: 'center' }}>
-            Page {page + 1}{totalPages > 0 ? ` of ${totalPages}` : ''}
-          </span>
-        </div>
-      </section>
-    </BuyerWorkspace>
+        <PaginationNav
+          className="buyer-saved-pagination"
+          page={page}
+          totalPages={effectiveTotalPages}
+          loading={loading}
+          onPageChange={setPage}
+        />
+        </section>
+      </BuyerWorkspace>
+      <ShortlistRemoveModal
+        isOpen={Boolean(pendingRemoveShortlistId)}
+        onConfirm={() => void handleConfirmRemoveShortlist()}
+        onCancel={handleCancelRemoveShortlist}
+      />
+    </>
   );
 };

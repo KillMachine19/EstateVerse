@@ -1,12 +1,16 @@
 .seller-sidebar {
-  width: 220px;
+  width: var(--sidebar-width, 220px);
   flex-shrink: 0;
+  position: fixed;
+  top: calc(5rem + 1rem);
+  left: max(1rem, calc((100vw - var(--workspace-max-width, 1240px)) / 2));
+  max-height: calc(100vh - 7rem);
+  overflow-y: auto;
   border: 1px solid rgba(15, 23, 42, 0.08);
   background: #ffffff;
   border-radius: 14px;
   padding: 1rem;
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
-  height: fit-content;
 }
 
 .seller-sidebar-title {

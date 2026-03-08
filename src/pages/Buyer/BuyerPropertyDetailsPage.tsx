@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
-import { Link, useParams } from 'react-router-dom';
-import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiHome, FiPhoneCall, FiUser, FiX } from 'react-icons/fi';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { FiArrowLeft, FiHome, FiUser } from 'react-icons/fi';
 import { BuyerWorkspace } from '../../components/BuyerComponents/BuyerWorkspace';
 import { PropertyCard } from '../../components/PropertyCard';
-import type { Property } from '../../types';
 import {
   getAllProperties,
   getSellerDetails,
@@ -16,18 +15,26 @@ import {
   type SellerDetailsResponse,
 } from '../../services/controllers';
 import { scheduleCall } from '../../services/controllers/callsService';
+import {
+  sanitizeIndianPhoneLocalInput,
+  toIndianE164Phone,
+  validateScheduleVisitForm,
+  type ScheduleVisitFormErrors,
+  type ScheduleVisitFormValues,
+} from '../../utils/validation';
+import {
+  parseListingNumber,
+  resolveListingId,
+  toPropertyCardFromListing,
+} from '../../utils/listings';
+import {
+  BuyerPropertyImageLightbox,
+  BuyerPropertyScheduleTab,
+  BuyerPropertyTabsNav,
+} from '../../components/BuyerPropertyDetails';
+import { ShortlistRemoveModal } from '../../components/ShortlistRemoveModal';
+import { AREA_UNIT_LABELS, SQFT_TO_ACRE, SQFT_TO_SQM } from '../../constants/units';
 import './BuyerPropertyDetailsPage.css';
-
-const parseNumber = (value: string | undefined, fallback = 0): number => {
-  if (!value) {
-    return fallback;
-  }
-  const parsed = Number.parseFloat(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-};
-
-const SQFT_TO_SQM = 0.092903;
-const SQFT_TO_ACRE = 1 / 43_560;
 
 const isAlreadyShortlistedError = (err: unknown): boolean => {
   if (!axios.isAxiosError(err)) {
@@ -38,67 +45,9 @@ const isAlreadyShortlistedError = (err: unknown): boolean => {
   return raw.toLowerCase().includes('already shortlisted');
 };
 
-const normalizeImageId = (value: string | undefined): string => {
-  if (!value) {
-    return '';
-  }
-  if (!/^https?:\/\//i.test(value)) {
-    return value;
-  }
-  try {
-    const url = new URL(value, window.location.origin);
-    const parts = url.pathname.split('/').filter(Boolean);
-    const uploadsIndex = parts.findIndex((part) => part === 'uploads');
-    if (uploadsIndex >= 0 && parts[uploadsIndex + 1]) {
-      return parts[uploadsIndex + 1];
-    }
-    return '';
-  } catch {
-    return '';
-  }
-};
-
-const reorderGalleryByMainImage = (images: string[], mainImageId: string | undefined): string[] => {
-  if (!images.length) {
-    return images;
-  }
-  const normalizedMain = normalizeImageId(mainImageId);
-  if (!normalizedMain) {
-    return images;
-  }
-  const mainIndex = images.findIndex((image) => normalizeImageId(image) === normalizedMain);
-  if (mainIndex <= 0) {
-    return images;
-  }
-  const next = [...images];
-  const [mainImage] = next.splice(mainIndex, 1);
-  next.unshift(mainImage);
-  return next;
-};
-
-const resolveListingId = (listing: ListingRecord): string => listing.propid ?? listing.id ?? '';
-
-const toPropertyCardModel = (listing: ListingRecord): Property => {
-  const imageGallery = reorderGalleryByMainImage(listing.imageIds ?? [], listing.mainImageId);
-  const area = parseNumber(listing.offerAreaSqFt ?? listing.totalAreaSqFt, 0);
-  const unitPrice = parseNumber(listing.pricePerSqFt, 0);
-
-  return {
-    id: resolveListingId(listing),
-    title: listing.projectName ?? 'Untitled Property',
-    description: listing.details ?? 'No description available.',
-    price: unitPrice * (area > 0 ? area : 1),
-    location: listing.location ?? 'N/A',
-    area,
-    type: 'office',
-    image: imageGallery[0] || 'https://via.placeholder.com/1200x900?text=No+Image',
-    imageGallery,
-    amenities: listing.amenities ?? [],
-  };
-};
-
 export const BuyerPropertyDetailsPage: React.FC = () => {
   const { propertyId = '' } = useParams();
+  const navigate = useNavigate();
   const [listing, setListing] = useState<ListingRecord | null>(null);
   const [seller, setSeller] = useState<SellerDetailsResponse | null>(null);
   const [sellerLoading, setSellerLoading] = useState(false);
@@ -107,17 +56,21 @@ export const BuyerPropertyDetailsPage: React.FC = () => {
   const [message, setMessage] = useState('');
   const [shortlistLoading, setShortlistLoading] = useState(false);
   const [isShortlisted, setIsShortlisted] = useState(false);
+  const [isRemoveShortlistModalOpen, setIsRemoveShortlistModalOpen] = useState(false);
   const [dealerSummaryLoading, setDealerSummaryLoading] = useState(false);
   const [dealerPropertiesCount, setDealerPropertiesCount] = useState<number>(0);
   const [dealerLocalities, setDealerLocalities] = useState<string[]>([]);
   const [areaUnit, setAreaUnit] = useState<'sqft' | 'sqm' | 'acre'>('sqft');
+  const [activeTab, setActiveTab] = useState<'details' | 'dealer' | 'schedule'>('details');
+  const [isUnitDropdownOpen, setIsUnitDropdownOpen] = useState(false);
+  const unitDropdownRef = useRef<HTMLDivElement | null>(null);
   const [isImageLightboxOpen, setIsImageLightboxOpen] = useState(false);
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [connectLoading, setConnectLoading] = useState(false);
   const [connectMessage, setConnectMessage] = useState('');
-  const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
-  const [connectForm, setConnectForm] = useState({
+  const [isVisitRequestedPopupOpen, setIsVisitRequestedPopupOpen] = useState(false);
+  const [connectForm, setConnectForm] = useState<ScheduleVisitFormValues>({
     name: '',
     email: '',
     phone: '',
@@ -125,6 +78,7 @@ export const BuyerPropertyDetailsPage: React.FC = () => {
     time: '',
     note: '',
   });
+  const [connectErrors, setConnectErrors] = useState<ScheduleVisitFormErrors>({});
 
   const loadListing = useCallback(async () => {
     if (!propertyId) {
@@ -217,9 +171,22 @@ export const BuyerPropertyDetailsPage: React.FC = () => {
     void loadListing();
   }, [loadListing]);
 
-  const property = useMemo(() => (listing ? toPropertyCardModel(listing) : null), [listing]);
-  const displayOfferAreaSqFt = parseNumber(listing?.offerAreaSqFt, property?.area ?? 0);
-  const displayTotalAreaSqFt = parseNumber(listing?.totalAreaSqFt, displayOfferAreaSqFt);
+  useEffect(() => {
+    const onPointerDown = (event: MouseEvent) => {
+      if (!unitDropdownRef.current?.contains(event.target as Node)) {
+        console.log('[BuyerPropertyDetails] unit dropdown: outside click -> close');
+        setIsUnitDropdownOpen(false);
+      }
+    };
+    window.addEventListener('mousedown', onPointerDown);
+    return () => {
+      window.removeEventListener('mousedown', onPointerDown);
+    };
+  }, []);
+
+  const property = useMemo(() => (listing ? toPropertyCardFromListing(listing) : null), [listing]);
+  const displayOfferAreaSqFt = parseListingNumber(listing?.offerAreaSqFt, property?.area ?? 0);
+  const displayTotalAreaSqFt = parseListingNumber(listing?.totalAreaSqFt, displayOfferAreaSqFt);
   const convertArea = useCallback((valueSqFt: number): number => {
     if (areaUnit === 'sqm') {
       return valueSqFt * SQFT_TO_SQM;
@@ -229,7 +196,7 @@ export const BuyerPropertyDetailsPage: React.FC = () => {
     }
     return valueSqFt;
   }, [areaUnit]);
-  const areaUnitLabel = areaUnit === 'sqft' ? 'sq ft' : areaUnit === 'sqm' ? 'sq m' : 'acre';
+  const areaUnitLabel = AREA_UNIT_LABELS[areaUnit];
   const formattedOfferArea = convertArea(displayOfferAreaSqFt).toLocaleString('en-US', {
     maximumFractionDigits: areaUnit === 'acre' ? 4 : 2,
   });
@@ -248,8 +215,47 @@ export const BuyerPropertyDetailsPage: React.FC = () => {
   const nextLightboxImage = () => {
     setLightboxIndex((prev) => (prev === lightboxImages.length - 1 ? 0 : prev + 1));
   };
-  const onConnectInputChange = (field: keyof typeof connectForm, value: string) => {
+
+  useEffect(() => {
+    if (!isImageLightboxOpen || lightboxImages.length <= 1) {
+      return;
+    }
+    const timer = window.setInterval(() => {
+      setLightboxIndex((prev) => (prev === lightboxImages.length - 1 ? 0 : prev + 1));
+    }, 3200);
+    return () => window.clearInterval(timer);
+  }, [isImageLightboxOpen, lightboxImages.length]);
+
+  useEffect(() => {
+    if (!isVisitRequestedPopupOpen) {
+      return;
+    }
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isVisitRequestedPopupOpen]);
+  const onConnectInputChange = useCallback((field: keyof typeof connectForm, value: string) => {
+    if (field === 'phone') {
+      setConnectForm((prev) => ({ ...prev, phone: sanitizeIndianPhoneLocalInput(value) }));
+      setConnectErrors((prev) => ({ ...prev, phone: undefined }));
+      setConnectMessage('');
+      return;
+    }
     setConnectForm((prev) => ({ ...prev, [field]: value }));
+    setConnectErrors((prev) => ({ ...prev, [field]: undefined }));
+    setConnectMessage('');
+  }, []);
+
+  const handleConnectPhoneKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (event) => {
+    const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
+    if (allowedKeys.includes(event.key)) {
+      return;
+    }
+    if (!/^\d$/.test(event.key)) {
+      event.preventDefault();
+    }
   };
 
   const handleConnectSubmit: React.FormEventHandler<HTMLFormElement> = async (event) => {
@@ -258,32 +264,60 @@ export const BuyerPropertyDetailsPage: React.FC = () => {
       return;
     }
 
-    const name = connectForm.name.trim();
-    const email = connectForm.email.trim();
-    const phone = connectForm.phone.trim();
-    const note = connectForm.note.trim() || `Interested in ${listing?.projectName ?? 'this property'}.`;
+    const normalizedForm: ScheduleVisitFormValues = {
+      ...connectForm,
+      name: connectForm.name.trim(),
+      email: connectForm.email.trim(),
+      phone: connectForm.phone.trim(),
+      date: connectForm.date.trim(),
+      time: connectForm.time.trim(),
+      note: connectForm.note.trim(),
+    };
+    const nextErrors = validateScheduleVisitForm(normalizedForm);
 
-    if (!name || !email || !phone || !connectForm.date || !connectForm.time) {
-      setConnectMessage('Please fill name, email, phone, preferred date, and preferred time.');
+    if (Object.keys(nextErrors).length > 0) {
+      setConnectErrors(nextErrors);
+      setConnectMessage('Please correct the highlighted fields and try again.');
       return;
     }
 
     try {
       setConnectLoading(true);
       setConnectMessage('');
-      const [, month, day] = connectForm.date.split('-');
-      const [rawHour, rawMinute] = connectForm.time.split(':');
+      setConnectErrors({});
+      const [year, month, day] = normalizedForm.date.split('-');
+      const [rawHour, rawMinute] = normalizedForm.time.split(':');
+      if (!year || !month || !day || !rawHour || !rawMinute) {
+        setConnectErrors({
+          date: 'Please select a valid preferred date.',
+          time: 'Please select a valid preferred time.',
+        });
+        setConnectMessage('Preferred date and time are required.');
+        return;
+      }
+
+      const normalizedPhone = toIndianE164Phone(normalizedForm.phone);
+      if (!normalizedPhone) {
+        setConnectErrors({ phone: 'Please enter a valid Indian phone number.' });
+        setConnectMessage('Please correct the highlighted fields and try again.');
+        return;
+      }
       const hourNum = Number.parseInt(rawHour, 10);
       const minuteNum = Number.parseInt(rawMinute, 10);
+      if (!Number.isFinite(hourNum) || !Number.isFinite(minuteNum)) {
+        setConnectErrors({ time: 'Please select a valid preferred time.' });
+        setConnectMessage('Preferred date and time are required.');
+        return;
+      }
       const period = hourNum >= 12 ? 'PM' : 'AM';
       const twelveHour = hourNum % 12 === 0 ? 12 : hourNum % 12;
       const formattedMinute = `${minuteNum}`.padStart(2, '0');
       const prettyTime = `${twelveHour}:${formattedMinute} ${period}`;
 
       await scheduleCall({
-        name,
-        email,
-        phone,
+        name: normalizedForm.name,
+        email: normalizedForm.email,
+        phone: normalizedPhone,
         company: 'Buyer Enquiry',
         dateMonth: month,
         dateDay: day,
@@ -291,12 +325,19 @@ export const BuyerPropertyDetailsPage: React.FC = () => {
         timeMinute: `${minuteNum}`.padStart(2, '0'),
         timePeriod: period,
         time: prettyTime,
-        message: note,
+        message: normalizedForm.note,
       });
 
-      setConnectMessage('Request sent successfully. Dealer team will connect with you soon.');
-      setConnectForm((prev) => ({ ...prev, note: '' }));
-      setIsConnectModalOpen(false);
+      setConnectMessage('');
+      setIsVisitRequestedPopupOpen(true);
+      setConnectForm({
+        name: '',
+        email: '',
+        phone: '',
+        date: '',
+        time: '',
+        note: '',
+      });
     } catch (err) {
       if (axios.isAxiosError(err)) {
         setConnectMessage(
@@ -321,9 +362,7 @@ export const BuyerPropertyDetailsPage: React.FC = () => {
         setShortlistLoading(true);
         setMessage('');
         if (isShortlisted) {
-          await removeShortlistedPropertyById(targetId);
-          setIsShortlisted(false);
-          setMessage('Property removed from shortlist.');
+          setIsRemoveShortlistModalOpen(true);
         } else {
           try {
             await shortlistPropertyById(targetId);
@@ -356,6 +395,59 @@ export const BuyerPropertyDetailsPage: React.FC = () => {
     [isShortlisted, shortlistLoading]
   );
 
+  const handleConfirmRemoveShortlist = useCallback(async () => {
+    const targetId = property?.id;
+    if (!targetId || shortlistLoading) {
+      return;
+    }
+    try {
+      setShortlistLoading(true);
+      setMessage('');
+      await removeShortlistedPropertyById(targetId);
+      setIsShortlisted(false);
+      setMessage('Property removed from shortlist.');
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        setMessage(
+          typeof err.response?.data?.message === 'string'
+            ? err.response.data.message
+            : 'Unable to update shortlist.'
+        );
+      } else {
+        setMessage('Unable to update shortlist.');
+      }
+    } finally {
+      setIsRemoveShortlistModalOpen(false);
+      setShortlistLoading(false);
+    }
+  }, [property?.id, shortlistLoading]);
+
+  const handleToggleUnitDropdown: React.MouseEventHandler<HTMLButtonElement> = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsUnitDropdownOpen((prev) => {
+      const next = !prev;
+      console.log('[BuyerPropertyDetails] unit dropdown toggle:', next);
+      return next;
+    });
+  };
+
+  const handleSelectAreaUnit = (unit: 'sqft' | 'sqm' | 'acre', event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    console.log(`[BuyerPropertyDetails] unit selected: ${unit}`);
+    setAreaUnit(unit);
+    setIsUnitDropdownOpen(false);
+  };
+
+  const handleCloseVisitRequestedPopup = () => {
+    setIsVisitRequestedPopupOpen(false);
+  };
+
+  const handleGoBackToAllProperties = () => {
+    setIsVisitRequestedPopupOpen(false);
+    navigate('/buyer/search');
+  };
+
   return (
     <BuyerWorkspace
       title="Property Details"
@@ -368,20 +460,8 @@ export const BuyerPropertyDetailsPage: React.FC = () => {
         {message ? <p>{message}</p> : null}
 
         {!loading && !error && property ? (
-          <>
-            <div className="buyer-property-unit-row">
-              <label htmlFor="buyer-area-unit">Area Unit</label>
-              <select
-                id="buyer-area-unit"
-                value={areaUnit}
-                onChange={(event) => setAreaUnit(event.target.value as 'sqft' | 'sqm' | 'acre')}
-              >
-                <option value="sqft">Sq ft</option>
-                <option value="sqm">Sq m</option>
-                <option value="acre">Acre</option>
-              </select>
-            </div>
-            <div className="buyer-property-details-grid">
+          <section className="buyer-property-tabs-card">
+            <div className="buyer-property-main-card">
               <PropertyCard
                 property={property}
                 isShortlisted={isShortlisted}
@@ -389,136 +469,127 @@ export const BuyerPropertyDetailsPage: React.FC = () => {
                 shortlistLoading={shortlistLoading}
                 onImageClick={openImageLightbox}
               />
-              <div className="buyer-property-details-side">
-                <article className="buyer-property-details-panel">
-                  <h2>{property.title}</h2>
-                  <p>{property.description}</p>
-                  <ul>
-                    <li><strong>Location:</strong> {property.location}</li>
-                    <li><strong>Area on Offer:</strong> {formattedOfferArea} {areaUnitLabel}</li>
-                    <li><strong>Total Area:</strong> {formattedTotalArea} {areaUnitLabel}</li>
-                    <li><strong>Price / sq ft:</strong> {listing?.pricePerSqFt ?? 'N/A'}</li>
-                    <li><strong>ROI:</strong> {listing?.roiPercent ?? 'N/A'}%</li>
-                    <li><strong>Agreement Duration:</strong> {listing?.agreementDuration ?? 'N/A'}</li>
-                  </ul>
-                </article>
+              <BuyerPropertyTabsNav
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                areaUnit={areaUnit}
+                isUnitDropdownOpen={isUnitDropdownOpen}
+                unitDropdownRef={unitDropdownRef}
+                onToggleUnitDropdown={handleToggleUnitDropdown}
+                onSelectAreaUnit={handleSelectAreaUnit}
+              />
+              <div className="buyer-property-tabs-body">
+                {activeTab === 'details' ? (
+                  <article className="buyer-property-details-panel property-card-content">
+                    <h2>{property.title}</h2>
+                    <p>{property.description}</p>
+                    <ul>
+                      <li><strong>Location:</strong> {property.location}</li>
+                      <li><strong>Area on Offer:</strong> {formattedOfferArea} {areaUnitLabel}</li>
+                      <li><strong>Total Area:</strong> {formattedTotalArea} {areaUnitLabel}</li>
+                      <li><strong>Price / sq ft:</strong> {listing?.pricePerSqFt ?? 'N/A'}</li>
+                      <li><strong>ROI:</strong> {listing?.roiPercent ?? 'N/A'}%</li>
+                      <li><strong>Agreement Duration:</strong> {listing?.agreementDuration ?? 'N/A'}</li>
+                    </ul>
+                  </article>
+                ) : null}
+                {activeTab === 'dealer' ? (
+                  <article className="buyer-property-dealer-card is-horizontal">
+                    <h3><FiUser aria-hidden="true" /> Dealer Details</h3>
+                    {sellerLoading ? <p>Loading dealer details...</p> : null}
+                    {!sellerLoading ? (
+                      <div className="buyer-property-dealer-horizontal">
+                        <div className="buyer-property-dealer-profile-card">
+                          <img
+                            className="buyer-property-dealer-avatar"
+                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(seller?.name || 'Dealer')}&background=0ea5e9&color=fff&size=128`}
+                            alt={`${seller?.name || 'Dealer'} profile`}
+                            loading="lazy"
+                          />
+                          <div className="buyer-property-dealer-col">
+                            <p><strong>Name:</strong> {seller?.name || 'N/A'}</p>
+                            <p><strong>Email:</strong> {seller?.email || 'N/A'}</p>
+                            <p><strong>Phone:</strong> {seller?.phone || 'N/A'}</p>
+                          </div>
+                        </div>
+                        <div className="buyer-property-dealer-col">
+                          <p><strong>Properties Listed:</strong> {dealerSummaryLoading ? 'Loading...' : dealerPropertiesCount}</p>
+                          <p>
+                            <strong>Localities:</strong>{' '}
+                            {dealerSummaryLoading
+                              ? 'Loading...'
+                              : dealerLocalities.length > 0
+                                ? dealerLocalities.join(', ')
+                                : (seller?.city || 'N/A')}
+                          </p>
+                          <p className="buyer-property-dealer-about">
+                            <strong>About {seller?.name || 'the dealer'}:</strong>{' '}
+                            {seller?.name || 'This dealer'} specializes in commercial properties and supports site visits,
+                            negotiation guidance, and end-to-end transaction support.
+                          </p>
+                        </div>
+                      </div>
+                    ) : null}
+                  </article>
+                ) : null}
+                {activeTab === 'schedule' ? (
+                  <BuyerPropertyScheduleTab
+                    connectForm={connectForm}
+                    connectErrors={connectErrors}
+                    connectLoading={connectLoading}
+                    onSubmit={handleConnectSubmit}
+                    onInputChange={onConnectInputChange}
+                    onPhoneKeyDown={handleConnectPhoneKeyDown}
+                  />
+                ) : null}
               </div>
             </div>
-            <article className="buyer-property-dealer-card is-horizontal">
-              <h3><FiUser aria-hidden="true" /> Dealer Details</h3>
-              {sellerLoading ? <p>Loading dealer details...</p> : null}
-              {!sellerLoading ? (
-                <div className="buyer-property-dealer-horizontal">
-                  <img
-                    className="buyer-property-dealer-avatar"
-                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(seller?.name || 'Dealer')}&background=0ea5e9&color=fff&size=128`}
-                    alt={`${seller?.name || 'Dealer'} profile`}
-                    loading="lazy"
-                  />
-                  <div className="buyer-property-dealer-col">
-                    <p><strong>Name:</strong> {seller?.name || 'N/A'}</p>
-                    <p><strong>Email:</strong> {seller?.email || 'N/A'}</p>
-                    <p><strong>Phone:</strong> {seller?.phone || 'N/A'}</p>
-                  </div>
-                  <div className="buyer-property-dealer-col">
-                    <p><strong>Properties Listed:</strong> {dealerSummaryLoading ? 'Loading...' : dealerPropertiesCount}</p>
-                    <p>
-                      <strong>Localities:</strong>{' '}
-                      {dealerSummaryLoading
-                        ? 'Loading...'
-                        : dealerLocalities.length > 0
-                          ? dealerLocalities.join(', ')
-                          : (seller?.city || 'N/A')}
-                    </p>
-                    <p className="buyer-property-dealer-about">
-                      <strong>About {seller?.name || 'the dealer'}:</strong>{' '}
-                      {seller?.name || 'This dealer'} specializes in commercial properties and supports site visits,
-                      negotiation guidance, and end-to-end transaction support.
-                    </p>
-                  </div>
-                </div>
-              ) : null}
-            </article>
-          </>
+          </section>
         ) : null}
 
-        <div className="buyer-property-details-footer">
-          <div className="buyer-property-details-footer-actions">
-            <button
-              type="button"
-              className="btn btn-primary buyer-launch-modal-btn"
-              onClick={() => {
-                setConnectMessage('');
-                setIsConnectModalOpen(true);
-              }}
-            >
-              <FiPhoneCall aria-hidden="true" />
-              <span>Schedule Site Visit</span>
-            </button>
-          </div>
-          <div className="buyer-property-details-back-wrap">
-            <Link to="/buyer/search" className="buyer-property-details-back-link">
-              <FiArrowLeft aria-hidden="true" />
-              <span>Back to Search</span>
-            </Link>
-          </div>
-          {connectMessage ? <p className="buyer-connect-message">{connectMessage}</p> : null}
+        <div className="buyer-property-outside-footer">
+          <Link to="/buyer/search" className="buyer-property-details-back-link">
+            <FiArrowLeft aria-hidden="true" />
+            <span>Back to Search</span>
+          </Link>
         </div>
+        {connectMessage ? <p className="buyer-connect-message">{connectMessage}</p> : null}
       </section>
-
-      {isConnectModalOpen ? (
-        <div className="buyer-connect-modal-overlay modal fade show" onClick={() => setIsConnectModalOpen(false)} role="presentation">
-          <div className="modal-dialog" onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true">
-            <div className="modal-content buyer-connect-modal-content">
-              <div className="modal-header buyer-connect-modal-header">
-                <h4 className="buyer-connect-modal-title">Schedule A Call</h4>
-                <button type="button" className="buyer-connect-modal-close close" onClick={() => setIsConnectModalOpen(false)}>
-                  <FiX aria-hidden="true" />
-                </button>
-              </div>
-              <form className="modal-body buyer-connect-form" onSubmit={handleConnectSubmit}>
-                <input className="form-control" type="text" placeholder="Your Name" value={connectForm.name} onChange={(e) => onConnectInputChange('name', e.target.value)} />
-                <input className="form-control" type="email" placeholder="Email" value={connectForm.email} onChange={(e) => onConnectInputChange('email', e.target.value)} />
-                <input className="form-control" type="tel" placeholder="Phone" value={connectForm.phone} onChange={(e) => onConnectInputChange('phone', e.target.value)} />
-                <div className="buyer-connect-form-row">
-                  <input className="form-control datepicker" type="date" value={connectForm.date} onChange={(e) => onConnectInputChange('date', e.target.value)} />
-                  <input className="form-control datepicker" type="time" value={connectForm.time} onChange={(e) => onConnectInputChange('time', e.target.value)} />
-                </div>
-                <textarea className="form-control" placeholder="Message" rows={3} value={connectForm.note} onChange={(e) => onConnectInputChange('note', e.target.value)} />
-                <div className="modal-footer buyer-connect-modal-footer">
-                  <button type="button" className="btn btn-outline btn-sm buyer-modal-btn" onClick={() => setIsConnectModalOpen(false)}>
-                    Cancel
-                  </button>
-                  <button type="submit" className="btn btn-primary btn-sm buyer-modal-btn" disabled={connectLoading}>
-                    {connectLoading ? 'Sending...' : 'Send Request'}
-                  </button>
-                </div>
-              </form>
+      {isVisitRequestedPopupOpen ? (
+        <div className="sc-overlay buyer-visit-popup-overlay" role="presentation">
+          <div
+            className="sc-dialog buyer-visit-popup"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="buyer-visit-popup-title"
+          >
+            <h3 id="buyer-visit-popup-title">Visit Requested</h3>
+            <p>Visit has been requested. Wait for seller to respond.</p>
+            <div className="buyer-visit-popup-actions">
+              <button type="button" className="buyer-visit-popup-btn is-primary" onClick={handleGoBackToAllProperties}>
+                Go back to all properties
+              </button>
+              <button type="button" className="buyer-visit-popup-btn is-secondary" onClick={handleCloseVisitRequestedPopup}>
+                Close
+              </button>
             </div>
           </div>
         </div>
       ) : null}
-      {isImageLightboxOpen ? (
-        <div className="buyer-image-lightbox-overlay" onClick={() => setIsImageLightboxOpen(false)} role="presentation">
-          <div className="buyer-image-lightbox" onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true">
-            <button type="button" className="buyer-image-lightbox-close" onClick={() => setIsImageLightboxOpen(false)}>
-              <FiX aria-hidden="true" />
-            </button>
-            <img src={lightboxImages[lightboxIndex]} alt={`Property preview ${lightboxIndex + 1}`} />
-            {lightboxImages.length > 1 ? (
-              <div className="buyer-image-lightbox-controls">
-                <button type="button" onClick={previousLightboxImage} aria-label="Previous image">
-                  <FiChevronLeft aria-hidden="true" />
-                </button>
-                <span>{lightboxIndex + 1} / {lightboxImages.length}</span>
-                <button type="button" onClick={nextLightboxImage} aria-label="Next image">
-                  <FiChevronRight aria-hidden="true" />
-                </button>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
+      <BuyerPropertyImageLightbox
+        isOpen={isImageLightboxOpen}
+        images={lightboxImages}
+        activeIndex={lightboxIndex}
+        onClose={() => setIsImageLightboxOpen(false)}
+        onSelectIndex={setLightboxIndex}
+        onPrevious={previousLightboxImage}
+        onNext={nextLightboxImage}
+      />
+      <ShortlistRemoveModal
+        isOpen={isRemoveShortlistModalOpen}
+        onConfirm={() => void handleConfirmRemoveShortlist()}
+        onCancel={() => setIsRemoveShortlistModalOpen(false)}
+      />
     </BuyerWorkspace>
   );
 };

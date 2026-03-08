@@ -15,24 +15,23 @@ import {
   uploadListingImages,
   updateProperty,
 } from '../../services/controllers';
+import {
+  LISTING_AMENITY_SUGGESTIONS,
+  LISTING_MAX_IMAGES,
+  LISTING_MAX_IMAGE_SIZE_BYTES,
+} from '../../constants/listings';
+import { SQM_TO_SQFT } from '../../constants/units';
+import {
+  normalizeListingImageId,
+  parseListingNumber,
+  resolveListingId,
+  toPropertyCardFromListing,
+} from '../../utils/listings';
 import '../../components/PropertyListingForm/PropertyListingForm.css';
 import './SellerListingManagePage.css';
-
-const SQM_TO_SQFT = 10.7639;
-const MAX_IMAGES = 6;
-const MAX_IMAGE_SIZE_BYTES = 1.5 * 1024 * 1024;
-const AMENITY_SUGGESTIONS = [
-  'High-Speed WiFi',
-  'Fire Exit',
-  'Power Backup',
-  'Central Air',
-  'CCTV Surveillance',
-  'Elevator Access',
-  '24/7 Security',
-  'Parking',
-  'Reception Desk',
-  'Conference Rooms',
-];
+const MAX_IMAGES = LISTING_MAX_IMAGES;
+const MAX_IMAGE_SIZE_BYTES = LISTING_MAX_IMAGE_SIZE_BYTES;
+const AMENITY_SUGGESTIONS = [...LISTING_AMENITY_SUGGESTIONS];
 
 interface EditDraft {
   projectName: string;
@@ -48,16 +47,6 @@ interface EditDraft {
   amenities: string[];
 }
 
-const parseNumber = (value: string | undefined, fallback = 0): number => {
-  if (!value) {
-    return fallback;
-  }
-  const parsed = Number.parseFloat(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-};
-
-const resolveId = (listing: ListingRecord) => listing.propid ?? listing.id ?? '';
-
 const parseAgreementDigits = (value: string | undefined): string => {
   if (!value) {
     return '';
@@ -65,43 +54,6 @@ const parseAgreementDigits = (value: string | undefined): string => {
   return value.replace(/\D/g, '').slice(0, 2);
 };
 
-const isNonUrlImageId = (value: string): boolean => !/^https?:\/\//i.test(value);
-const reorderGalleryByMainImage = (images: string[], mainImageId: string | undefined): string[] => {
-  if (!images.length) {
-    return images;
-  }
-  const normalizedMain = normalizeImageId(mainImageId);
-  if (!normalizedMain) {
-    return images;
-  }
-  const mainIndex = images.findIndex((image) => normalizeImageId(image) === normalizedMain);
-  if (mainIndex <= 0) {
-    return images;
-  }
-  const next = [...images];
-  const [mainImage] = next.splice(mainIndex, 1);
-  next.unshift(mainImage);
-  return next;
-};
-const normalizeImageId = (value: string | undefined): string => {
-  if (!value) {
-    return '';
-  }
-  if (isNonUrlImageId(value)) {
-    return value;
-  }
-  try {
-    const url = new URL(value, window.location.origin);
-    const parts = url.pathname.split('/').filter(Boolean);
-    const uploadsIndex = parts.findIndex((part) => part === 'uploads');
-    if (uploadsIndex >= 0 && parts[uploadsIndex + 1]) {
-      return parts[uploadsIndex + 1];
-    }
-    return '';
-  } catch {
-    return '';
-  }
-};
 const resolveImagePreviewSource = (value: string): string => {
   if (/^https?:\/\//i.test(value)) {
     return value;
@@ -110,21 +62,8 @@ const resolveImagePreviewSource = (value: string): string => {
 };
 
 const toPropertyCardModel = (listing: ListingRecord, shortlistedBuyersCount: number): Property => {
-  const area = parseNumber(listing.offerAreaSqFt ?? listing.totalAreaSqFt, 0);
-  const unitPrice = parseNumber(listing.pricePerSqFt, 0);
-  const imageGallery = reorderGalleryByMainImage(listing.imageIds ?? [], listing.mainImageId);
-
   return {
-    id: resolveId(listing),
-    title: listing.projectName ?? 'Untitled Property',
-    description: listing.details ?? 'No description available.',
-    price: unitPrice * (area > 0 ? area : 1),
-    location: listing.location ?? 'N/A',
-    area,
-    type: 'office',
-    image: imageGallery[0] || 'https://via.placeholder.com/1200x900?text=No+Image',
-    imageGallery,
-    amenities: listing.amenities ?? [],
+    ...toPropertyCardFromListing(listing, { shortlistedBuyersCount }),
     shortlistedBuyersCount,
   };
 };
@@ -212,8 +151,8 @@ export const SellerListingManagePage: React.FC = () => {
 
       setNewImages([]);
       const existingImages = listingResponse.imageIds ?? [];
-      const normalizedMainImageId = normalizeImageId(listingResponse.mainImageId);
-      const existingMainIndex = existingImages.findIndex((imageId) => normalizeImageId(imageId) === normalizedMainImageId);
+      const normalizedMainImageId = normalizeListingImageId(listingResponse.mainImageId);
+      const existingMainIndex = existingImages.findIndex((imageId) => normalizeListingImageId(imageId) === normalizedMainImageId);
       if (existingMainIndex >= 0) {
         setMainImageIndex(existingMainIndex);
       } else if (existingImages.length > 0) {
@@ -422,9 +361,9 @@ export const SellerListingManagePage: React.FC = () => {
     if (!numericValue.test(draft.offerAreaSqFt)) return 'Area on Offer must be numeric.';
     if (!numericValue.test(draft.pricePerSqFt)) return 'Price must be numeric.';
 
-    const totalArea = parseNumber(draft.totalAreaSqFt, NaN);
-    const offerArea = parseNumber(draft.offerAreaSqFt, NaN);
-    const price = parseNumber(draft.pricePerSqFt, NaN);
+    const totalArea = parseListingNumber(draft.totalAreaSqFt, NaN);
+    const offerArea = parseListingNumber(draft.offerAreaSqFt, NaN);
+    const price = parseListingNumber(draft.pricePerSqFt, NaN);
 
     if (!Number.isFinite(totalArea) || !Number.isFinite(offerArea) || !Number.isFinite(price)) {
       return 'Total Area, Area on Offer and Price must be numeric values.';
@@ -455,8 +394,8 @@ export const SellerListingManagePage: React.FC = () => {
         return 'Please select a main image from uploaded replacement images.';
       }
     } else if (listing) {
-      const existingImageIds = (listing.imageIds ?? []).map(normalizeImageId).filter(Boolean);
-      const existingMainImageId = normalizeImageId(listing.mainImageId);
+      const existingImageIds = (listing.imageIds ?? []).map(normalizeListingImageId).filter(Boolean);
+      const existingMainImageId = normalizeListingImageId(listing.mainImageId);
       if (existingImageIds.length !== MAX_IMAGES || !existingMainImageId || !existingImageIds.includes(existingMainImageId)) {
         return 'Please upload 6 images and select a main image before updating this property.';
       }
@@ -477,10 +416,10 @@ export const SellerListingManagePage: React.FC = () => {
       return;
     }
 
-    const id = resolveId(listing);
-    const totalAreaSqFt = parseNumber(draft.totalAreaSqFt, 0);
-    const offerAreaSqFt = parseNumber(draft.offerAreaSqFt, 0);
-    const pricePerSqFt = parseNumber(draft.pricePerSqFt, 0);
+    const id = resolveListingId(listing);
+    const totalAreaSqFt = parseListingNumber(draft.totalAreaSqFt, 0);
+    const offerAreaSqFt = parseListingNumber(draft.offerAreaSqFt, 0);
+    const pricePerSqFt = parseListingNumber(draft.pricePerSqFt, 0);
     const amenities = draft.amenities;
 
     let imageIds: string[] = [];
@@ -497,10 +436,10 @@ export const SellerListingManagePage: React.FC = () => {
         mainImageId = mainImageIndex !== null ? imageIds[mainImageIndex] ?? '' : '';
       } else {
         const existingImages = listing.imageIds ?? [];
-        imageIds = existingImages.map(normalizeImageId).filter(Boolean).slice(0, MAX_IMAGES);
+        imageIds = existingImages.map(normalizeListingImageId).filter(Boolean).slice(0, MAX_IMAGES);
         const selectedExistingImage = mainImageIndex !== null ? existingImages[mainImageIndex] ?? '' : '';
-        const selectedExistingId = normalizeImageId(selectedExistingImage);
-        mainImageId = selectedExistingId || normalizeImageId(listing.mainImageId);
+        const selectedExistingId = normalizeListingImageId(selectedExistingImage);
+        mainImageId = selectedExistingId || normalizeListingImageId(listing.mainImageId);
       }
 
       if (imageIds.length !== MAX_IMAGES || !mainImageId || !imageIds.includes(mainImageId)) {
@@ -552,7 +491,7 @@ export const SellerListingManagePage: React.FC = () => {
       return;
     }
 
-    const id = resolveId(listing);
+    const id = resolveListingId(listing);
     try {
       setDeleting(true);
       setBanner(null);
