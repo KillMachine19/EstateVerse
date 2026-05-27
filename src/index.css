@@ -188,11 +188,395 @@ body.theme-dark .property-listing-suggestion {
   color: #94a3b8;
 }
 
+body.theme-dark .hero-stat-card {
+  background: rgba(15, 23, 42, 0.65);
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+body.theme-dark .hero-stat-number,
+body.theme-dark .hero-stat-label {
+  color: #e2e8f0;
+}
+
+body.theme-dark .buyer-saved-panel,
+body.theme-dark .buyer-saved-map-list,
+body.theme-dark .buyer-saved-map-item {
+  background: #111827;
+  border-color: rgba(148, 163, 184, 0.28);
+  color: #e2e8f0;
+}
+
+body.theme-dark .buyer-saved-map-list-title,
+body.theme-dark .buyer-saved-map-item-name {
+  color: #e2e8f0;
+}
+
+body.theme-dark .buyer-saved-map-item-location {
+  color: #94a3b8;
+}
+
+body.theme-dark .properties-filters {
+  background: #111827;
+  border-color: rgba(148, 163, 184, 0.26);
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.35);
+}
+
+body.theme-dark .filter-label,
+body.theme-dark .checkbox-option {
+  color: #e2e8f0;
+}
+
+body.theme-dark .filter-input {
+  background: #0f172a;
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #e2e8f0;
+}
+
+body.theme-dark .filter-input::placeholder {
+  color: #94a3b8;
+}
+
+body.theme-dark .filter-amenity-chip {
+  background: #0f172a;
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #cbd5e1;
+}
+
+body.theme-dark .filter-amenity-chip:hover {
+  border-color: #22d3ee;
+  color: #e2e8f0;
+}
+
+body.theme-dark .filter-amenity-chip.is-active {
+  background: rgba(34, 211, 238, 0.16);
+  border-color: rgba(34, 211, 238, 0.45);
+  color: #67e8f9;
+}
+
+body.theme-dark .budget-slider-group input[type='range']::-webkit-slider-thumb,
+body.theme-dark .budget-slider-group input[type='range']::-moz-range-thumb {
+  background: #0f172a;
+  border-color: #22d3ee;
+}
+
+body.theme-dark .budget-slider-track {
+  background:
+    linear-gradient(
+      to right,
+      #334155 0%,
+      #334155 var(--min-budget-percent),
+      #22d3ee var(--min-budget-percent),
+      #22d3ee var(--max-budget-percent),
+      #334155 var(--max-budget-percent),
+      #334155 100%
+    );
+}
+
+body.theme-dark .seller-workspace,
+body.theme-dark .dealer-workspace,
+body.theme-dark .admin-shell {
+  background: linear-gradient(180deg, rgba(34, 211, 238, 0.08) 0%, rgba(0, 0, 0, 0) 45%), #0b1220;
+}
+
+body.theme-dark .seller-workspace-card,
+body.theme-dark .dealer-workspace-card,
+body.theme-dark .admin-shell-card,
+body.theme-dark .admin-sidebar,
+body.theme-dark .seller-sidebar,
+body.theme-dark .seller-listing-manage-shell,
+body.theme-dark .seller-listing-manage-panel,
+body.theme-dark .seller-listing-manage-buyers,
+body.theme-dark .seller-listing-manage-buyer-item,
+body.theme-dark .seller-metric-card,
+body.theme-dark .seller-pipeline,
+body.theme-dark .seller-highlights,
+body.theme-dark .seller-panel,
+body.theme-dark .seller-pipeline-card,
+body.theme-dark .seller-highlight-card,
+body.theme-dark .dealer-metric-card,
+body.theme-dark .dealer-panel,
+body.theme-dark .dealer-funnel-card,
+body.theme-dark .admin-metric-card,
+body.theme-dark .admin-dashboard-panel,
+body.theme-dark .admin-users-panel,
+body.theme-dark .admin-audit-panel,
+body.theme-dark .admin-revoke-panel,
+body.theme-dark .admin-settings-card,
+body.theme-dark .admin-dealers-list,
+body.theme-dark .admin-dealers-edit,
+body.theme-dark .admin-modal-card {
+  background: #111827;
+  border-color: rgba(148, 163, 184, 0.26);
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.4);
+}
+
+body.theme-dark .seller-workspace-title,
+body.theme-dark .seller-workspace-description,
+body.theme-dark .seller-sidebar-title,
+body.theme-dark .seller-sidebar-link,
+body.theme-dark .seller-sidebar-sublink,
+body.theme-dark .seller-sidebar-accordion__toggle,
+body.theme-dark .seller-listing-manage-panel label,
+body.theme-dark .seller-listing-manage-buyer-item span,
+body.theme-dark .seller-listing-manage-buyer-item small,
+body.theme-dark .dealer-workspace-title,
+body.theme-dark .dealer-workspace-description,
+body.theme-dark .admin-shell-title,
+body.theme-dark .admin-shell-description,
+body.theme-dark .admin-sidebar-title,
+body.theme-dark .admin-sidebar-link,
+body.theme-dark .seller-metric-card h3,
+body.theme-dark .seller-metric-card p,
+body.theme-dark .seller-metric-card span,
+body.theme-dark .seller-panel h2,
+body.theme-dark .seller-pipeline-card h4,
+body.theme-dark .seller-pipeline-card p,
+body.theme-dark .seller-pipeline-card span,
+body.theme-dark .seller-highlight-card h3,
+body.theme-dark .seller-highlight-card span,
+body.theme-dark .seller-highlight-card p,
+body.theme-dark .dealer-metric-card h3,
+body.theme-dark .dealer-metric-card p,
+body.theme-dark .dealer-metric-card span,
+body.theme-dark .dealer-panel h2,
+body.theme-dark .dealer-funnel-card h3,
+body.theme-dark .dealer-funnel-card p,
+body.theme-dark .dealer-queue-list,
+body.theme-dark .admin-metric-card h3,
+body.theme-dark .admin-metric-card p,
+body.theme-dark .admin-metric-card span,
+body.theme-dark .admin-dashboard-panel h2,
+body.theme-dark .admin-dashboard-panel ul,
+body.theme-dark .admin-users-header h2,
+body.theme-dark .admin-audit-header h2,
+body.theme-dark .admin-revoke-header h2,
+body.theme-dark .admin-settings-card h3,
+body.theme-dark .admin-settings-card p,
+body.theme-dark .admin-dealers-list-head h2,
+body.theme-dark .admin-dealers-edit h2,
+body.theme-dark .admin-dealers-row strong,
+body.theme-dark .admin-dealers-row small,
+body.theme-dark .admin-modal-card h3,
+body.theme-dark .admin-modal-card p {
+  color: #e2e8f0;
+}
+
+body.theme-dark .admin-dealers-row,
+body.theme-dark .admin-users-row,
+body.theme-dark .admin-audit-row,
+body.theme-dark .admin-revoke-row {
+  background: #0f172a;
+  border-color: rgba(148, 163, 184, 0.2);
+  color: #cbd5e1;
+}
+
+body.theme-dark .admin-dealers-row--head,
+body.theme-dark .admin-users-row--head,
+body.theme-dark .admin-audit-row--head,
+body.theme-dark .admin-revoke-row--head {
+  background: transparent;
+  color: #94a3b8;
+}
+
+body.theme-dark .admin-users-actions input,
+body.theme-dark .admin-users-actions button,
+body.theme-dark .admin-audit-header button,
+body.theme-dark .admin-revoke-filter,
+body.theme-dark .admin-settings-card button,
+body.theme-dark .admin-dealers-search .form-control,
+body.theme-dark .admin-dealer-form-grid .form-control,
+body.theme-dark .dealer-create-grid .profile-field select,
+body.theme-dark .dealer-create-grid .profile-field textarea,
+body.theme-dark .dealer-locality-chips,
+body.theme-dark .dealer-locality-suggestion {
+  background: #0f172a;
+  border-color: rgba(148, 163, 184, 0.32);
+  color: #e2e8f0;
+}
+
+body.theme-dark .dealer-locality-chip,
+body.theme-dark .dealer-locality-chip button {
+  color: #67e8f9;
+}
+
+body.theme-dark .admin-sidebar-link:hover {
+  background: rgba(51, 65, 85, 0.55);
+  color: #e2e8f0;
+}
+
+body.theme-dark .seller-sidebar-nav > * {
+  border-bottom-color: rgba(148, 163, 184, 0.24);
+}
+
+body.theme-dark .seller-sidebar-link:hover,
+body.theme-dark .seller-sidebar-sublink:hover,
+body.theme-dark .seller-sidebar-accordion__toggle:hover {
+  background: rgba(51, 65, 85, 0.5);
+  color: #e2e8f0;
+}
+
+body.theme-dark .seller-sidebar-link.is-active,
+body.theme-dark .seller-sidebar-sublink.is-active,
+body.theme-dark .seller-sidebar-accordion__toggle.is-active {
+  background: rgba(14, 165, 233, 0.24);
+  color: #e2e8f0;
+}
+
+body.theme-dark .seller-sidebar-icon,
+body.theme-dark .seller-sidebar-sublink__icon {
+  color: #38bdf8;
+}
+
+body.theme-dark .admin-sidebar-link.is-active {
+  background: rgba(14, 165, 233, 0.24);
+  color: #e2e8f0;
+}
+
+body.theme-dark .admin-sidebar-icon {
+  color: #38bdf8;
+}
+
+body.theme-dark .sc-overlay {
+  background: rgba(2, 6, 23, 0.74);
+}
+
+body.theme-dark .sc-dialog {
+  background: #111827;
+  border-color: rgba(148, 163, 184, 0.28);
+}
+
+body.theme-dark .sc-title,
+body.theme-dark .sc-label,
+body.theme-dark .sc-phone-prefix {
+  color: #e2e8f0;
+}
+
+body.theme-dark .sc-subtitle {
+  color: #94a3b8;
+}
+
+body.theme-dark .sc-close {
+  background: #0f172a;
+  color: #cbd5e1;
+}
+
+body.theme-dark .sc-control,
+body.theme-dark .sc-phone-field,
+body.theme-dark .sc-cancel {
+  background: #0f172a;
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #e2e8f0;
+}
+
+body.theme-dark .sc-control::placeholder,
+body.theme-dark .sc-phone-input::placeholder {
+  color: #94a3b8;
+}
+
+body.theme-dark .sc-cancel:hover {
+  border-color: rgba(148, 163, 184, 0.45);
+  color: #e2e8f0;
+}
+
+body.theme-dark .btn.btn-primary,
+body.theme-dark button.btn.btn-primary,
+body.theme-dark .btn.btn-secondary,
+body.theme-dark button.btn.btn-secondary,
+body.theme-dark .btn.btn-success,
+body.theme-dark button.btn.btn-success,
+body.theme-dark .btn.btn-danger,
+body.theme-dark button.btn.btn-danger {
+  color: #f8fafc;
+}
+
+body.theme-dark .btn-outline {
+  border-color: #22d3ee;
+  color: #67e8f9;
+}
+
+body.theme-dark .btn-outline:hover:not(:disabled) {
+  color: #0b1220;
+}
+
+body.theme-dark .admin-action-icon-btn {
+  border-color: #22d3ee;
+  color: #22d3ee;
+}
+
+body.theme-dark .admin-action-icon-btn:hover:not(:disabled) {
+  background: rgba(34, 211, 238, 0.16);
+}
+
+body.theme-dark .seller-application-item,
+body.theme-dark .seller-application-details-card,
+body.theme-dark .seller-notifications-state,
+body.theme-dark .seller-notification-card,
+body.theme-dark .seller-notifications-filter,
+body.theme-dark .seller-notifications-empty {
+  background: #111827;
+  border-color: rgba(148, 163, 184, 0.28);
+  color: #e2e8f0;
+}
+
+body.theme-dark .seller-application-item__title,
+body.theme-dark .seller-application-item__right strong,
+body.theme-dark .seller-application-details-card h2,
+body.theme-dark .seller-application-details-card h3,
+body.theme-dark .seller-application-back-link,
+body.theme-dark .seller-application-label,
+body.theme-dark .seller-notification-header h2,
+body.theme-dark .seller-notification-tag,
+body.theme-dark .seller-notifications-filter {
+  color: #e2e8f0;
+}
+
+body.theme-dark .seller-application-item__meta,
+body.theme-dark .seller-application-item__right,
+body.theme-dark .seller-notification-header span,
+body.theme-dark .seller-notification-content p {
+  color: #94a3b8;
+}
+
+body.theme-dark .seller-application-decision-tab,
+body.theme-dark .seller-application-control,
+body.theme-dark .seller-application-back-link {
+  background: #0f172a;
+  border-color: rgba(148, 163, 184, 0.34);
+  color: #e2e8f0;
+}
+
+body.theme-dark .seller-application-decision-tab.is-active,
+body.theme-dark .seller-notifications-filter.is-active {
+  background: rgba(14, 165, 233, 0.22);
+  border-color: rgba(56, 189, 248, 0.45);
+}
+
+body.theme-dark .seller-listing-manage-bottom {
+  border-top-color: rgba(148, 163, 184, 0.24);
+}
+
+body.theme-dark .seller-listing-manage-panel input,
+body.theme-dark .seller-listing-manage-panel textarea,
+body.theme-dark .seller-listing-manage-bottom .btn {
+  background: #0f172a;
+  border-color: rgba(148, 163, 184, 0.32);
+  color: #e2e8f0;
+}
+
+body.theme-dark .seller-notification-icon {
+  background: rgba(34, 211, 238, 0.18);
+  color: #67e8f9;
+}
+
+body.theme-dark .seller-notification-link {
+  color: #67e8f9;
+}
+
 img,
 video,
 canvas,
 iframe {
-  max-width: 60%;
+  max-width: 100%;
 }
 
 /* Global Link Styles */

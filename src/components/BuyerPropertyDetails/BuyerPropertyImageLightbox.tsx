@@ -38,14 +38,12 @@ export const BuyerPropertyImageLightbox: React.FC<BuyerPropertyImageLightboxProp
         >
           <FiX aria-hidden="true" />
         </button>
-        <div id="carouselExampleIndicators" className="carousel slide buyer-lightbox-carousel" data-ride="carousel">
+        <div className="carousel slide buyer-lightbox-carousel">
           {images.length > 1 ? (
             <ol className="carousel-indicators">
               {images.map((_, index) => (
                 <li
                   key={`indicator-${index}`}
-                  data-target="#carouselExampleIndicators"
-                  data-slide-to={index}
                   className={index === activeIndex ? 'active' : ''}
                   onClick={() => onSelectIndex(index)}
                 />
@@ -53,40 +51,38 @@ export const BuyerPropertyImageLightbox: React.FC<BuyerPropertyImageLightboxProp
             </ol>
           ) : null}
           <div className="carousel-inner" role="listbox">
-            {images.map((image, index) => (
-              <div key={image} className={`carousel-item ${index === activeIndex ? 'active' : ''}`}>
-                <img className="d-block" src={image} alt={`Property slide ${index + 1}`} />
+            {images[activeIndex] ? (
+              <div className="carousel-item active">
+                <img className="d-block" src={images[activeIndex]} alt={`Property slide ${activeIndex + 1}`} />
               </div>
-            ))}
+            ) : null}
           </div>
           {images.length > 1 ? (
             <>
-              <a
+              <button
+                type="button"
                 className="carousel-control-prev"
-                href="#carouselExampleIndicators"
-                role="button"
-                data-slide="prev"
                 onClick={(event) => {
                   event.preventDefault();
                   onPrevious();
                 }}
+                aria-label="Previous image"
               >
                 <i className="now-ui-icons arrows-1_minimal-left" />
                 <FiChevronLeft aria-hidden="true" />
-              </a>
-              <a
+              </button>
+              <button
+                type="button"
                 className="carousel-control-next"
-                href="#carouselExampleIndicators"
-                role="button"
-                data-slide="next"
                 onClick={(event) => {
                   event.preventDefault();
                   onNext();
                 }}
+                aria-label="Next image"
               >
                 <i className="now-ui-icons arrows-1_minimal-right" />
                 <FiChevronRight aria-hidden="true" />
-              </a>
+              </button>
             </>
           ) : null}
         </div>

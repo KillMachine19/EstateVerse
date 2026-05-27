@@ -5,6 +5,7 @@ import { FiList } from 'react-icons/fi';
 import { SellerWorkspace } from '../../components/SellerComponents';
 import { PropertyCard } from '../../components/PropertyCard';
 import { PropertiesFilters } from '../../components/PropertiesFilters';
+import { BuyerPropertyImageLightbox } from '../../components/BuyerPropertyDetails';
 import type { Property } from '../../types';
 import {
   getBuyersWhoShortlistedPropertyById,
@@ -41,6 +42,9 @@ export const SellerListingsPage: React.FC = () => {
   const [includeRentLease, setIncludeRentLease] = useState(false);
   const [includeBuying, setIncludeBuying] = useState(false);
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+  const [isImageLightboxOpen, setIsImageLightboxOpen] = useState(false);
+  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -170,6 +174,20 @@ export const SellerListingsPage: React.FC = () => {
   const minBudgetPercent = budgetMax > budgetMin ? ((minBudget - budgetMin) / (budgetMax - budgetMin)) * 100 : 0;
   const maxBudgetPercent = budgetMax > budgetMin ? ((maxBudget - budgetMin) / (budgetMax - budgetMin)) * 100 : 100;
 
+  const openImageLightbox = (images: string[], index: number) => {
+    setLightboxImages(images);
+    setLightboxIndex(index);
+    setIsImageLightboxOpen(true);
+  };
+
+  const previousLightboxImage = () => {
+    setLightboxIndex((prev) => (prev === 0 ? lightboxImages.length - 1 : prev - 1));
+  };
+
+  const nextLightboxImage = () => {
+    setLightboxIndex((prev) => (prev === lightboxImages.length - 1 ? 0 : prev + 1));
+  };
+
   return (
     <SellerWorkspace
       title="My Listings"
@@ -219,7 +237,7 @@ export const SellerListingsPage: React.FC = () => {
             <div className="properties-grid" aria-label="Seller property listings">
               {filteredProperties.map((property) => (
                 <Link key={property.id} to={`/seller/listings/${property.id}`} className="seller-listings-card-link">
-                  <PropertyCard property={property} showShortlistedBuyersCount blurImageBackdrop />
+                  <PropertyCard property={property} showShortlistedBuyersCount blurImageBackdrop onImageClick={openImageLightbox} />
                 </Link>
               ))}
             </div>
@@ -231,6 +249,15 @@ export const SellerListingsPage: React.FC = () => {
             </div>
           ) : null}
         </section>
+        <BuyerPropertyImageLightbox
+          isOpen={isImageLightboxOpen}
+          images={lightboxImages}
+          activeIndex={lightboxIndex}
+          onClose={() => setIsImageLightboxOpen(false)}
+          onSelectIndex={setLightboxIndex}
+          onPrevious={previousLightboxImage}
+          onNext={nextLightboxImage}
+        />
       </main>
     </SellerWorkspace>
   );

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { Navigate } from 'react-router-dom';
 import { PropertyCard } from '../../components/PropertyCard';
+import { BuyerPropertyImageLightbox } from '../../components/BuyerPropertyDetails';
 import { PropertiesFilters } from '../../components/PropertiesFilters';
 import { PaginationNav } from '../../components/PaginationNav';
 import { useAuth } from '../../context/AuthContext';
@@ -25,6 +26,9 @@ export const Properties: React.FC = () => {
   const [includeRentLease, setIncludeRentLease] = useState(false);
   const [includeBuying, setIncludeBuying] = useState(false);
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+  const [isImageLightboxOpen, setIsImageLightboxOpen] = useState(false);
+  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const loadProperties = useCallback(async () => {
     try {
@@ -98,6 +102,20 @@ export const Properties: React.FC = () => {
     [filteredProperties.length, page, totalPages]
   );
 
+  const openImageLightbox = (images: string[], index: number) => {
+    setLightboxImages(images);
+    setLightboxIndex(index);
+    setIsImageLightboxOpen(true);
+  };
+
+  const previousLightboxImage = () => {
+    setLightboxIndex((prev) => (prev === 0 ? lightboxImages.length - 1 : prev - 1));
+  };
+
+  const nextLightboxImage = () => {
+    setLightboxIndex((prev) => (prev === lightboxImages.length - 1 ? 0 : prev + 1));
+  };
+
   const toggleAmenity = (amenity: string) => {
     setSelectedAmenities((prev) =>
       prev.includes(amenity) ? prev.filter((item) => item !== amenity) : [...prev, amenity]
@@ -159,7 +177,7 @@ export const Properties: React.FC = () => {
         {!loading && !error && filteredProperties.length > 0 ? (
           <div className="properties-grid" aria-label="Property listings">
             {filteredProperties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
+              <PropertyCard key={property.id} property={property} onImageClick={openImageLightbox} />
             ))}
           </div>
         ) : null}
@@ -178,6 +196,15 @@ export const Properties: React.FC = () => {
           onPageChange={setPage}
         />
       </section>
+      <BuyerPropertyImageLightbox
+        isOpen={isImageLightboxOpen}
+        images={lightboxImages}
+        activeIndex={lightboxIndex}
+        onClose={() => setIsImageLightboxOpen(false)}
+        onSelectIndex={setLightboxIndex}
+        onPrevious={previousLightboxImage}
+        onNext={nextLightboxImage}
+      />
     </main>
   );
 };

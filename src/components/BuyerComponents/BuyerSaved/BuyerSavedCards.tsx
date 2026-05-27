@@ -204,7 +204,7 @@ export const BuyerSavedCards: React.FC = () => {
             >
               <FiX aria-hidden="true" />
             </button>
-            <div id="buyerSavedCarousel" className="carousel slide buyer-saved-carousel" data-ride="carousel">
+            <div className="carousel slide buyer-saved-carousel">
               <ol className="carousel-indicators">
                 {lightboxImages.map((image, index) => (
                   <li
@@ -216,11 +216,11 @@ export const BuyerSavedCards: React.FC = () => {
                 ))}
               </ol>
               <div className="carousel-inner" role="listbox">
-                {lightboxImages.map((image, index) => (
-                  <div key={`${image}-${index}`} className={`carousel-item ${lightboxIndex === index ? 'active' : ''}`}>
-                    <img className="d-block" src={image} alt={`Property image ${index + 1}`} />
+                {lightboxImages[lightboxIndex] ? (
+                  <div className="carousel-item active">
+                    <img className="d-block" src={lightboxImages[lightboxIndex]} alt={`Property image ${lightboxIndex + 1}`} />
                   </div>
-                ))}
+                ) : null}
               </div>
               <button
                 type="button"

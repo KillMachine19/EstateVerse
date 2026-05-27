@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { FiSearch } from 'react-icons/fi';
 import { BuyerWorkspace } from '../../components/BuyerComponents/BuyerWorkspace';
 import { PropertyCard } from '../../components/PropertyCard';
+import { BuyerPropertyImageLightbox } from '../../components/BuyerPropertyDetails';
 import { PropertiesFilters } from '../../components/PropertiesFilters';
 import { PaginationNav } from '../../components/PaginationNav';
 import { ShortlistRemoveModal } from '../../components/ShortlistRemoveModal';
@@ -46,6 +47,9 @@ export const BuyerSearchPropertiesPage: React.FC = () => {
   const [includeRentLease, setIncludeRentLease] = useState(false);
   const [includeBuying, setIncludeBuying] = useState(false);
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+  const [isImageLightboxOpen, setIsImageLightboxOpen] = useState(false);
+  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const loadProperties = useCallback(async () => {
     try {
@@ -231,6 +235,20 @@ export const BuyerSearchPropertiesPage: React.FC = () => {
     setPendingRemoveShortlistId(null);
   };
 
+  const openImageLightbox = (images: string[], index: number) => {
+    setLightboxImages(images);
+    setLightboxIndex(index);
+    setIsImageLightboxOpen(true);
+  };
+
+  const previousLightboxImage = () => {
+    setLightboxIndex((prev) => (prev === 0 ? lightboxImages.length - 1 : prev - 1));
+  };
+
+  const nextLightboxImage = () => {
+    setLightboxIndex((prev) => (prev === lightboxImages.length - 1 ? 0 : prev + 1));
+  };
+
   return (
     <>
       <BuyerWorkspace
@@ -279,6 +297,7 @@ export const BuyerSearchPropertiesPage: React.FC = () => {
                     isShortlisted={Boolean(shortlistedIds[property.id])}
                     onToggleShortlist={handleToggleShortlist}
                     shortlistLoading={shortlistingId === property.id}
+                    onImageClick={openImageLightbox}
                   />
                 </Link>
               );
@@ -299,6 +318,15 @@ export const BuyerSearchPropertiesPage: React.FC = () => {
         isOpen={Boolean(pendingRemoveShortlistId)}
         onConfirm={() => void handleConfirmRemoveShortlist()}
         onCancel={handleCancelRemoveShortlist}
+      />
+      <BuyerPropertyImageLightbox
+        isOpen={isImageLightboxOpen}
+        images={lightboxImages}
+        activeIndex={lightboxIndex}
+        onClose={() => setIsImageLightboxOpen(false)}
+        onSelectIndex={setLightboxIndex}
+        onPrevious={previousLightboxImage}
+        onNext={nextLightboxImage}
       />
     </>
   );
