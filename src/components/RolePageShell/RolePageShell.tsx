@@ -1,6 +1,7 @@
 import React from 'react';
 import { BuyerSidebar } from '../BuyerComponents/BuyerSidebar';
 import { AdminSidebar } from '../AdminComponents';
+import { DealerSidebar } from '../DealerComponents';
 import { SellerSidebar } from '../SellerComponents';
 import { useAuth } from '../../context/AuthContext';
 import './RolePageShell.css';
@@ -19,6 +20,8 @@ export const RolePageShell: React.FC<RolePageShellProps> = ({ title, description
     ? null
     : userRole === 'admin'
       ? <AdminSidebar />
+      : userRole === 'dealer'
+        ? <DealerSidebar />
       : userRole === 'seller'
         ? <SellerSidebar />
         : <BuyerSidebar />;

@@ -8,13 +8,8 @@ interface LogoProps {
 export const Logo: React.FC<LogoProps> = ({ showTagline = false }) => {
   return (
     <div className="logo-container">
-      <div className="logo-icon">
-        <span className="logo-icon-text">EV</span>
-      </div>
-      <div>
-        <h1 className="logo-brand">EstateVerse</h1>
-        {showTagline && <p className="logo-tagline">Commercial Real Estate</p>}
-      </div>
+      <img className="logo-image" src="/images/naddy-d-baddy-logo.png" alt="Naddy-D-Baddy RealEstate" />
+      {showTagline && <p className="logo-tagline">Real Estate</p>}
     </div>
   );
 };

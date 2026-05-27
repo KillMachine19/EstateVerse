@@ -38,6 +38,9 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
     setUserRoleState(null);
     persistUserRole(null);
     setApiAuthToken(null);
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem('estateverse_force_password_reset');
+    }
   }, []);
 
   const refreshSession = useCallback(async () => {
@@ -60,7 +63,15 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
   useEffect(() => {
     const storedRole = readStoredUserRole();
     const hasPersistedToken = Boolean(readStoredAuthToken());
-    setIsAuthenticated(hasPersistedToken || Boolean(storedRole));
+    if (!hasPersistedToken) {
+      setIsAuthenticated(false);
+      setUserRoleState(null);
+      persistUserRole(null);
+      setIsAuthLoading(false);
+      return;
+    }
+
+    setIsAuthenticated(true);
     setUserRoleState(storedRole);
     setIsAuthLoading(false);
   }, []);

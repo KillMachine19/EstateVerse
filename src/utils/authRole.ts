@@ -1,7 +1,7 @@
 import { decodeJwtPayload, extractAuthToken } from './authToken';
 
-export type UserRole = 'buyer' | 'seller' | 'admin';
-export type BackendRole = 'ADMIN' | 'USER';
+export type UserRole = 'buyer' | 'seller' | 'admin' | 'dealer';
+export type BackendRole = 'ADMIN' | 'USER' | 'DEALER';
 
 export const USER_ROLE_STORAGE_KEY = 'estateverse_user_role';
 
@@ -11,7 +11,7 @@ export const normalizeUserRole = (value: unknown): UserRole | null => {
   }
 
   const normalized = value.trim().toLowerCase();
-  if (normalized === 'buyer' || normalized === 'seller' || normalized === 'admin') {
+  if (normalized === 'buyer' || normalized === 'seller' || normalized === 'admin' || normalized === 'dealer') {
     return normalized;
   }
 
@@ -25,6 +25,10 @@ export const normalizeUserRole = (value: unknown): UserRole | null => {
 
   if (normalized === 'role_admin') {
     return 'admin';
+  }
+
+  if (normalized === 'role_dealer') {
+    return 'dealer';
   }
 
   return null;
@@ -67,6 +71,10 @@ const roleFromAuthorities = (authorities: string[]): UserRole | null => {
 
     if (normalized === 'admin' || normalized === 'role_admin') {
       return 'admin';
+    }
+
+    if (normalized === 'dealer' || normalized === 'role_dealer') {
+      return 'dealer';
     }
   }
 
@@ -148,7 +156,15 @@ export const extractUserRoleFromSession = (session: unknown): UserRole | null =>
   return null;
 };
 
-export const mapUserRoleToBackendRole = (_role: UserRole): BackendRole => 'USER';
+export const mapUserRoleToBackendRole = (role: UserRole): BackendRole => {
+  if (role === 'admin') {
+    return 'ADMIN';
+  }
+  if (role === 'dealer') {
+    return 'DEALER';
+  }
+  return 'USER';
+};
 
 export const readStoredUserRole = (): UserRole | null => {
   if (typeof window === 'undefined') {

@@ -3,28 +3,14 @@
 .logo-container {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
 }
 
-.logo-icon {
-  flex-shrink: 0;
-  width: 2.5rem;
-  height: 2.5rem;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  border-radius: var(--border-radius-base);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-md);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-white);
-  font-size: var(--font-size-lg);
-}
-
-.logo-icon-text {
-  color: var(--color-white);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-lg);
+.logo-image {
+  width: clamp(90px, 14vw, 160px);
+  height: auto;
+  display: block;
+  object-fit: contain;
 }
 
 .logo-brand {
@@ -48,8 +34,8 @@
 
 .logo-tagline {
   font-size: var(--font-size-xs);
-  color: var(--color-dark-gray);
+  color: rgba(255, 255, 255, 0.75);
   font-weight: var(--font-weight-normal);
-  margin-top: var(--spacing-xs);
+  margin-top: 0;
   letter-spacing: 0.5px;
 }

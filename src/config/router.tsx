@@ -34,6 +34,15 @@ import { AdminRevokeAccessPage } from '../pages/Admin/AdminRevokeAccessPage';
 import { AdminUsersPage } from '../pages/Admin/AdminUsersPage';
 import { AdminAuditLogsPage } from '../pages/Admin/AdminAuditLogsPage';
 import { AdminSettingsPage } from '../pages/Admin/AdminSettingsPage';
+import { AdminCreateDealerPage } from '../pages/Admin/AdminCreateDealerPage';
+import { AdminDealersPage } from '../pages/Admin/AdminDealersPage';
+import { AdminAnalyticsPortalPage } from '../pages/Admin/AdminAnalyticsPortalPage';
+import { DealerApplicationsPage } from '../pages/Dealer/DealerApplicationsPage';
+import { DealerDashboardPage } from '../pages/Dealer/DealerDashboardPage';
+import { DealerDealsPage } from '../pages/Dealer/DealerDealsPage';
+import { DealerFollowUpsPage } from '../pages/Dealer/DealerFollowUpsPage';
+import { DealerProfilePage } from '../pages/Dealer/DealerProfilePage';
+import { DealerReviewPropertiesPage } from '../pages/Dealer/DealerReviewPropertiesPage';
 
 export const router = createBrowserRouter([
   {
@@ -180,7 +189,7 @@ export const router = createBrowserRouter([
         path: 'admin/dashboard',
         element: (
           <RoleProtectedRoute requiredRole="admin">
-            <AdminDashboardPage />
+            <AdminAnalyticsPortalPage />
           </RoleProtectedRoute>
         ),
       },
@@ -217,10 +226,82 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: 'admin/dealers',
+        element: (
+          <RoleProtectedRoute requiredRole="admin">
+            <AdminDealersPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'admin/dealers/create',
+        element: (
+          <RoleProtectedRoute requiredRole="admin">
+            <AdminCreateDealerPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'admin/analytics',
+        element: (
+          <RoleProtectedRoute requiredRole="admin">
+            <AdminDashboardPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
         path: 'seller/dashboard',
         element: (
           <RoleProtectedRoute requiredRole="seller">
             <SellerDashboardPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'dealer/dashboard',
+        element: (
+          <RoleProtectedRoute requiredRole="dealer">
+            <DealerDashboardPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'dealer/applications',
+        element: (
+          <RoleProtectedRoute requiredRole="dealer">
+            <DealerApplicationsPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'dealer/follow-ups',
+        element: (
+          <RoleProtectedRoute requiredRole="dealer">
+            <DealerFollowUpsPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'dealer/deals',
+        element: (
+          <RoleProtectedRoute requiredRole="dealer">
+            <DealerDealsPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'dealer/review-properties',
+        element: (
+          <RoleProtectedRoute requiredRole="dealer">
+            <DealerReviewPropertiesPage />
+          </RoleProtectedRoute>
+        ),
+      },
+      {
+        path: 'dealer/profile',
+        element: (
+          <RoleProtectedRoute requiredRole="dealer">
+            <DealerProfilePage />
           </RoleProtectedRoute>
         ),
       },

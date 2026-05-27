@@ -1,0 +1,126 @@
+.dealer-page-panel {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.dealer-page-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dealer-page-table th,
+.dealer-page-table td {
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  font-size: 0.92rem;
+}
+
+.dealer-page-table th {
+  color: #334155;
+  font-weight: var(--font-weight-semibold);
+}
+
+.dealer-page-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+.dealer-page-status.is-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.dealer-page-status.is-warning {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.dealer-page-actions {
+  display: inline-flex;
+  gap: 0.5rem;
+}
+
+.dealer-page-btn {
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 10px;
+  background: #f8fafc;
+  padding: 0.35rem 0.65rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+.dealer-page-btn.is-primary {
+  background: #0891b2;
+  border-color: #0891b2;
+  color: #ffffff;
+}
+
+.dealer-page-btn.is-danger {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  color: #ffffff;
+}
+
+.dealer-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.dealer-profile-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.dealer-profile-field label {
+  font-size: 0.85rem;
+  color: #334155;
+}
+
+.dealer-profile-field input,
+.dealer-profile-field textarea {
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 10px;
+  padding: 0.65rem 0.8rem;
+  font: inherit;
+}
+
+.dealer-profile-field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.dealer-profile-field.is-full {
+  grid-column: 1 / -1;
+}
+
+.dealer-inline-note {
+  margin: 0.85rem 0 0;
+  color: #0f766e;
+  font-size: 0.9rem;
+}
+
+.dealer-profile-actions {
+  margin-top: 1rem;
+}
+
+@media (max-width: 900px) {
+  .dealer-profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dealer-page-table {
+    display: block;
+    overflow-x: auto;
+  }
+}

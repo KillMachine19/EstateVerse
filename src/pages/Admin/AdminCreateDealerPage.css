@@ -1,0 +1,107 @@
+.dealer-create-grid .dealer-create-full-width {
+  grid-column: 1 / -1;
+}
+
+.dealer-create-grid .profile-field select,
+.dealer-create-grid .profile-field textarea {
+  border: 1px solid rgba(15, 23, 42, 0.16);
+  border-radius: 10px;
+  padding: 0.72rem 0.85rem;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  background: var(--bg-white);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+  font-family: inherit;
+}
+
+.dealer-create-grid .profile-field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.dealer-create-grid .profile-field select:focus-visible,
+.dealer-create-grid .profile-field textarea:focus-visible {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.dealer-localities-field {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.dealer-locality-chips {
+  border: 1px solid rgba(15, 23, 42, 0.16);
+  border-radius: 10px;
+  padding: 0.55rem;
+  min-height: 46px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.dealer-locality-chips:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.dealer-locality-chips input {
+  border: none;
+  outline: none;
+  flex: 1;
+  min-width: 180px;
+  font: inherit;
+  color: var(--text-primary);
+  background: transparent;
+}
+
+.dealer-locality-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  padding: 0.26rem 0.62rem;
+  background: rgba(0, 188, 212, 0.12);
+  border: 1px solid rgba(0, 188, 212, 0.25);
+  color: #0c4a6e;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.dealer-locality-chip button {
+  border: none;
+  background: transparent;
+  color: #0c4a6e;
+  padding: 0;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.dealer-locality-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.dealer-locality-suggestion {
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  border-radius: 999px;
+  background: #f8fafc;
+  color: #1e293b;
+  padding: 0.35rem 0.65rem;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+.dealer-locality-suggestion:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.dealer-locality-suggestion:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FiEye, FiEyeOff, FiLock } from 'react-icons/fi';
+import { useSearchParams } from 'react-router-dom';
 import { RolePageShell } from '../../components/RolePageShell';
 import axios from 'axios';
 import { updatePassword } from '../../services/controllers/profileService';
@@ -12,6 +13,7 @@ interface ResetPasswordErrors {
 }
 
 export const ResetPasswordPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -21,6 +23,7 @@ export const ResetPasswordPage: React.FC = () => {
   const [apiError, setApiError] = useState('');
   const [errors, setErrors] = useState<ResetPasswordErrors>({});
   const [isSaved, setIsSaved] = useState(false);
+  const isFirstLoginReset = searchParams.get('firstLogin') === 'true';
 
   const validate = () => {
     const nextErrors: ResetPasswordErrors = {};
@@ -67,6 +70,7 @@ export const ResetPasswordPage: React.FC = () => {
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
+        window.localStorage.removeItem('estateverse_force_password_reset');
       })
       .catch((error) => {
         if (axios.isAxiosError(error)) {
@@ -91,6 +95,7 @@ export const ResetPasswordPage: React.FC = () => {
       description="Choose a new password to keep your account secure."
       icon={<FiLock aria-hidden="true" />}
     >
+      {isFirstLoginReset ? <p className="reset-password-status">Please reset your password to continue using your account.</p> : null}
       <form className="reset-password-form" onSubmit={handleSubmit} noValidate>
         <div className="reset-password-grid">
           <label className="reset-password-field">

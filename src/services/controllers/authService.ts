@@ -1,7 +1,7 @@
 import apiClient from '../apiClient';
 import { setApiAuthToken } from '../apiClient';
 import type { BackendRole } from '../../utils/authRole';
-import { extractAuthToken } from '../../utils/authToken';
+import { decodeJwtPayload, extractAuthToken } from '../../utils/authToken';
 
 export interface AuthCredentials {
   username: string;
@@ -9,6 +9,84 @@ export interface AuthCredentials {
 }
 
 export type RegisterCredentials = AuthCredentials | (AuthCredentials & { role: BackendRole });
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+const asBoolean = (value: unknown): boolean | null => {
+  if (typeof value === 'boolean') {
+    return value;
+  }
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === 'true') {
+      return true;
+    }
+    if (normalized === 'false') {
+      return false;
+    }
+  }
+  return null;
+};
+
+export const shouldForcePasswordReset = (payload: unknown): boolean => {
+  if (!isRecord(payload)) {
+    return false;
+  }
+
+  const directValues = [
+    payload.mustResetPassword,
+    payload.passwordResetRequired,
+    payload.forcePasswordReset,
+    payload.firstLogin,
+  ];
+  for (const value of directValues) {
+    const booleanValue = asBoolean(value);
+    if (booleanValue !== null) {
+      return booleanValue;
+    }
+  }
+
+  const data = isRecord(payload.data) ? payload.data : null;
+  if (data) {
+    const nestedValues = [
+      data.mustResetPassword,
+      data.passwordResetRequired,
+      data.forcePasswordReset,
+      data.firstLogin,
+    ];
+    for (const value of nestedValues) {
+      const booleanValue = asBoolean(value);
+      if (booleanValue !== null) {
+        return booleanValue;
+      }
+    }
+  }
+
+  const token = extractAuthToken(payload);
+  if (!token) {
+    return false;
+  }
+  const jwtPayload = decodeJwtPayload(token);
+  if (!jwtPayload) {
+    return false;
+  }
+
+  const jwtValues = [
+    jwtPayload.mustResetPassword,
+    jwtPayload.passwordResetRequired,
+    jwtPayload.forcePasswordReset,
+    jwtPayload.firstLogin,
+  ];
+  for (const value of jwtValues) {
+    const booleanValue = asBoolean(value);
+    if (booleanValue !== null) {
+      return booleanValue;
+    }
+  }
+
+  return false;
+};
 
 export const registerUser = async (credentials: RegisterCredentials) => {
   try {

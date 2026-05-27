@@ -1,0 +1,63 @@
+.dealer-sidebar {
+  width: var(--sidebar-width, 240px);
+  position: fixed;
+  top: 102px;
+  left: max(1rem, calc((100vw - var(--workspace-max-width, 1260px)) / 2));
+  background: #ffffff;
+  border: 1px solid rgba(14, 116, 144, 0.14);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  z-index: 3;
+}
+
+.dealer-sidebar-title {
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #0f766e;
+  font-weight: var(--font-weight-semibold);
+}
+
+.dealer-sidebar-nav {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.dealer-sidebar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  color: #1f2937;
+  font-weight: 500;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dealer-sidebar-link:hover {
+  background: #ecfeff;
+  color: #0f766e;
+}
+
+.dealer-sidebar-link.is-active {
+  background: #cffafe;
+  color: #115e59;
+}
+
+.dealer-sidebar-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .dealer-sidebar {
+    position: static;
+    width: 100%;
+  }
+}

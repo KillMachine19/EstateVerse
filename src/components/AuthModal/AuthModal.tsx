@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import axios from 'axios';
 import { FiBriefcase, FiKey, FiUser, FiX } from 'react-icons/fi';
-import { loginUser, registerUser } from '../../services/controllers/authService';
+import { loginUser, registerUser, shouldForcePasswordReset } from '../../services/controllers/authService';
 import {
   extractUserRoleFromSession,
   readStoredUserRole,
   type UserRole,
 } from '../../utils/authRole';
+import { readStoredAuthToken } from '../../utils/authToken';
 import './AuthModal.css';
 
 type AuthMode = 'signin' | 'signup';
@@ -15,7 +16,7 @@ type AuthMode = 'signin' | 'signup';
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAuthSuccess: (role: UserRole | null) => Promise<void> | void;
+  onAuthSuccess: (role: UserRole | null, options?: { forcePasswordReset?: boolean }) => Promise<void> | void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess }) => {
@@ -23,7 +24,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
   const [authError, setAuthError] = useState('');
   const [authSuccess, setAuthSuccess] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
       setAuthError('');
       setAuthSuccess('');
       setIsSubmitting(false);
-      setEmail('');
+      setUsername('');
       setPassword('');
       return;
     }
@@ -75,7 +76,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
     }
 
     const payload = {
-      username: email.trim(),
+      username: username.trim(),
       password,
     };
 
@@ -87,8 +88,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
         setMode('signin');
       } else {
         const loginResponse = await loginUser(payload);
+        const storedToken = readStoredAuthToken();
+        if (!storedToken) {
+          setAuthError('Login succeeded, but auth token is missing. Please try signing in again.');
+          return;
+        }
         const resolvedRole = extractUserRoleFromSession(loginResponse) ?? readStoredUserRole();
-        await onAuthSuccess(resolvedRole);
+        await onAuthSuccess(resolvedRole, { forcePasswordReset: shouldForcePasswordReset(loginResponse) });
         return;
       }
     } catch (error) {
@@ -153,16 +159,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuc
           <label className="auth-field">
             <span className="auth-label">
               <FiUser aria-hidden="true" />
-              Email
+              Username or Email
             </span>
             <input
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              autoComplete="email"
-              value={email}
+              type="text"
+              name="username"
+              placeholder="Enter your username or email"
+              autoComplete="username"
+              value={username}
               onChange={(event) => {
-                setEmail(event.target.value);
+                setUsername(event.target.value);
                 if (authError) {
                   setAuthError('');
                 }

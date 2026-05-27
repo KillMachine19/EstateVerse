@@ -5,14 +5,17 @@ import {
   FiBell,
   FiBookmark,
   FiCheckCircle,
+  FiCheckSquare,
   FiFileText,
   FiGrid,
+  FiPhoneCall,
   FiShield,
   FiSettings,
   FiMapPin,
   FiMessageSquare,
   FiSearch,
   FiTag,
+  FiUserCheck,
   FiUser,
 } from 'react-icons/fi';
 import { Logo } from '../Logo';
@@ -37,6 +40,7 @@ export const Header: React.FC = () => {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const isBuyer = isAuthenticated && userRole === 'buyer';
   const isAdmin = isAuthenticated && userRole === 'admin';
+  const isDealer = isAuthenticated && userRole === 'dealer';
 
   const navigationItems = isAuthenticated
     ? getSignedInNavigationItems(userRole)
@@ -80,6 +84,8 @@ export const Header: React.FC = () => {
 
   const adminMobileNavigationItems = [
     { label: 'Dashboard', path: '/admin/dashboard', icon: <FiGrid aria-hidden="true" /> },
+    { label: 'Dealers', path: '/admin/dealers', icon: <FiUserCheck aria-hidden="true" /> },
+    { label: 'Create Dealer', path: '/admin/dealers/create', icon: <FiUserCheck aria-hidden="true" /> },
     { label: 'Revoke Access', path: '/admin/revoke-access', icon: <FiShield aria-hidden="true" /> },
     {
       label: 'Profile',
@@ -91,6 +97,15 @@ export const Header: React.FC = () => {
         { label: 'Reset Password', path: '/reset-password', icon: <FiSettings aria-hidden="true" /> },
       ],
     },
+  ];
+
+  const dealerDesktopNavigationItems = [
+    { label: 'Dashboard', path: '/dealer/dashboard', icon: <FiGrid aria-hidden="true" /> },
+    { label: 'Applications', path: '/dealer/applications', icon: <FiPhoneCall aria-hidden="true" /> },
+    { label: 'Follow Ups', path: '/dealer/follow-ups', icon: <FiMessageSquare aria-hidden="true" /> },
+    { label: 'Deal Status', path: '/dealer/deals', icon: <FiTag aria-hidden="true" /> },
+    { label: 'Review Properties', path: '/dealer/review-properties', icon: <FiCheckSquare aria-hidden="true" /> },
+    { label: 'Dealer Profile', path: '/dealer/profile', icon: <FiUser aria-hidden="true" /> },
   ];
 
   const toggleMobileMenu = () => {
@@ -129,18 +144,23 @@ export const Header: React.FC = () => {
     navigate(isAuthenticated ? getDefaultDashboardPath(userRole) : '/');
   };
 
-  const onAuthSuccess = async (role: UserRole | null) => {
+  const onAuthSuccess = async (role: UserRole | null, options?: { forcePasswordReset?: boolean }) => {
     setAuthenticated(true);
     const resolvedRole = role ?? readStoredUserRole() ?? 'buyer';
 
     setUserRole(resolvedRole);
     setIsAuthOpen(false);
     setIsMobileMenuOpen(false);
-    navigate(getDefaultDashboardPath(resolvedRole));
+    if (options?.forcePasswordReset) {
+      window.localStorage.setItem('estateverse_force_password_reset', 'true');
+    } else {
+      window.localStorage.removeItem('estateverse_force_password_reset');
+    }
+    navigate(options?.forcePasswordReset ? '/reset-password?firstLogin=true' : getDefaultDashboardPath(resolvedRole));
   };
 
   const onPerspectiveChange = (perspective: 'buyer' | 'seller') => {
-    if (!isAuthenticated || userRole === perspective || userRole === 'admin') {
+    if (!isAuthenticated || userRole === perspective || userRole === 'admin' || userRole === 'dealer') {
       return;
     }
 
@@ -151,6 +171,7 @@ export const Header: React.FC = () => {
 
   const onSignOut = () => {
     clearAuth();
+    window.localStorage.removeItem('estateverse_force_password_reset');
     setIsAuthOpen(false);
     setIsMobileMenuOpen(false);
     navigate('/');
@@ -166,7 +187,7 @@ export const Header: React.FC = () => {
             </div>
           </button>
 
-          <div className={`header-nav-desktop ${isBuyer ? 'header-nav-buyer' : ''}`}>
+          <div className={`header-nav-desktop ${isBuyer || isDealer ? 'header-nav-buyer' : ''}`}>
             {isBuyer ? (
               <>
                 <BuyerHeaderNav />
@@ -187,13 +208,15 @@ export const Header: React.FC = () => {
                   </button>
                 </div>
               </>
+            ) : isDealer ? (
+              <Navigation items={dealerDesktopNavigationItems} isOpen={true} />
             ) : (
               <Navigation items={navigationItems} isOpen={true} />
             )}
           </div>
 
           <div className="header-auth-desktop">
-            {isAuthenticated && !isBuyer && !isAdmin ? (
+            {isAuthenticated && !isBuyer && !isAdmin && !isDealer ? (
               <div className="header-perspective-toggle" role="group" aria-label="Select viewing perspective">
                 <button
                   type="button"
@@ -234,13 +257,21 @@ export const Header: React.FC = () => {
         {isMobileMenuOpen && (
           <div className="header-mobile-nav">
             <Navigation
-              items={isBuyer ? buyerMobileNavigationItems : isAdmin ? adminMobileNavigationItems : navigationItems}
+              items={
+                isBuyer
+                  ? buyerMobileNavigationItems
+                  : isAdmin
+                    ? adminMobileNavigationItems
+                    : isDealer
+                      ? dealerDesktopNavigationItems
+                      : navigationItems
+              }
               isOpen={isMobileMenuOpen}
               onClose={closeMobileMenu}
               isMobile={true}
             />
             <div className="header-mobile-actions">
-              {isAuthenticated && !isAdmin ? (
+              {isAuthenticated && !isAdmin && !isDealer ? (
                 <div className="header-perspective-toggle header-perspective-toggle-mobile" role="group" aria-label="Select viewing perspective">
                   <button
                     type="button"

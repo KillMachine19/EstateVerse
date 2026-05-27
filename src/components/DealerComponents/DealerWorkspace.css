@@ -1,12 +1,12 @@
-.admin-shell {
+.dealer-workspace {
   min-height: calc(100vh - 160px);
   padding: 1.5rem 1rem 2rem;
-  background: radial-gradient(circle at top left, rgba(14, 165, 233, 0.12), transparent 40%),
-    linear-gradient(180deg, rgba(2, 132, 199, 0.08) 0%, rgba(0, 0, 0, 0) 45%), #f8fbfd;
+  background: radial-gradient(circle at 15% 15%, rgba(14, 165, 233, 0.12), transparent 45%),
+    linear-gradient(180deg, rgba(3, 105, 161, 0.08) 0%, rgba(2, 132, 199, 0) 55%), #f4f9fd;
 }
 
-.admin-shell-container {
-  --workspace-max-width: 1240px;
+.dealer-workspace-container {
+  --workspace-max-width: 1260px;
   --sidebar-width: 240px;
   max-width: var(--workspace-max-width);
   margin: 0 auto;
@@ -15,25 +15,25 @@
   gap: 1rem;
 }
 
-.admin-shell-main {
+.dealer-workspace-main {
   flex: 1;
   min-width: 0;
-  margin-left: 0;
+  margin-left: calc(var(--sidebar-width) + 1rem);
 }
 
-.admin-shell-content {
+.dealer-workspace-content {
   margin-top: 1rem;
 }
 
-.admin-shell-card {
+.dealer-workspace-card {
   background: #ffffff;
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--shadow-sm);
 }
 
-.admin-shell-title {
+.dealer-workspace-title {
   margin: 0 0 0.75rem;
   font-size: clamp(1.5rem, 2.5vw, 2rem);
   color: #0f172a;
@@ -42,12 +42,12 @@
   gap: 0.55rem;
 }
 
-.admin-shell-title-icon {
+.dealer-workspace-title-icon {
   width: 2rem;
   height: 2rem;
   border-radius: 10px;
-  background: rgba(2, 132, 199, 0.16);
-  color: #075985;
+  background: rgba(14, 116, 144, 0.15);
+  color: #0f766e;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -55,23 +55,23 @@
   font-size: 1rem;
 }
 
-.admin-shell-description {
+.dealer-workspace-description {
   margin: 0;
   color: #334155;
   line-height: 1.6;
-  max-width: 64ch;
+  max-width: 65ch;
 }
 
 @media (max-width: 900px) {
-  .admin-shell-container {
+  .dealer-workspace-container {
     flex-direction: column;
   }
 
-  .admin-shell-main {
+  .dealer-workspace-main {
     margin-left: 0;
   }
 
-  .admin-shell {
+  .dealer-workspace {
     padding-top: 1rem;
   }
 }

@@ -1,10 +1,13 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { FiGrid, FiList, FiShield, FiSliders } from 'react-icons/fi';
+import { FiBarChart2, FiGrid, FiList, FiShield, FiSliders, FiUserCheck, FiUserPlus } from 'react-icons/fi';
 import './AdminSidebar.css';
 
 const ADMIN_NAV_ITEMS = [
   { label: 'Dashboard', to: '/admin/dashboard', icon: <FiGrid aria-hidden="true" /> },
+  { label: 'Analytics', to: '/admin/analytics', icon: <FiBarChart2 aria-hidden="true" /> },
+  { label: 'Dealers', to: '/admin/dealers', icon: <FiUserCheck aria-hidden="true" /> },
+  { label: 'Create Dealer', to: '/admin/dealers/create', icon: <FiUserPlus aria-hidden="true" /> },
   { label: 'User Directory', to: '/admin/users', icon: <FiList aria-hidden="true" /> },
   { label: 'Audit Logs', to: '/admin/audit-logs', icon: <FiList aria-hidden="true" /> },
   { label: 'Revoke Access', to: '/admin/revoke-access', icon: <FiShield aria-hidden="true" /> },

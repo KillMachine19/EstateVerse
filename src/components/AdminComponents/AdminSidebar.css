@@ -1,8 +1,9 @@
 .admin-sidebar {
   width: var(--sidebar-width, 240px);
-  position: fixed;
+  position: sticky;
   top: calc(5rem + 1rem);
-  left: max(1rem, calc((100vw - var(--workspace-max-width, 1240px)) / 2));
+  left: auto;
+  align-self: flex-start;
   max-height: calc(100vh - 7rem);
   overflow-y: auto;
   border-radius: 16px;
@@ -59,5 +60,8 @@
 @media (max-width: 900px) {
   .admin-sidebar {
     width: 100%;
+    position: static;
+    top: auto;
+    max-height: none;
   }
 }

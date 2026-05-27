@@ -41,11 +41,23 @@ const SELLER_NAVIGATION_ITEMS: NavItem[] = [
 
 const ADMIN_NAVIGATION_ITEMS: NavItem[] = [
   { label: 'Dashboard', path: '/admin/dashboard' },
+  { label: 'Analytics', path: '/admin/analytics' },
+  { label: 'Dealers', path: '/admin/dealers' },
+  { label: 'Create Dealer', path: '/admin/dealers/create' },
   { label: 'User Directory', path: '/admin/users' },
   { label: 'Audit Logs', path: '/admin/audit-logs' },
   { label: 'Revoke Access', path: '/admin/revoke-access' },
   { label: 'System Settings', path: '/admin/settings' },
   { label: 'Profile', path: '/profile' },
+];
+
+const DEALER_NAVIGATION_ITEMS: NavItem[] = [
+  { label: 'Dashboard', path: '/dealer/dashboard' },
+  { label: 'Applications', path: '/dealer/applications' },
+  { label: 'Follow Ups', path: '/dealer/follow-ups' },
+  { label: 'Deal Status', path: '/dealer/deals' },
+  { label: 'Review Properties', path: '/dealer/review-properties' },
+  { label: 'Profile', path: '/dealer/profile' },
 ];
 
 export const getSignedInNavigationItems = (role: UserRole | null): NavItem[] => {
@@ -54,6 +66,9 @@ export const getSignedInNavigationItems = (role: UserRole | null): NavItem[] => 
   }
   if (role === 'seller') {
     return SELLER_NAVIGATION_ITEMS;
+  }
+  if (role === 'dealer') {
+    return DEALER_NAVIGATION_ITEMS;
   }
 
   return BUYER_NAVIGATION_ITEMS;
@@ -65,6 +80,9 @@ export const getDefaultDashboardPath = (role: UserRole | null): string => {
   }
   if (role === 'seller') {
     return '/seller/dashboard';
+  }
+  if (role === 'dealer') {
+    return '/dealer/dashboard';
   }
   return '/buyer/dashboard';
 };
