@@ -12,7 +12,7 @@ const BUYER_SIDEBAR_ITEMS = [
 export const BuyerSidebar: React.FC = () => {
   const location = useLocation();
   const isDashboardRoute = useMemo(
-    () => location.pathname.startsWith('/buyer/dashboard') || location.pathname.startsWith('/buyer/analytics'),
+    () => location.pathname.startsWith('/buyer/dashboard') ,
     [location.pathname]
   );
   const isSavedRoute = useMemo(
@@ -65,15 +65,6 @@ export const BuyerSidebar: React.FC = () => {
                   <FiGrid aria-hidden="true" />
                 </span>
                 Overview
-              </NavLink>
-              <NavLink
-                to="/buyer/analytics"
-                className={({ isActive }) => `buyer-sidebar-sublink ${isActive ? 'is-active' : ''}`}
-              >
-                <span className="buyer-sidebar-sublink__icon">
-                  <FiPieChart aria-hidden="true" />
-                </span>
-                Analytics
               </NavLink>
             </div>
           )}

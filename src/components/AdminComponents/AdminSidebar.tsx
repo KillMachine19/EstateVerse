@@ -5,7 +5,6 @@ import './AdminSidebar.css';
 
 const ADMIN_NAV_ITEMS = [
   { label: 'Dashboard', to: '/admin/dashboard', icon: <FiGrid aria-hidden="true" /> },
-  { label: 'Analytics', to: '/admin/analytics', icon: <FiBarChart2 aria-hidden="true" /> },
   { label: 'Dealers', to: '/admin/dealers', icon: <FiUserCheck aria-hidden="true" /> },
   { label: 'Create Dealer', to: '/admin/dealers/create', icon: <FiUserPlus aria-hidden="true" /> },
   { label: 'User Directory', to: '/admin/users', icon: <FiList aria-hidden="true" /> },

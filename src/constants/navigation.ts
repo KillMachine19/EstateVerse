@@ -33,7 +33,6 @@ const SELLER_NAVIGATION_ITEMS: NavItem[] = [
   { label: 'Add Property', path: '/seller/add-property' },
   { label: 'Leads', path: '/seller/leads' },
   { label: 'Applications', path: '/seller/applications' },
-  { label: 'Analytics', path: '/seller/analytics' },
   { label: 'Messages', path: '/seller/messages' },
   { label: 'Notifications', path: '/seller/notifications' },
   { label: 'Profile', path: '/profile' },

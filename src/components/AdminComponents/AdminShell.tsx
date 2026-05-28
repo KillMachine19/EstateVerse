@@ -9,7 +9,7 @@ interface AdminShellProps {
   children?: React.ReactNode;
 }
 
-export const AdminShell: React.FC<AdminShellProps> = ({ title, description, icon, children }) => {
+export const AdminShell: React.FC<AdminShellProps> = ({ title, description, icon,children }) => {
   return (
     <section className="admin-shell">
       <div className="admin-shell-container">

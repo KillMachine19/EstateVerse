@@ -33,7 +33,7 @@
   gap: 0.75rem;
   padding: 0.85rem 1rem;
   border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-  background: linear-gradient(120deg, rgba(0, 188, 212, 0.25), rgba(44, 168, 255, 0.2));
+  background: linear-gradient(120deg, rgba(228, 87, 42, 0.25), rgba(255, 155, 116, 0.2));
 }
 
 .buyer-property-tabs {
@@ -458,7 +458,7 @@
 }
 
 .buyer-lightbox-carousel .carousel-indicators .active {
-  background: #22d3ee;
+  background: #ff8e61;
 }
 
 .buyer-lightbox-carousel .carousel-control-prev,

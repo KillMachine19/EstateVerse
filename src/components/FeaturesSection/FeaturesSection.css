@@ -2,7 +2,7 @@
 
 .features-section {
   padding: var(--spacing-3xl) 0;
-  background: linear-gradient(180deg, var(--bg-smoke) 0%, var(--bg-white) 100%);
+  background: linear-gradient(180deg, var(--sunset-bg) 0%, #fff8f3 100%);
   position: relative;
 }
 
@@ -39,7 +39,7 @@
   font-size: var(--font-size-3xl);
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--spacing-md);
-  color: var(--text-primary);
+  color: var(--sunset-ink);
   text-transform: uppercase;
   letter-spacing: -0.5px;
 }
@@ -51,7 +51,7 @@
 }
 
 .features-description {
-  color: var(--text-secondary);
+  color: var(--sunset-ink-soft);
   font-size: var(--font-size-lg);
   max-width: 42rem;
   margin: 0 auto;
@@ -77,12 +77,12 @@
 }
 
 .feature-card {
-  background-color: var(--bg-white);
+  background-color: var(--sunset-card);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-xl);
   box-shadow: var(--shadow-md);
   transition: all var(--transition-base);
-  border: 1px solid rgba(249, 99, 50, 0.1);
+  border: 1px solid rgba(228, 87, 42, 0.2);
   position: relative;
   overflow: hidden;
 }
@@ -94,7 +94,7 @@
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-info));
+  background: linear-gradient(90deg, var(--sunset-accent), #ff9b74);
   transform: scaleX(0);
   transition: transform var(--transition-base);
   transform-origin: left;
@@ -119,11 +119,11 @@
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
   margin-bottom: var(--spacing-sm);
-  color: var(--text-primary);
+  color: var(--sunset-ink);
 }
 
 .feature-description {
-  color: var(--text-secondary);
+  color: var(--sunset-ink-soft);
   font-size: var(--font-size-base);
   line-height: var(--line-height-normal);
 }

@@ -1,7 +1,7 @@
 .buyer-workspace {
   min-height: calc(100vh - 160px);
   padding: 1.5rem 1rem 2rem;
-  background: linear-gradient(180deg, rgba(0, 188, 212, 0.08) 0%, rgba(0, 0, 0, 0) 45%), #f8fbfd;
+  background: linear-gradient(180deg, rgba(255, 108, 55, 0.08) 0%, rgba(0, 0, 0, 0) 45%), #f8fbfd;
 }
 
 .buyer-workspace-container {
@@ -45,8 +45,8 @@
   width: 2rem;
   height: 2rem;
   border-radius: 10px;
-  background: rgba(0, 188, 212, 0.14);
-  color: #0369a1;
+  background: rgba(255, 108, 55, 0.14);
+  color: #e4572a;
   display: inline-flex;
   align-items: center;
   justify-content: center;

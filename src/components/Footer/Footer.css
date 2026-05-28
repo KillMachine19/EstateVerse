@@ -44,7 +44,7 @@
   margin-bottom: var(--spacing-md);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-info));
+  background: linear-gradient(135deg, var(--sunset-accent), #ff9b74);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -87,7 +87,7 @@
 
 .footer-link::before {
   content: '▸';
-  color: var(--color-primary);
+  color: var(--sunset-accent);
   font-weight: var(--font-weight-bold);
 }
 

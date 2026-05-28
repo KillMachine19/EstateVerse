@@ -220,7 +220,7 @@
 
 .property-listing-image-slot.is-main {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.2);
+  box-shadow: 0 0 0 2px rgba(255, 108, 55, 0.2);
 }
 
 .property-listing-image-main {
@@ -308,12 +308,12 @@
 }
 
 .property-listing-chip {
-  border: 1px solid rgba(0, 188, 212, 0.35);
+  border: 1px solid rgba(228, 87, 42, 0.35);
   border-radius: 999px;
   padding: 0.25rem 0.6rem;
   font-size: var(--font-size-xs);
   color: var(--color-primary-dark);
-  background: rgba(0, 188, 212, 0.12);
+  background: rgba(255, 108, 55, 0.12);
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;

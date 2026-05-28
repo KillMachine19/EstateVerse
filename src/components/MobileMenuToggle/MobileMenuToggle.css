@@ -17,14 +17,14 @@
 }
 
 .menu-toggle:hover {
-  color: var(--color-primary);
-  background-color: rgba(0, 188, 212, 0.1);
-  border-color: rgba(0, 188, 212, 0.3);
+  color: var(--sunset-accent);
+  background-color: rgba(255, 108, 55, 0.1);
+  border-color: rgba(255, 108, 55, 0.3);
 }
 
 .menu-toggle:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.3);
+  box-shadow: 0 0 0 3px rgba(255, 108, 55, 0.3);
 }
 
 .menu-icon {

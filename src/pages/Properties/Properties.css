@@ -1,7 +1,7 @@
 .properties-page {
   flex: 1;
   width: 100%;
-  background: linear-gradient(180deg, #ffffff 0%, #f8fcfd 100%);
+  background: linear-gradient(180deg, #f3ece8 0%, #fff8f3 100%);
 }
 
 .properties-section {
@@ -26,6 +26,10 @@
 
 .properties-header {
   margin-bottom: var(--spacing-lg);
+  background: linear-gradient(130deg, rgba(165, 91, 96, 0.18), rgba(255, 108, 55, 0.1));
+  border: 1px solid rgba(228, 87, 42, 0.2);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
 }
 
 .properties-title {
@@ -33,18 +37,19 @@
   font-size: var(--font-size-4xl);
   text-transform: uppercase;
   letter-spacing: -0.5px;
+  color: var(--sunset-ink);
 }
 
 .properties-subtitle {
   max-width: 44rem;
   margin: 0;
-  color: var(--text-secondary);
+  color: var(--sunset-ink-soft);
   font-size: var(--font-size-lg);
 }
 
 .properties-results-count {
   margin: 0 0 var(--spacing-md);
-  color: var(--text-secondary);
+  color: var(--sunset-ink-soft);
   font-size: var(--font-size-sm);
 }
 
@@ -56,11 +61,11 @@
 
 .properties-empty-state {
   padding: var(--spacing-xl);
-  border: 1px dashed rgba(0, 0, 0, 0.2);
+  border: 1px dashed rgba(228, 87, 42, 0.45);
   border-radius: var(--border-radius-lg);
   text-align: center;
-  color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.8);
+  color: var(--sunset-ink-soft);
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .properties-pagination {

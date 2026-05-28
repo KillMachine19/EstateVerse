@@ -4,7 +4,7 @@
   top: 102px;
   left: max(1rem, calc((100vw - var(--workspace-max-width, 1260px)) / 2));
   background: #ffffff;
-  border: 1px solid rgba(14, 116, 144, 0.14);
+  border: 1px solid rgba(228, 87, 42, 0.2);
   border-radius: 16px;
   padding: 1.25rem;
   box-shadow: var(--shadow-sm);
@@ -16,7 +16,7 @@
   font-size: 0.8rem;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: #0f766e;
+  color: #e4572a;
   font-weight: var(--font-weight-semibold);
 }
 
@@ -37,13 +37,13 @@
 }
 
 .dealer-sidebar-link:hover {
-  background: #ecfeff;
-  color: #0f766e;
+  background: rgba(255, 108, 55, 0.08);
+  color: #e4572a;
 }
 
 .dealer-sidebar-link.is-active {
-  background: #cffafe;
-  color: #115e59;
+  background: rgba(255, 108, 55, 0.16);
+  color: #0f172a;
 }
 
 .dealer-sidebar-icon {

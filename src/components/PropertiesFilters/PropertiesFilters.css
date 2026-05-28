@@ -6,10 +6,10 @@
   max-width: 82rem;
   margin: 0 auto var(--spacing-md);
   padding: var(--spacing-lg) var(--spacing-lg);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(228, 87, 42, 0.2);
   border-radius: var(--border-radius-lg);
-  background: #ffffff;
-  box-shadow: var(--shadow-sm);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
 }
 
 .filter-group {
@@ -25,7 +25,7 @@
 .filter-label {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-bold);
-  color: var(--text-primary);
+  color: var(--sunset-ink);
   letter-spacing: 0.01em;
 }
 
@@ -43,8 +43,8 @@
 
 .filter-input:focus-visible {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-light);
+  border-color: var(--sunset-accent);
+  box-shadow: 0 0 0 3px rgba(255, 108, 55, 0.2);
 }
 
 .budget-slider-group {
@@ -66,8 +66,8 @@
       to right,
       var(--color-light-gray) 0%,
       var(--color-light-gray) var(--min-budget-percent),
-      var(--color-primary) var(--min-budget-percent),
-      var(--color-primary) var(--max-budget-percent),
+      var(--sunset-accent) var(--min-budget-percent),
+      var(--sunset-accent) var(--max-budget-percent),
       var(--color-light-gray) var(--max-budget-percent),
       var(--color-light-gray) 100%
     );
@@ -90,7 +90,7 @@
   height: 1rem;
   border-radius: 50%;
   background: var(--color-white);
-  border: 2px solid var(--color-primary);
+  border: 2px solid var(--sunset-accent);
   box-shadow: var(--shadow-sm);
   pointer-events: auto;
   cursor: pointer;
@@ -101,7 +101,7 @@
   height: 1rem;
   border-radius: 50%;
   background: var(--color-white);
-  border: 2px solid var(--color-primary);
+  border: 2px solid var(--sunset-accent);
   box-shadow: var(--shadow-sm);
   pointer-events: auto;
   cursor: pointer;
@@ -142,14 +142,14 @@
 }
 
 .filter-amenity-chip:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary-dark);
+  border-color: var(--sunset-accent);
+  color: var(--sunset-accent-dark);
 }
 
 .filter-amenity-chip.is-active {
-  border-color: rgba(0, 188, 212, 0.5);
-  background: rgba(0, 188, 212, 0.14);
-  color: #0369a1;
+  border-color: rgba(228, 87, 42, 0.5);
+  background: rgba(228, 87, 42, 0.12);
+  color: var(--sunset-accent-dark);
 }
 
 .checkbox-option {
@@ -162,7 +162,7 @@
 }
 
 .checkbox-option input {
-  accent-color: var(--color-primary);
+  accent-color: var(--sunset-accent);
 }
 
 @media (min-width: 768px) {

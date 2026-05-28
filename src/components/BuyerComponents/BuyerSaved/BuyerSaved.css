@@ -88,7 +88,7 @@
 }
 
 .buyer-saved-carousel .carousel-indicators .active {
-  background: #22d3ee;
+  background: #ff8e61;
 }
 
 .buyer-saved-carousel .carousel-control-prev,
@@ -194,7 +194,7 @@
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: #0284c7;
+  color: #e4572a;
   font-weight: 600;
 }
 

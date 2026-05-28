@@ -1,11 +1,18 @@
 /* Hero Section Component Styles - Now UI Kit Theme */
 
 .hero-section {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-info) 50%, var(--color-success) 100%);
+  background:
+    linear-gradient(168deg, rgba(165, 91, 96, 0.9) 0%, rgba(126, 70, 74, 0.74) 45%, rgba(15, 23, 42, 0.86) 100%),
+    url('/images/hero-office.jpg');
+  background-size: cover;
+  background-position: center;
   color: var(--color-white);
-  padding: var(--spacing-3xl) 0;
+  padding: 0;
   position: relative;
   overflow: hidden;
+  min-height: calc(100vh - 5rem);
+  display: flex;
+  align-items: center;
 }
 
 .hero-section::before {
@@ -15,7 +22,7 @@
   right: 0;
   width: 400px;
   height: 400px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.07);
   border-radius: 50%;
   transform: translate(100px, -100px);
 }
@@ -27,7 +34,7 @@
   left: 0;
   width: 300px;
   height: 300px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
   border-radius: 50%;
   transform: translate(-50px, 50px);
 }
@@ -44,6 +51,7 @@
   padding: 0 var(--spacing-md);
   position: relative;
   z-index: 1;
+  width: 100%;
 }
 
 @media (min-width: 640px) {
@@ -61,13 +69,14 @@
 .hero-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: 1.25rem;
   align-items: center;
+  text-align: center;
 }
 
 @media (min-width: 768px) {
   .hero-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
 }
 
@@ -76,8 +85,10 @@
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--spacing-lg);
   line-height: var(--line-height-tight);
-  text-transform: uppercase;
-  letter-spacing: -1px;
+  letter-spacing: -0.8px;
+  max-width: 18ch;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @media (min-width: 768px) {
@@ -91,7 +102,9 @@
   color: rgba(255, 255, 255, 0.9);
   margin-bottom: var(--spacing-xl);
   line-height: var(--line-height-loose);
-  max-width: 500px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @media (min-width: 768px) {
@@ -102,7 +115,9 @@
 
 .hero-buttons {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: var(--spacing-md);
 }
 
@@ -114,15 +129,7 @@
 }
 
 .hero-image {
-  background: linear-gradient(135deg, rgba(44, 168, 255, 0.2) 0%, rgba(24, 206, 15, 0.2) 100%);
-  border-radius: var(--border-radius-lg);
-  height: 20rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  overflow: hidden;
+  display: none;
 }
 
 @media (min-width: 768px) {
@@ -159,7 +166,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--spacing-xl);
-  margin-top: var(--spacing-3xl);
+  margin-top: var(--spacing-2xl);
 }
 
 @media (min-width: 768px) {
@@ -169,7 +176,7 @@
 }
 
 .hero-stat-card {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--sunset-glass);
   border-radius: var(--border-radius-base);
   padding: var(--spacing-lg);
   backdrop-filter: blur(10px);
@@ -179,7 +186,7 @@
 }
 
 .hero-stat-card:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-4px);
 }
 
@@ -187,9 +194,10 @@
   font-size: var(--font-size-4xl);
   font-weight: var(--font-weight-bold);
   margin-bottom: var(--spacing-sm);
+  color: #ffffff;
 }
 
 .hero-stat-label {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.92);
   font-size: var(--font-size-base);
 }

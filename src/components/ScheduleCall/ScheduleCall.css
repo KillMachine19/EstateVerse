@@ -2,7 +2,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-info) 100%);
+  background: linear-gradient(135deg, var(--sunset-accent) 0%, #ff8e61 100%);
   color: var(--color-white);
   border: 1px solid transparent;
   border-radius: 999px;
@@ -29,7 +29,7 @@
 
 .sc-trigger-btn:focus {
   outline: none;
-  box-shadow: 0 0 0 3px var(--color-primary-light);
+  box-shadow: 0 0 0 3px rgba(255, 108, 55, 0.3);
 }
 
 .sc-trigger-floating {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   FiBarChart2,
   FiBell,
@@ -35,12 +35,16 @@ import './Header.css';
 
 export const Header: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, userRole, setAuthenticated, setUserRole, clearAuth } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const isBuyer = isAuthenticated && userRole === 'buyer';
   const isAdmin = isAuthenticated && userRole === 'admin';
   const isDealer = isAuthenticated && userRole === 'dealer';
+  const isHomeRoute = location.pathname === '/';
+  const isSolidHeader = !isHomeRoute || isScrolled;
 
   const navigationItems = isAuthenticated
     ? getSignedInNavigationItems(userRole)
@@ -53,7 +57,6 @@ export const Header: React.FC = () => {
       icon: <FiGrid aria-hidden="true" />,
       children: [
         { label: 'Overview', path: '/buyer/dashboard', icon: <FiGrid aria-hidden="true" /> },
-        { label: 'Analytics', path: '/buyer/analytics', icon: <FiBarChart2 aria-hidden="true" /> },
       ],
     },
     {
@@ -139,6 +142,16 @@ export const Header: React.FC = () => {
     };
   }, [isAuthenticated]);
 
+  useEffect(() => {
+    const onScroll = () => {
+      setIsScrolled(window.scrollY > 24);
+    };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   const onLogoClick = () => {
     setIsMobileMenuOpen(false);
     navigate(isAuthenticated ? getDefaultDashboardPath(userRole) : '/');
@@ -178,7 +191,7 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="header">
+    <header className={`header ${isSolidHeader ? 'is-solid is-scrolled' : ''}`}>
       <div className="header-container">
         <div className="header-content">
           <button type="button" className="header-logo-btn" onClick={onLogoClick}>

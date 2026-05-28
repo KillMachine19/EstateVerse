@@ -47,7 +47,7 @@
 }
 
 .nav-link {
-  color: var(--text-muted);
+  color: rgba(248, 250, 252, 0.56);
   transition: all var(--transition-base);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
@@ -67,7 +67,7 @@
   left: 0;
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-info));
+  background: linear-gradient(90deg, var(--sunset-accent), #ff9b74);
   transition: width var(--transition-base);
 }
 
@@ -76,7 +76,7 @@
 }
 
 .nav-link-active {
-  color: var(--color-white);
+  color: rgba(255, 255, 255, 0.86);
 }
 
 .nav-link-active::after {
@@ -118,7 +118,7 @@
 }
 
 .accordion-item {
-  border-bottom: 1px solid rgba(0, 188, 212, 0.1);
+  border-bottom: 1px solid rgba(228, 87, 42, 0.16);
 }
 
 .accordion-item:last-child {
@@ -146,8 +146,8 @@
 }
 
 .accordion-toggle:hover {
-  background-color: rgba(0, 188, 212, 0.1);
-  color: var(--color-primary);
+  background-color: rgba(255, 108, 55, 0.12);
+  color: var(--sunset-accent);
 }
 
 .accordion-label {
@@ -191,7 +191,7 @@
   max-height: 0;
   overflow: hidden;
   transition: max-height var(--transition-base);
-  background-color: rgba(0, 188, 212, 0.05);
+  background-color: rgba(255, 108, 55, 0.05);
 }
 
 .accordion-content.expanded {
@@ -211,9 +211,9 @@
 }
 
 .accordion-link:hover {
-  color: var(--color-primary);
-  border-left-color: var(--color-primary);
-  background-color: rgba(0, 188, 212, 0.1);
+  color: var(--sunset-accent);
+  border-left-color: var(--sunset-accent);
+  background-color: rgba(255, 108, 55, 0.1);
 }
 
 .accordion-content .accordion-link {

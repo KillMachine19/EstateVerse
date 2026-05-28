@@ -9,14 +9,14 @@
   --font-weight-bold: 700;
 
   /* Colors - Primary Palette */
-  --color-primary: #00BCD4;
-  --color-primary-light: rgba(0, 188, 212, 0.3);
-  --color-primary-dark: #0097a7;
+  --color-primary: #ff6c37;
+  --color-primary-light: rgba(255, 108, 55, 0.26);
+  --color-primary-dark: #e4572a;
 
   /* Colors - Info */
-  --color-info: #2CA8FF;
-  --color-info-light: rgba(44, 168, 255, 0.3);
-  --color-info-dark: #1595e8;
+  --color-info: #ff9b74;
+  --color-info-light: rgba(255, 155, 116, 0.26);
+  --color-info-dark: #ff8e61;
 
   /* Colors - Success */
   --color-success: #18ce0f;
@@ -96,4 +96,15 @@
   --line-height-normal: 1.5;
   --line-height-loose: 1.75;
   --line-height-relaxed: 2;
+
+  /* Sunset Theme Tokens */
+  --sunset-accent: #ff6c37;
+  --sunset-accent-dark: #e4572a;
+  --sunset-tint: #a55b60;
+  --sunset-ink: #0f172a;
+  --sunset-ink-soft: #334155;
+  --sunset-glass: rgba(255, 255, 255, 0.14);
+  --sunset-glass-border: rgba(255, 255, 255, 0.24);
+  --sunset-card: #f8f6f4;
+  --sunset-bg: #f3ece8;
 }

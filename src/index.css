@@ -52,7 +52,7 @@ body.theme-dark {
 }
 
 body.theme-dark a {
-  color: #67e8f9;
+  color: #ffb08f;
 }
 
 body.theme-dark a:hover {
@@ -175,7 +175,7 @@ body.theme-dark .property-listing-image-slot {
 body.theme-dark .property-listing-chip {
   background: rgba(34, 211, 238, 0.12);
   border-color: rgba(34, 211, 238, 0.35);
-  color: #67e8f9;
+  color: #ffb08f;
 }
 
 body.theme-dark .property-listing-chip__label {
@@ -243,20 +243,20 @@ body.theme-dark .filter-amenity-chip {
 }
 
 body.theme-dark .filter-amenity-chip:hover {
-  border-color: #22d3ee;
+  border-color: #ff8e61;
   color: #e2e8f0;
 }
 
 body.theme-dark .filter-amenity-chip.is-active {
   background: rgba(34, 211, 238, 0.16);
   border-color: rgba(34, 211, 238, 0.45);
-  color: #67e8f9;
+  color: #ffb08f;
 }
 
 body.theme-dark .budget-slider-group input[type='range']::-webkit-slider-thumb,
 body.theme-dark .budget-slider-group input[type='range']::-moz-range-thumb {
   background: #0f172a;
-  border-color: #22d3ee;
+  border-color: #ff8e61;
 }
 
 body.theme-dark .budget-slider-track {
@@ -265,8 +265,8 @@ body.theme-dark .budget-slider-track {
       to right,
       #334155 0%,
       #334155 var(--min-budget-percent),
-      #22d3ee var(--min-budget-percent),
-      #22d3ee var(--max-budget-percent),
+      #ff8e61 var(--min-budget-percent),
+      #ff8e61 var(--max-budget-percent),
       #334155 var(--max-budget-percent),
       #334155 100%
     );
@@ -396,7 +396,7 @@ body.theme-dark .dealer-locality-suggestion {
 
 body.theme-dark .dealer-locality-chip,
 body.theme-dark .dealer-locality-chip button {
-  color: #67e8f9;
+  color: #ffb08f;
 }
 
 body.theme-dark .admin-sidebar-link:hover {
@@ -490,8 +490,8 @@ body.theme-dark button.btn.btn-danger {
 }
 
 body.theme-dark .btn-outline {
-  border-color: #22d3ee;
-  color: #67e8f9;
+  border-color: #ff8e61;
+  color: #ffb08f;
 }
 
 body.theme-dark .btn-outline:hover:not(:disabled) {
@@ -499,8 +499,8 @@ body.theme-dark .btn-outline:hover:not(:disabled) {
 }
 
 body.theme-dark .admin-action-icon-btn {
-  border-color: #22d3ee;
-  color: #22d3ee;
+  border-color: #ff8e61;
+  color: #ff8e61;
 }
 
 body.theme-dark .admin-action-icon-btn:hover:not(:disabled) {
@@ -565,11 +565,11 @@ body.theme-dark .seller-listing-manage-bottom .btn {
 
 body.theme-dark .seller-notification-icon {
   background: rgba(34, 211, 238, 0.18);
-  color: #67e8f9;
+  color: #ffb08f;
 }
 
 body.theme-dark .seller-notification-link {
-  color: #67e8f9;
+  color: #ffb08f;
 }
 
 img,

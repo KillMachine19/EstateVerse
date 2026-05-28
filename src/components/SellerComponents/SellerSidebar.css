@@ -62,12 +62,12 @@
 }
 
 .seller-sidebar-accordion__toggle:hover {
-  background: rgba(14, 116, 144, 0.1);
+  background: rgba(255, 108, 55, 0.1);
   color: #0f172a;
 }
 
 .seller-sidebar-accordion__toggle.is-active {
-  background: linear-gradient(90deg, rgba(14, 116, 144, 0.18), rgba(20, 83, 45, 0.12));
+  background: linear-gradient(90deg, rgba(255, 108, 55, 0.2), rgba(255, 155, 116, 0.18));
   color: #0f172a;
   font-weight: 600;
 }
@@ -100,13 +100,13 @@
 }
 
 .seller-sidebar-sublink:hover {
-  background: rgba(14, 116, 144, 0.08);
+  background: rgba(255, 108, 55, 0.08);
   color: #0f172a;
 }
 
 .seller-sidebar-sublink.is-active {
   color: #0f172a;
-  background: rgba(14, 116, 144, 0.12);
+  background: rgba(255, 108, 55, 0.12);
   font-weight: 600;
 }
 
@@ -128,12 +128,12 @@
 }
 
 .seller-sidebar-link:hover {
-  background: rgba(14, 116, 144, 0.1);
+  background: rgba(255, 108, 55, 0.1);
   color: #0f172a;
 }
 
 .seller-sidebar-link.is-active {
-  background: linear-gradient(90deg, rgba(14, 116, 144, 0.18), rgba(20, 83, 45, 0.12));
+  background: linear-gradient(90deg, rgba(255, 108, 55, 0.2), rgba(255, 155, 116, 0.18));
   color: #0f172a;
   font-weight: 600;
 }
@@ -142,7 +142,7 @@
   display: inline-flex;
   align-items: center;
   font-size: 0.98rem;
-  color: #0f766e;
+  color: #e4572a;
 }
 
 @media (max-width: 900px) {

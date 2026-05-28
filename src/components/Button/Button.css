@@ -29,43 +29,43 @@
 
 /* Primary Button */
 .btn-primary {
-  background-color: var(--color-primary);
+  background-color: var(--sunset-accent);
   color: var(--color-white);
-  border-color: var(--color-primary);
+  border-color: var(--sunset-accent);
   box-shadow: var(--shadow-md);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: var(--color-primary-dark);
-  border-color: var(--color-primary-dark);
+  background-color: var(--sunset-accent-dark);
+  border-color: var(--sunset-accent-dark);
   box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 
 /* Secondary Button */
 .btn-secondary {
-  background-color: var(--color-info);
+  background-color: #ff8e61;
   color: var(--color-white);
-  border-color: var(--color-info);
+  border-color: #ff8e61;
   box-shadow: var(--shadow-md);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background-color: var(--color-info-dark);
-  border-color: var(--color-info-dark);
+  background-color: var(--sunset-accent);
+  border-color: var(--sunset-accent);
   box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 
 /* Outline Button */
 .btn-outline {
-  border: 2px solid var(--color-primary);
-  color: var(--color-primary);
+  border: 2px solid var(--sunset-accent);
+  color: var(--sunset-accent);
   background-color: transparent;
 }
 
 .btn-outline:hover:not(:disabled) {
-  background-color: var(--color-primary);
+  background-color: var(--sunset-accent);
   color: var(--color-white);
   box-shadow: var(--shadow-lg);
 }

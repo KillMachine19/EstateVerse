@@ -64,9 +64,9 @@
   gap: 0.35rem;
   border-radius: 999px;
   padding: 0.26rem 0.62rem;
-  background: rgba(0, 188, 212, 0.12);
-  border: 1px solid rgba(0, 188, 212, 0.25);
-  color: #0c4a6e;
+  background: rgba(255, 108, 55, 0.12);
+  border: 1px solid rgba(228, 87, 42, 0.25);
+  color: #7c2d12;
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
 }
@@ -74,7 +74,7 @@
 .dealer-locality-chip button {
   border: none;
   background: transparent;
-  color: #0c4a6e;
+  color: #7c2d12;
   padding: 0;
   display: inline-flex;
   cursor: pointer;

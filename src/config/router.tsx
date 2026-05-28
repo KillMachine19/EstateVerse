@@ -14,7 +14,6 @@ import { BuyerApplicationsPage } from '../pages/Buyer/BuyerApplicationsPage';
 import { BuyerMessagesPage } from '../pages/Buyer/BuyerMessagesPage';
 import { BuyerNotificationsPage } from '../pages/Buyer/BuyerNotificationsPage';
 import { ProfilePage } from '../pages/Account/ProfilePage';
-import { BuyerAnalyticsPage } from '../pages/Buyer/BuyerAnalyticsPage';
 import { BuyerSavedMapPage } from '../pages/Buyer/BuyerSavedMapPage';
 import { BuyerPropertyDetailsPage } from '../pages/Buyer/BuyerPropertyDetailsPage';
 import { VerificationStatusPage } from '../pages/Account/VerificationStatusPage';
@@ -25,7 +24,6 @@ import { SellerAddPropertyPage } from '../pages/Seller/SellerAddPropertyPage';
 import { SellerLeadsPage } from '../pages/Seller/SellerLeadsPage';
 import { SellerApplicationsPage } from '../pages/Seller/SellerApplicationsPage';
 import { SellerApplicationDetailsPage } from '../pages/Seller/SellerApplicationDetailsPage';
-import { SellerAnalyticsPage } from '../pages/Seller/SellerAnalyticsPage';
 import { SellerMessagesPage } from '../pages/Seller/SellerMessagesPage';
 import { SellerNotificationsPage } from '../pages/Seller/SellerNotificationsPage';
 import { ResetPasswordPage } from '../pages/Account/ResetPasswordPage';
@@ -178,14 +176,6 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: 'buyer/analytics',
-        element: (
-          <RoleProtectedRoute requiredRole="buyer">
-            <BuyerAnalyticsPage />
-          </RoleProtectedRoute>
-        ),
-      },
-      {
         path: 'admin/dashboard',
         element: (
           <RoleProtectedRoute requiredRole="admin">
@@ -238,14 +228,6 @@ export const router = createBrowserRouter([
         element: (
           <RoleProtectedRoute requiredRole="admin">
             <AdminCreateDealerPage />
-          </RoleProtectedRoute>
-        ),
-      },
-      {
-        path: 'admin/analytics',
-        element: (
-          <RoleProtectedRoute requiredRole="admin">
-            <AdminDashboardPage />
           </RoleProtectedRoute>
         ),
       },
@@ -350,14 +332,6 @@ export const router = createBrowserRouter([
         element: (
           <RoleProtectedRoute requiredRole="seller">
             <SellerApplicationDetailsPage />
-          </RoleProtectedRoute>
-        ),
-      },
-      {
-        path: 'seller/analytics',
-        element: (
-          <RoleProtectedRoute requiredRole="seller">
-            <SellerAnalyticsPage />
           </RoleProtectedRoute>
         ),
       },

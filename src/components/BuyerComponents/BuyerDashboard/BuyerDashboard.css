@@ -22,8 +22,8 @@
   width: 2rem;
   height: 2rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, rgba(0, 188, 212, 0.2), rgba(44, 168, 255, 0.2));
-  color: #0369a1;
+  background: linear-gradient(135deg, rgba(255, 108, 55, 0.2), rgba(255, 155, 116, 0.2));
+  color: #e4572a;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -81,7 +81,7 @@
 
 .buyer-dashboard-section__action {
   border: none;
-  background: rgba(0, 188, 212, 0.16);
+  background: rgba(255, 108, 55, 0.16);
   color: #0f172a;
   border-radius: 999px;
   padding: 0.35rem 0.7rem;
@@ -138,7 +138,7 @@
 
 .buyer-status-badge--info {
   background: rgba(14, 165, 233, 0.18);
-  color: #075985;
+  color: #9a3412;
 }
 
 .buyer-status-badge--success {
@@ -170,7 +170,7 @@
 
 .buyer-dashboard-plain-list__item svg {
   margin-top: 0.12rem;
-  color: #0284c7;
+  color: #e4572a;
   flex-shrink: 0;
 }
 
@@ -194,8 +194,8 @@
   width: 2rem;
   height: 2rem;
   border-radius: 10px;
-  background: rgba(0, 188, 212, 0.18);
-  color: #0369a1;
+  background: rgba(255, 108, 55, 0.18);
+  color: #e4572a;
   display: inline-flex;
   align-items: center;
   justify-content: center;

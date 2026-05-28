@@ -6,7 +6,6 @@ import {
   FiGrid,
   FiList,
   FiMessageSquare,
-  FiPieChart,
   FiPlusCircle,
   FiTag,
 } from 'react-icons/fi';
@@ -22,7 +21,7 @@ const SELLER_SIDEBAR_ITEMS = [
 export const SellerSidebar: React.FC = () => {
   const location = useLocation();
   const isDashboardRoute = useMemo(
-    () => location.pathname.startsWith('/seller/dashboard') || location.pathname.startsWith('/seller/analytics'),
+    () => location.pathname.startsWith('/seller/dashboard'),
     [location.pathname]
   );
   const isListingsRoute = useMemo(
@@ -71,15 +70,6 @@ export const SellerSidebar: React.FC = () => {
                   <FiGrid aria-hidden="true" />
                 </span>
                 Overview
-              </NavLink>
-              <NavLink
-                to="/seller/analytics"
-                className={({ isActive }) => `seller-sidebar-sublink ${isActive ? 'is-active' : ''}`}
-              >
-                <span className="seller-sidebar-sublink__icon">
-                  <FiPieChart aria-hidden="true" />
-                </span>
-                Analytics
               </NavLink>
             </div>
           )}
