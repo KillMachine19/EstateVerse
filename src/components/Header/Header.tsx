@@ -24,7 +24,6 @@ import { MobileMenuToggle } from '../MobileMenuToggle';
 import { AuthModal } from '../AuthModal';
 import { useAuth } from '../../context/AuthContext';
 import { BuyerHeaderNav } from '../BuyerComponents/BuyerHeaderNav';
-import { ThemeToggle } from '../ThemeToggle';
 import {
   getDefaultDashboardPath,
   getSignedInNavigationItems,
@@ -247,7 +246,6 @@ export const Header: React.FC = () => {
                 </button>
               </div>
             ) : null}
-            <ThemeToggle className="header-theme-toggle" />
             {!isAuthenticated ? (
               <button type="button" className="header-auth-btn" onClick={openAuthModal}>
                 Sign In / Sign Up
@@ -302,7 +300,6 @@ export const Header: React.FC = () => {
                   </button>
                 </div>
               ) : null}
-              <ThemeToggle className="header-theme-toggle header-theme-toggle-mobile" />
               {!isAuthenticated ? (
                 <button type="button" className="header-auth-btn header-auth-mobile" onClick={openAuthModal}>
                   Sign In / Sign Up
